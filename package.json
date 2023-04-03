@@ -40,7 +40,6 @@
     "react-switch": "^6.1.0",
     "react-tabs": "^5.1.0",
     "react-toastify": "^9.0.3",
-    "rodal": "^1.8.3",
     "styled-components": "^5.3.5",
     "sweetalert2": "^11.4.17",
     "zustand": "^4.0.0-rc.1"
