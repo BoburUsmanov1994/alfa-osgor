@@ -213,7 +213,7 @@ const OsgorCreateContainer = ({...rest}) => {
         if(risk){
             calculatePremium()
         }
-    },[risk])
+    },[risk,fotSum])
     if (isLoadingFilials || isLoadingInsuranceTerms || isLoadingCountry || isLoadingRegion) {
         return <OverlayLoader/>
     }
@@ -587,6 +587,7 @@ const OsgorCreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
+                                    property={{disabled:true}}
                                     label={'Коэффициент страхового тарифа'}
                                     type={'input'}
                                     name={'comission'}/>
