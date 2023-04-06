@@ -48,6 +48,7 @@ const OsgorCreateContainer = ({...rest}) => {
     const [regionId, setRegionId] = useState(null)
     const [insuranceTerm, setInsuranceTerm] = useState(null)
     const [policeStartDate, setPoliceStartDate] = useState(dayjs())
+    const [oked, setOked] = useState(null)
     const setBreadcrumbs = useStore(state => get(state, 'setBreadcrumbs', () => {
     }))
     const breadcrumbs = useMemo(() => [{
@@ -99,6 +100,11 @@ const OsgorCreateContainer = ({...rest}) => {
     })
     const okedList = getSelectOptionsListFromData(get(okeds, `data.result`, []), 'id', 'name')
 
+    const {data: ownershipForms} = useGetAllQuery({
+        key: KEYS.ownershipForms, url: URLS.ownershipForms
+    })
+    const ownershipFormList = getSelectOptionsListFromData(get(ownershipForms, `data.result`, []), 'id', 'name')
+
     const {data: district, isLoading: isLoadingDistrict} = useGetAllQuery({
         key: [KEYS.districts, regionId],
         url: URLS.districts,
@@ -110,6 +116,18 @@ const OsgorCreateContainer = ({...rest}) => {
         enabled: !!(regionId || get(person, 'regionId'))
     })
     const districtList = getSelectOptionsListFromData(get(district, `data.result`, []), 'id', 'name')
+
+    const {data: activity} = useGetAllQuery({
+        key: [KEYS.activityAndRisk, oked],
+        url: URLS.activityAndRisk,
+        params: {
+            params: {
+                oked
+            }
+        },
+        enabled: !!(oked )
+    })
+    const activityList = getSelectOptionsListFromData([{oked:get(activity, `data.result.oked`),name:get(activity, `data.result.name`)}], 'oked', 'name')
 
     const {
         mutate: getPersonalInfoRequest, isLoading: isLoadingPersonalInfo
@@ -152,13 +170,16 @@ const OsgorCreateContainer = ({...rest}) => {
         if (isEqual(name, 'policies[0].insuranceTermId')) {
             setInsuranceTerm(value)
         }
+        if (isEqual(name, 'insurant.organization.oked')) {
+            setOked(value)
+        }
     }
 
     if (isLoadingFilials || isLoadingInsuranceTerms || isLoadingCountry || isLoadingRegion) {
         return <OverlayLoader/>
     }
 
-    console.log('org', organization)
+    console.log('oked', [{oked:get(activity, `data.result.oked`),name:get(activity, `data.result.name`)}])
 
 
     return (<>
@@ -194,12 +215,12 @@ const OsgorCreateContainer = ({...rest}) => {
                                                        property={{hideLabel: true}} type={'select'}
                                                        name={'regionId'}/></Col>
                                 </Row>
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Филиал</Col>
-                                    <Col xs={7}><Field options={filialList}
-                                                       property={{hideLabel: true}} type={'select'}
-                                                       name={'agencyId'}/></Col>
-                                </Row>
+                                {/*<Row align={'center'} className={'mb-25'}>*/}
+                                {/*    <Col xs={5}>Филиал</Col>*/}
+                                {/*    <Col xs={7}><Field options={filialList}*/}
+                                {/*                       property={{hideLabel: true}} type={'select'}*/}
+                                {/*                       name={'agencyId'}/></Col>*/}
+                                {/*</Row>*/}
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Тип местности </Col>
                                     <Col xs={7}><Field params={{required: true}} options={areaTypesList}
@@ -456,7 +477,7 @@ const OsgorCreateContainer = ({...rest}) => {
                             </>}
                             {isEqual(insurant, 'organization') && <>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field props={{required:true}} label={'INN'} defaultValue={inn} property={{
+                                    <Field props={{required: true}} label={'INN'} defaultValue={inn} property={{
                                         mask: '999999999',
                                         placeholder: 'Inn',
                                         maskChar: '_'
@@ -464,24 +485,26 @@ const OsgorCreateContainer = ({...rest}) => {
 
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field props={{required:true}} defaultValue={get(organization,'name')} label={'Наименование'} type={'input'}
+                                    <Field props={{required: true}} defaultValue={get(organization, 'name')}
+                                           label={'Наименование'} type={'input'}
                                            name={'insurant.organization.name'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field  label={'Руководитель'} type={'input'}
+                                    <Field label={'Руководитель'} type={'input'}
                                            name={'insurant.organization.representativeName'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field  label={'Должность'} type={'input'}
-                                            name={'insurant.organization.position'}/>
+                                    <Field label={'Должность'} type={'input'}
+                                           name={'insurant.organization.position'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(organization,'phone')}  props={{required:true}} label={'Телефон'} type={'input'}
-                                            name={'insurant.organization.phone'}/>
+                                    <Field defaultValue={get(organization, 'phone')} props={{required: true}}
+                                           label={'Телефон'} type={'input'}
+                                           name={'insurant.organization.phone'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(organization,'email')}  label={'Email'} type={'input'}
-                                            name={'insurant.organization.email'}/>
+                                    <Field defaultValue={get(organization, 'email')} label={'Email'} type={'input'}
+                                           name={'insurant.organization.email'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
@@ -491,7 +514,92 @@ const OsgorCreateContainer = ({...rest}) => {
                                         type={'select'}
                                         name={'insurant.organization.oked'}/>
                                 </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field label={'Расчетный счет'} type={'input'}
+                                           name={'insurant.organization.checkingAccount'}/>
+                                </Col>
+                                <Col xs={3}><Field label={'Область'} params={{required: true}} options={regionList}
+                                                   type={'select'}
+                                                   name={'insurant.organization.regionId'}/></Col>
+                                <Col xs={3}><Field label={'Форма собственности'} params={{required: true}}
+                                                   options={ownershipFormList}
+                                                   type={'select'}
+                                                   name={'insurant.organization.ownershipFormId'}/></Col>
                             </>}
+                        </Row>
+                        <Row gutterWidth={60} className={'mt-15'}>
+                            <Col xs={12} className={'mb-15'}><Title sm>Вид деятельности</Title></Col>
+                            <Col xs={3} className={'mb-25'}>
+                                <Field
+                                    options={activityList}
+                                    label={'Вид деятельности (по правилам)'}
+                                    type={'select'}
+                                    name={'activityRisk'}/>
+                            </Col>
+                            <Col xs={3} className={'mb-25'}>
+                                <Field
+                                    options={getSelectOptionsListFromData(get(activity,'data.result.risks',[]))}
+                                    label={'Класс проф. риска'}
+                                    type={'select'}
+                                    name={'risk'}/>
+                            </Col>
+                            <Col xs={3} className={'mb-25'}>
+                                <Field
+                                    label={'Коэффициент страхового тарифа'}
+                                    type={'input'}
+                                    name={'comission'}/>
+                            </Col>
+                            <Col xs={3} className={'mb-25'}>
+                                <Field
+                                    label={'Коэффициент страхового тарифа'}
+                                    type={'input'}
+                                    name={'funeralExpensesSum'}/>
+                            </Col>
+                            <Col xs={3} className={'mb-25'}>
+                                <Field
+                                    label={'Фонд оплаты труда'}
+                                    type={'input'}
+                                    name={'fot'}/>
+                            </Col>
+                        </Row>
+                        <Row gutterWidth={60} className={'mt-15'}>
+                            <Col xs={12} className={'mb-15'}><Title sm>Агентсткое вознограждение и РПМ</Title></Col>
+                            <Col xs={8}>
+                                <Row>
+                                    <Col xs={12} className={'mb-25'}>
+                                        <Field
+                                            options={filialList}
+                                            label={'Агент'}
+                                            type={'select'}
+                                            name={'agencyId'}/>
+                                    </Col>
+
+                                    <Col xs={6} className={'mb-25'}>
+                                        <Field
+                                            label={'Вознограждение %'}
+                                            type={'input'}
+                                            name={'rewardPercent'}/>
+                                    </Col>
+                                    <Col xs={6} className={'mb-25'}>
+                                        <Field
+                                            label={'Отчисления в РПМ  %'}
+                                            type={'input'}
+                                            name={'rpmPercent'}/>
+                                    </Col>
+                                    <Col xs={6} className={'mb-25'}>
+                                        <Field
+                                            label={'Сумма'}
+                                            type={'input'}
+                                            name={'rewardSum'}/>
+                                    </Col>
+                                    <Col xs={6} className={'mb-25'}>
+                                        <Field
+                                            label={'Сумма'}
+                                            type={'input'}
+                                            name={'rpmSum'}/>
+                                    </Col>
+                                </Row>
+                            </Col>
                         </Row>
                     </Form>
                 </Col>

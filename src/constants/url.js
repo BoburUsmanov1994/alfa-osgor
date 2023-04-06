@@ -30,4 +30,5 @@ export const URLS = {
     agencies: 'api/references/agencies',
     vehicleTypes: 'api/references/vehicle-types',
     okeds: 'api/references/okeds',
+    activityAndRisk: 'api/references/activity-and-risks',
 }

@@ -30,4 +30,5 @@ export const KEYS = {
     agencies: 'agencies',
     vehicleTypes: 'vehicleTypes',
     okeds: 'okeds',
+    activityAndRisk: 'activityAndRisk',
 }
