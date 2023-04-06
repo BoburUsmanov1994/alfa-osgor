@@ -198,7 +198,7 @@ const OsgorCreateContainer = ({...rest}) => {
         }
     }
     useEffect(() => {
-        if (risk) {
+        if (risk && fotSum) {
             calculatePremium()
         }
     }, [risk, fotSum])
@@ -551,7 +551,7 @@ const OsgorCreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
-                                    defaultValue={get(head(get(activity, 'data.result.risks', [])), 'coeficient')}
+                                    defaultValue={get(find(get(activity, 'data.result.risks', []),_risk=>get(_risk,'number') == risk), 'coeficient')}
                                     property={{disabled: true}}
                                     label={'Коэффициент страхового тарифа'}
                                     type={'input'}
