@@ -25,7 +25,7 @@ const Router = ({...rest}) => {
                             </Route>
                             <Route path="/auth/logout" element={<LogOutPage/>}/>
                             <Route path={"auth/*"} element={<Navigate to={'/osgor/create'} replace/>}/>
-                            <Route path={"/"} element={<Navigate to={'/osgop/create'} replace/>}/>
+                            <Route path={"/"} element={<Navigate to={'/osgor/create'} replace/>}/>
                             <Route path={"*"} element={<NotFoundPage/>}/>
                         </Route>
 
