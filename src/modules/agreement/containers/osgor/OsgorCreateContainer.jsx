@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {useSettingsStore, useStore} from "../../../../store";
-import {get, isEqual} from "lodash";
+import {get, isEqual, round} from "lodash";
 import Panel from "../../../../components/panel";
 import Search from "../../../../components/search";
 import {Col, Row} from "react-grid-system";
@@ -632,7 +632,7 @@ const OsgorCreateContainer = ({...rest}) => {
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={rewardPercent*insurancePremium/100}
+                                            defaultValue={round(rewardPercent*insurancePremium/100,2)}
                                             property={{disabled:true}}
                                             label={'Сумма'}
                                             type={'number-format-input'}
@@ -640,7 +640,7 @@ const OsgorCreateContainer = ({...rest}) => {
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={rpmPercent*insurancePremium/100}
+                                            defaultValue={round(rpmPercent*insurancePremium/100,2)}
                                             property={{disabled:true}}
                                             label={'Сумма'}
                                             type={'number-format-input'}
