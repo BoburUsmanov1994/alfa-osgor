@@ -594,7 +594,7 @@ const OsgorCreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
-                                    label={'Коэффициент страхового тарифа'}
+                                    label={'Расходы на погребение'}
                                     type={'input'}
                                     name={'funeralExpensesSum'}/>
                             </Col>
