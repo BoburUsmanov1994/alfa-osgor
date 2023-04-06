@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {useSettingsStore, useStore} from "../../../../store";
-import {find, get, isEqual, isNil, round} from "lodash";
+import {find, get, head, isEqual, isNil, round} from "lodash";
 import Panel from "../../../../components/panel";
 import Search from "../../../../components/search";
 import {Col, Row} from "react-grid-system";
@@ -541,13 +541,14 @@ const OsgorCreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
-                                    options={getSelectOptionsListFromData(get(activity, 'data.result.risks', []))}
+                                    options={getSelectOptionsListFromData(get(activity, 'data.result.risks', []),'number','number')}
                                     label={'Класс проф. риска'}
                                     type={'select'}
                                     name={'risk'}/>
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
+                                    defaultValue={get(head(get(activity, 'data.result.risks', [])),'coeficient')}
                                     property={{disabled:true}}
                                     label={'Коэффициент страхового тарифа'}
                                     type={'input'}
