@@ -19,8 +19,8 @@ import qrcodeImg from "../../../../assets/images/qrcode.png"
 import dayjs from "dayjs";
 
 const getEndDateByInsuranceTerm = (term, startDate) => {
-    if(!isNil(term)) {
-        return dayjs(startDate).add(get(term,'value'), get(term,'prefix')).toDate()
+    if (!isNil(term)) {
+        return dayjs(startDate).add(get(term, 'value'), get(term, 'prefix')).toDate()
     }
     return dayjs()
 }
@@ -162,7 +162,7 @@ const OsgorCreateContainer = ({...rest}) => {
         calculatePremiumRequest({
                 url: URLS.osgorCalculate, attributes: {
                     risk,
-                    insuranceSum:fotSum
+                    insuranceSum: fotSum
                 }
             },
             {
@@ -191,17 +191,20 @@ const OsgorCreateContainer = ({...rest}) => {
         if (isEqual(name, 'rewardPercent')) {
             setRewardPercent(value)
         }
+        if (isEqual(name, 'insurant.person.oked')) {
+            if (value?.length >= 4) {
+                setOked(value)
+            }
+        }
     }
-    useEffect(()=>{
-        if(risk){
+    useEffect(() => {
+        if (risk) {
             calculatePremium()
         }
-    },[risk,fotSum])
+    }, [risk, fotSum])
     if (isLoadingFilials || isLoadingInsuranceTerms || isLoadingCountry || isLoadingRegion) {
         return <OverlayLoader/>
     }
-
-
 
 
     return (<>
@@ -270,11 +273,11 @@ const OsgorCreateContainer = ({...rest}) => {
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Страховая премия: </Col>
-                                    <Col xs={7}><Field defaultValue={insurancePremium} property={{hideLabel: true, disabled: true}}
+                                    <Col xs={7}><Field defaultValue={insurancePremium}
+                                                       property={{hideLabel: true, disabled: true}}
                                                        type={'number-format-input'}
                                                        name={'policies[0].insurancePremium'}/></Col>
                                 </Row>
-
 
 
                             </Col>
@@ -297,7 +300,7 @@ const OsgorCreateContainer = ({...rest}) => {
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Дача окончания покрытия: </Col>
                                     <Col xs={7}><Field
-                                        defaultValue={getEndDateByInsuranceTerm(find(get(insuranceTerms, `data.result`, []),(_insuranceTerm)=>get(_insuranceTerm,'id') == insuranceTerm), policeStartDate)}
+                                        defaultValue={getEndDateByInsuranceTerm(find(get(insuranceTerms, `data.result`, []), (_insuranceTerm) => get(_insuranceTerm, 'id') == insuranceTerm), policeStartDate)}
                                         disabled={!isEqual(insuranceTerm, 6)}
                                         property={{hideLabel: true}} type={'datepicker'}
                                         name={'policies[0].endDate'}/></Col>
@@ -541,15 +544,15 @@ const OsgorCreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
-                                    options={getSelectOptionsListFromData(get(activity, 'data.result.risks', []),'number','number')}
+                                    options={getSelectOptionsListFromData(get(activity, 'data.result.risks', []), 'number', 'number')}
                                     label={'Класс проф. риска'}
                                     type={'select'}
                                     name={'risk'}/>
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
-                                    defaultValue={get(head(get(activity, 'data.result.risks', [])),'coeficient')}
-                                    property={{disabled:true}}
+                                    defaultValue={get(head(get(activity, 'data.result.risks', [])), 'coeficient')}
+                                    property={{disabled: true}}
                                     label={'Коэффициент страхового тарифа'}
                                     type={'input'}
                                     name={'comission'}/>
@@ -594,16 +597,16 @@ const OsgorCreateContainer = ({...rest}) => {
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={round(rewardPercent*insurancePremium/100,2)}
-                                            property={{disabled:true}}
+                                            defaultValue={round(rewardPercent * insurancePremium / 100, 2)}
+                                            property={{disabled: true}}
                                             label={'Сумма'}
                                             type={'number-format-input'}
                                             name={'rewardSum'}/>
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={round(rpmPercent*insurancePremium/100,2)}
-                                            property={{disabled:true}}
+                                            defaultValue={round(rpmPercent * insurancePremium / 100, 2)}
+                                            property={{disabled: true}}
                                             label={'Сумма'}
                                             type={'number-format-input'}
                                             name={'rpmSum'}/>
