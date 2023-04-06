@@ -249,17 +249,11 @@ const OsgorCreateContainer = ({...rest}) => {
                                     <Col xs={7}><Button green>Новый</Button></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Регион </Col>
-                                    <Col xs={7}><Field params={{required: true}} options={regionList}
+                                    <Col xs={5}>Филиал </Col>
+                                    <Col xs={7}><Field params={{required: true}} options={filialList}
                                                        property={{hideLabel: true}} type={'select'}
-                                                       name={'regionId'}/></Col>
+                                                       name={'agencyId'}/></Col>
                                 </Row>
-                                {/*<Row align={'center'} className={'mb-25'}>*/}
-                                {/*    <Col xs={5}>Тип местности </Col>*/}
-                                {/*    <Col xs={7}><Field params={{required: true}} options={areaTypesList}*/}
-                                {/*                       property={{hideLabel: true}} type={'select'}*/}
-                                {/*                       name={'areaTypeId'}/></Col>*/}
-                                {/*</Row>*/}
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Серия договора:</Col>
                                     <Col xs={7}><Field property={{hideLabel: true}} type={'input'}
@@ -283,7 +277,7 @@ const OsgorCreateContainer = ({...rest}) => {
                                 </Row>
                             </Col>
                             <Col xs={4}>
-                             
+
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Страховая сумма: </Col>
                                     <Col xs={7}><Field defaultValue={fotSum}
