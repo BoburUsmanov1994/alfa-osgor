@@ -313,7 +313,7 @@ const OsgorCreateContainer = ({...rest}) => {
                             </Col>
                         </Row>
                         <Row gutterWidth={60} className={'mt-15'}>
-                            <Col xs={12} className={'mb-15'}><Title sm>Страхователь</Title></Col>
+                            <Col xs={12} className={'mb-15'}><Title >Страхователь</Title></Col>
                             <Col xs={12}>
                                 <Row>
                                     <Col xs={4}>
@@ -534,7 +534,7 @@ const OsgorCreateContainer = ({...rest}) => {
                             </>}
                         </Row>
                         <Row gutterWidth={60} className={'mt-15'}>
-                            <Col xs={12} className={'mb-15'}><Title sm>Вид деятельности</Title></Col>
+                            <Col xs={12} className={'mb-15'}><Title >Вид деятельности</Title></Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
                                     options={activityList}
@@ -551,7 +551,7 @@ const OsgorCreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
-                                    defaultValue={get(find(get(activity, 'data.result.risks', []),_risk=>get(_risk,'number') == risk), 'coeficient')}
+                                    defaultValue={get(find(get(activity, 'data.result.risks', []), _risk => get(_risk, 'number') == risk), 'coeficient')}
                                     property={{disabled: true}}
                                     label={'Коэффициент страхового тарифа'}
                                     type={'input'}
@@ -572,7 +572,7 @@ const OsgorCreateContainer = ({...rest}) => {
                             </Col>
                         </Row>
                         <Row gutterWidth={60} className={'mt-15'}>
-                            <Col xs={12} className={'mb-15'}><Title sm>Агентсткое вознограждение и РПМ</Title></Col>
+                            <Col xs={12} className={'mb-15'}><Title >Агентсткое вознограждение и РПМ</Title></Col>
                             <Col xs={8}>
                                 <Row>
                                     <Col xs={12} className={'mb-25'}>
