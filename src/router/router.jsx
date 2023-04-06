@@ -10,7 +10,7 @@ import {OverlayLoader} from "../components/loader";
 import LogOutPage from "../modules/auth/pages/LogOutPage";
 //lazy load
 const OsgorAgreementsPage = lazy(() => import("../modules/agreement/pages/osgor/AgreementsPage"));
-const OsgorAgreementCreatePage = lazy(() => import("../modules/agreement/pages/osgor/AgreementCreatePage"));
+const OsgorAgreementCreatePage = lazy(() => import("../modules/agreement/pages/osgor/OsgorCreatePage"));
 
 const Router = ({...rest}) => {
     return (

@@ -90,16 +90,16 @@ const NumberFormatInput = ({
                 <ErrorMessage
                     errors={errors}
                     name={name}
-                    render={({messages = `${label} is required`}) => {
+                    render={({messages = `${label ?? name} is required`}) => {
 
                         if (errors[name].type == 'required') {
-                            messages = `${label} is required`;
+                            messages = `${label ?? name} is required`;
                         }
                         if (errors[name].type == 'pattern') {
-                            messages = `${label} is not valid`;
+                            messages = `${label ?? name} is not valid`;
                         }
                         if (errors[name].type == 'manual') {
-                            messages = `${label} ${errors[name].message}`;
+                            messages = `${label ?? name} ${errors[name].message}`;
                         }
                         return <small className="form-error-message"> {messages}</small>;
                     }}

@@ -66,7 +66,9 @@ const CustomDatepicker = ({
 
     useEffect(()=>{
         if(defaultValue){
-            setStartDate(dayjs(defaultValue).toDate())
+            if(dayjs(defaultValue).isValid()) {
+                setStartDate(dayjs(defaultValue).toDate())
+            }
         }
     },[defaultValue])
     return (
@@ -75,9 +77,14 @@ const CustomDatepicker = ({
                 {!get(property,'hideLabel',false) &&  <Label>{label ?? name}</Label>}
                 <div className={"custom__box"}>
                     <DatePicker
+                        dateFormat={get(property,'dateFormat','dd.MM.yyyy')}
                         className={`custom-datepicker ${!isEmpty(errors) ? "error" : ''}`}
-                        selected={startDate}
-                        onChange={(date) => setStartDate(date)}
+                        selected={dayjs(startDate).toDate()}
+                        onChange={(date) => {
+                            if(dayjs(date).isValid()){
+                                setStartDate(date)
+                            }
+                        }}
                         readOnly={disabled}
                     />
                     <Calendar className={'custom__icon'}/>

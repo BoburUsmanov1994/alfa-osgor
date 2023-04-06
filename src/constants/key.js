@@ -29,4 +29,5 @@ export const KEYS = {
     ownershipForms: 'ownershipForms',
     agencies: 'agencies',
     vehicleTypes: 'vehicleTypes',
+    okeds: 'okeds',
 }

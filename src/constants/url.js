@@ -29,4 +29,5 @@ export const URLS = {
     ownershipForms: 'api/references/ownership-forms',
     agencies: 'api/references/agencies',
     vehicleTypes: 'api/references/vehicle-types',
+    okeds: 'api/references/okeds',
 }
