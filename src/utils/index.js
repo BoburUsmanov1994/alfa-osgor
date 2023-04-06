@@ -1,4 +1,4 @@
-import {includes, isEqual,get} from "lodash";
+import {includes, isEqual,get,isObject} from "lodash";
 
 const addDetectClick =  ({setOpen,classNames = []}) => {
     window.addEventListener("click", (e) => {
@@ -33,7 +33,7 @@ const formatDate  = (date) => {
 
 
 const getSelectOptionsListFromData = (data = [], value = 'id', label = 'title') => {
-    return data.map(item => ({ value: item[value], label: get(item,label) })) || [];
+    return data.map(item => isObject(item) ?  ({ value: item[value], label: get(item,label) }) : ({ value: item, label: item})) || [];
 }
 
 const getFieldType = (type = 'String') => {
