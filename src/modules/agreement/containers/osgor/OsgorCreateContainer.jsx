@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {useSettingsStore, useStore} from "../../../../store";
-import {get, isEqual, round} from "lodash";
+import {find, get, isEqual, isNil, round} from "lodash";
 import Panel from "../../../../components/panel";
 import Search from "../../../../components/search";
 import {Col, Row} from "react-grid-system";
@@ -18,23 +18,11 @@ import {OverlayLoader} from "../../../../components/loader";
 import qrcodeImg from "../../../../assets/images/qrcode.png"
 import dayjs from "dayjs";
 
-const getEndDateByInsuranceTerm = (termId, startDate) => {
-    switch (termId) {
-        case 1:
-            return dayjs(startDate).add(10, 'day').toDate()
-        case 2:
-            return dayjs(startDate).add(15, 'day').toDate()
-        case 3:
-            return dayjs(startDate).add(6, 'month').toDate()
-        case 4:
-            return dayjs(startDate).add(12, 'month').toDate()
-        case 5:
-            return dayjs(startDate).add(24, 'month').toDate()
-        case 6:
-            return dayjs(startDate)
-        default :
-            return dayjs()
+const getEndDateByInsuranceTerm = (term, startDate) => {
+    if(!isNil(term)) {
+        return dayjs(startDate).add(get(term,'value'), get(term,'prefix')).toDate()
     }
+    return dayjs()
 }
 
 const OsgorCreateContainer = ({...rest}) => {
@@ -84,11 +72,6 @@ const OsgorCreateContainer = ({...rest}) => {
         key: KEYS.regions, url: URLS.regions
     })
     const regionList = getSelectOptionsListFromData(get(region, `data.result`, []), 'id', 'name')
-
-    const {data: areaType} = useGetAllQuery({
-        key: KEYS.areaTypes, url: URLS.areaTypes
-    })
-    const areaTypesList = getSelectOptionsListFromData(get(areaType, `data.result`, []), 'id', 'name')
 
     const {data: genders} = useGetAllQuery({
         key: KEYS.genders, url: URLS.genders
@@ -314,7 +297,7 @@ const OsgorCreateContainer = ({...rest}) => {
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Дача окончания покрытия: </Col>
                                     <Col xs={7}><Field
-                                        defaultValue={getEndDateByInsuranceTerm(insuranceTerm, policeStartDate)}
+                                        defaultValue={getEndDateByInsuranceTerm(find(get(insuranceTerms, `data.result`, []),(_insuranceTerm)=>get(_insuranceTerm,'id') == insuranceTerm), policeStartDate)}
                                         disabled={!isEqual(insuranceTerm, 6)}
                                         property={{hideLabel: true}} type={'datepicker'}
                                         name={'policies[0].endDate'}/></Col>
