@@ -254,12 +254,12 @@ const OsgorCreateContainer = ({...rest}) => {
                                                        property={{hideLabel: true}} type={'select'}
                                                        name={'regionId'}/></Col>
                                 </Row>
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Тип местности </Col>
-                                    <Col xs={7}><Field params={{required: true}} options={areaTypesList}
-                                                       property={{hideLabel: true}} type={'select'}
-                                                       name={'areaTypeId'}/></Col>
-                                </Row>
+                                {/*<Row align={'center'} className={'mb-25'}>*/}
+                                {/*    <Col xs={5}>Тип местности </Col>*/}
+                                {/*    <Col xs={7}><Field params={{required: true}} options={areaTypesList}*/}
+                                {/*                       property={{hideLabel: true}} type={'select'}*/}
+                                {/*                       name={'areaTypeId'}/></Col>*/}
+                                {/*</Row>*/}
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Серия договора:</Col>
                                     <Col xs={7}><Field property={{hideLabel: true}} type={'input'}
@@ -283,12 +283,12 @@ const OsgorCreateContainer = ({...rest}) => {
                                 </Row>
                             </Col>
                             <Col xs={4}>
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Общая сумма договора: </Col>
-                                    <Col xs={7}><Field params={{required: true}} property={{hideLabel: true}}
-                                                       type={'number-format-input'}
-                                                       name={'sum'}/></Col>
-                                </Row>
+                                {/*<Row align={'center'} className={'mb-25'}>*/}
+                                {/*    <Col xs={5}>Общая сумма договора: </Col>*/}
+                                {/*    <Col xs={7}><Field params={{required: true}} property={{hideLabel: true}}*/}
+                                {/*                       type={'number-format-input'}*/}
+                                {/*                       name={'sum'}/></Col>*/}
+                                {/*</Row>*/}
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Страховая сумма: </Col>
                                     <Col xs={7}><Field defaultValue={fotSum}
@@ -303,18 +303,18 @@ const OsgorCreateContainer = ({...rest}) => {
                                                        name={'policies[0].insurancePremium'}/></Col>
                                 </Row>
 
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Дата начала договора: </Col>
-                                    <Col xs={7}><Field params={{required: true}} property={{hideLabel: true}}
-                                                       type={'datepicker'}
-                                                       name={'contractStartDate'}/></Col>
-                                </Row>
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Дата окончания договора: </Col>
-                                    <Col xs={7}><Field params={{required: true}} property={{hideLabel: true}}
-                                                       type={'datepicker'}
-                                                       name={'contractEndDate'}/></Col>
-                                </Row>
+                                {/*<Row align={'center'} className={'mb-25'}>*/}
+                                {/*    <Col xs={5}>Дата начала договора: </Col>*/}
+                                {/*    <Col xs={7}><Field params={{required: true}} property={{hideLabel: true}}*/}
+                                {/*                       type={'datepicker'}*/}
+                                {/*                       name={'contractStartDate'}/></Col>*/}
+                                {/*</Row>*/}
+                                {/*<Row align={'center'} className={'mb-25'}>*/}
+                                {/*    <Col xs={5}>Дата окончания договора: </Col>*/}
+                                {/*    <Col xs={7}><Field params={{required: true}} property={{hideLabel: true}}*/}
+                                {/*                       type={'datepicker'}*/}
+                                {/*                       name={'contractEndDate'}/></Col>*/}
+                                {/*</Row>*/}
 
                             </Col>
                             <Col xs={4}>
