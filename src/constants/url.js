@@ -31,4 +31,5 @@ export const URLS = {
     vehicleTypes: 'api/references/vehicle-types',
     okeds: 'api/references/okeds',
     activityAndRisk: 'api/references/activity-and-risks',
+    osgorCalculate: 'api/osgor/calculate',
 }

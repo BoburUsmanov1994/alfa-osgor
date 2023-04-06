@@ -49,6 +49,11 @@ const OsgorCreateContainer = ({...rest}) => {
     const [insuranceTerm, setInsuranceTerm] = useState(null)
     const [policeStartDate, setPoliceStartDate] = useState(dayjs())
     const [oked, setOked] = useState(null)
+    const [fotSum, setFotSum] = useState(0)
+    const [risk, setRisk] = useState(null)
+    const [insurancePremium, setInsurancePremium] = useState(0)
+    const [rpmPercent, setRpmPercent] = useState(0)
+    const [rewardPercent, setRewardPercent] = useState(0)
     const setBreadcrumbs = useStore(state => get(state, 'setBreadcrumbs', () => {
     }))
     const breadcrumbs = useMemo(() => [{
@@ -105,7 +110,7 @@ const OsgorCreateContainer = ({...rest}) => {
     })
     const ownershipFormList = getSelectOptionsListFromData(get(ownershipForms, `data.result`, []), 'id', 'name')
 
-    const {data: district, isLoading: isLoadingDistrict} = useGetAllQuery({
+    const {data: district} = useGetAllQuery({
         key: [KEYS.districts, regionId],
         url: URLS.districts,
         params: {
@@ -125,9 +130,12 @@ const OsgorCreateContainer = ({...rest}) => {
                 oked
             }
         },
-        enabled: !!(oked )
+        enabled: !!(oked)
     })
-    const activityList = getSelectOptionsListFromData([{oked:get(activity, `data.result.oked`),name:get(activity, `data.result.name`)}], 'oked', 'name')
+    const activityList = getSelectOptionsListFromData([{
+        oked: get(activity, `data.result.oked`),
+        name: get(activity, `data.result.name`)
+    }], 'oked', 'name')
 
     const {
         mutate: getPersonalInfoRequest, isLoading: isLoadingPersonalInfo
@@ -136,6 +144,10 @@ const OsgorCreateContainer = ({...rest}) => {
     const {
         mutate: getOrganizationInfoRequest, isLoading: isLoadingOrganizationInfo
     } = usePostQuery({listKeyId: KEYS.organizationInfoProvider})
+
+    const {
+        mutate: calculatePremiumRequest
+    } = usePostQuery({listKeyId: KEYS.osgorCalculate})
 
     const getInfo = () => {
         getPersonalInfoRequest({
@@ -163,6 +175,20 @@ const OsgorCreateContainer = ({...rest}) => {
             }
         )
     }
+    const calculatePremium = () => {
+        calculatePremiumRequest({
+                url: URLS.osgorCalculate, attributes: {
+                    risk,
+                    insuranceSum:fotSum
+                }
+            },
+            {
+                onSuccess: ({data}) => {
+                    setInsurancePremium(get(data, 'result.insurancePremium'))
+                }
+            }
+        )
+    }
     const getFieldData = (name, value) => {
         if (isEqual(name, 'insurant.person.regionId')) {
             setRegionId(value)
@@ -173,13 +199,26 @@ const OsgorCreateContainer = ({...rest}) => {
         if (isEqual(name, 'insurant.organization.oked')) {
             setOked(value)
         }
+        if (isEqual(name, 'risk')) {
+            setRisk(value)
+        }
+        if (isEqual(name, 'rpmPercent')) {
+            setRpmPercent(value)
+        }
+        if (isEqual(name, 'rewardPercent')) {
+            setRewardPercent(value)
+        }
     }
-
+    useEffect(()=>{
+        if(risk){
+            calculatePremium()
+        }
+    },[risk])
     if (isLoadingFilials || isLoadingInsuranceTerms || isLoadingCountry || isLoadingRegion) {
         return <OverlayLoader/>
     }
 
-    console.log('oked', [{oked:get(activity, `data.result.oked`),name:get(activity, `data.result.name`)}])
+
 
 
     return (<>
@@ -215,12 +254,6 @@ const OsgorCreateContainer = ({...rest}) => {
                                                        property={{hideLabel: true}} type={'select'}
                                                        name={'regionId'}/></Col>
                                 </Row>
-                                {/*<Row align={'center'} className={'mb-25'}>*/}
-                                {/*    <Col xs={5}>Филиал</Col>*/}
-                                {/*    <Col xs={7}><Field options={filialList}*/}
-                                {/*                       property={{hideLabel: true}} type={'select'}*/}
-                                {/*                       name={'agencyId'}/></Col>*/}
-                                {/*</Row>*/}
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Тип местности </Col>
                                     <Col xs={7}><Field params={{required: true}} options={areaTypesList}
@@ -258,12 +291,15 @@ const OsgorCreateContainer = ({...rest}) => {
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Страховая сумма: </Col>
-                                    <Col xs={7}><Field property={{hideLabel: true}} type={'number-format-input'}
+                                    <Col xs={7}><Field defaultValue={fotSum}
+                                                       property={{hideLabel: true, disabled: true}}
+                                                       type={'number-format-input'}
                                                        name={'policies[0].insuranceSum'}/></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Страховая премия: </Col>
-                                    <Col xs={7}><Field property={{hideLabel: true}} type={'number-format-input'}
+                                    <Col xs={7}><Field defaultValue={insurancePremium} property={{hideLabel: true, disabled: true}}
+                                                       type={'number-format-input'}
                                                        name={'policies[0].insurancePremium'}/></Col>
                                 </Row>
 
@@ -474,6 +510,12 @@ const OsgorCreateContainer = ({...rest}) => {
                                         type={'input'}
                                         name={'insurant.person.email'}/>
                                 </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        label={'Oked'}
+                                        type={'input'}
+                                        name={'insurant.person.oked'}/>
+                                </Col>
                             </>}
                             {isEqual(insurant, 'organization') && <>
                                 <Col xs={3} className={'mb-25'}>
@@ -538,7 +580,7 @@ const OsgorCreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
-                                    options={getSelectOptionsListFromData(get(activity,'data.result.risks',[]))}
+                                    options={getSelectOptionsListFromData(get(activity, 'data.result.risks', []))}
                                     label={'Класс проф. риска'}
                                     type={'select'}
                                     name={'risk'}/>
@@ -557,8 +599,9 @@ const OsgorCreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
+                                    property={{onChange: (val) => setFotSum(val)}}
                                     label={'Фонд оплаты труда'}
-                                    type={'input'}
+                                    type={'number-format-input'}
                                     name={'fot'}/>
                             </Col>
                         </Row>
@@ -588,14 +631,18 @@ const OsgorCreateContainer = ({...rest}) => {
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
+                                            defaultValue={rewardPercent*insurancePremium/100}
+                                            property={{disabled:true}}
                                             label={'Сумма'}
-                                            type={'input'}
+                                            type={'number-format-input'}
                                             name={'rewardSum'}/>
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
+                                            defaultValue={rpmPercent*insurancePremium/100}
+                                            property={{disabled:true}}
                                             label={'Сумма'}
-                                            type={'input'}
+                                            type={'number-format-input'}
                                             name={'rpmSum'}/>
                                     </Col>
                                 </Row>

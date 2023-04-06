@@ -31,4 +31,5 @@ export const KEYS = {
     vehicleTypes: 'vehicleTypes',
     okeds: 'okeds',
     activityAndRisk: 'activityAndRisk',
+    osgorCalculate: 'osgorCalculate',
 }
