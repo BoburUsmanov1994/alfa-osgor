@@ -72,6 +72,7 @@ const GridTable = ({
                        page,
                        viewUrl = null,
                        updateUrl = null,
+                       dataKey = null,
                        ...rest
                    }) => {
     const {t} = useTranslation()
@@ -93,7 +94,7 @@ const GridTable = ({
             </tr>
             </thead>
             <tbody className={'table-body'}>
-            <TableBody viewUrl={viewUrl} updateUrl={updateUrl} page={page} remove={remove} openEditModal={openEditModal} tableHeaderData={tableHeaderData}
+            <TableBody dataKey={dataKey} viewUrl={viewUrl} updateUrl={updateUrl} page={page} remove={remove} openEditModal={openEditModal} tableHeaderData={tableHeaderData}
                        tableBodyData={tableBodyData}/>
             </tbody>
         </Styled>

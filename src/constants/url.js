@@ -1,6 +1,7 @@
 export const URLS = {
     login: 'api/auth/get-token',
     osgorCreate: 'api/osgor/create',
+    osgorList: 'api/osgor/list',
     osgorView: 'api/osgor/show',
     osgorConfirmPayment: 'api/osgor/confirm-payed',
     osgorCheckPayment: 'api/osgor/check-payment',

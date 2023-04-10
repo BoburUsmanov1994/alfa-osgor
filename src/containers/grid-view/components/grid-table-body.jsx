@@ -14,7 +14,8 @@ const GridTableBody = ({
                            },
                            page,
                            viewUrl = null,
-                           updateUrl = null
+                           updateUrl = null,
+                           dataKey = null,
                        }) => {
     const navigate = useNavigate();
     return (
@@ -26,16 +27,19 @@ const GridTableBody = ({
                         tableHeaderData && tableHeaderData.map((td, j) => <td key={get(td, 'id', j)}>
                             {
                                 get(td, 'isArray') ? get(tr, `${get(td, 'key')}`, []).map(
-                                    item => get(item,get(td,'arrayKey','name'))
-                                ).join(" , ") : get(td, 'hasNumberFormat',false) ? <NumberFormat displayType={'text'} thousandSeparator={" "} value={get(tr, `${get(td, 'key')}`, 0 )} /> : get(td, 'date',false) ? dayjs(get(tr, `${get(td, 'key')}`, new Date())).format(get(td, 'dateFormat',"DD.MM.YYYY")) : get(tr, `${get(td, 'key')}`, '-')
+                                    item => get(item, get(td, 'arrayKey', 'name'))
+                                ).join(" , ") : get(td, 'hasNumberFormat', false) ?
+                                    <NumberFormat displayType={'text'} thousandSeparator={" "}
+                                                  value={get(tr, `${get(td, 'key')}`, 0)}/> : get(td, 'date', false) ? dayjs(get(tr, `${get(td, 'key')}`, new Date())).format(get(td, 'dateFormat', "DD.MM.YYYY")) : get(tr, `${get(td, 'key')}`, '-')
                             }
                         </td>)
                     }
-                    <td>{viewUrl && <Eye onClick={() => navigate(`${viewUrl}/${get(tr, '_id', null)}`)}
-                                         className={'cursor-pointer mr-10'} size={20} color={'#78716c'}/>}<Edit
+                    <td>{viewUrl && <Eye
+                        onClick={() => navigate(`${viewUrl}/${dataKey ? get(tr, dataKey, null) : get(tr, '_id', null)}`)}
+                        className={'cursor-pointer mr-10'} size={20} color={'#78716c'}/>}<Edit
                         onClick={() => {
                             if (updateUrl) {
-                                navigate(`${updateUrl}/${get(tr, '_id', null)}`)
+                                navigate(`${updateUrl}/${dataKey ? get(tr, dataKey, null) : get(tr, '_id', null)}`)
                                 return
                             }
                             openEditModal(get(tr, '_id', null))

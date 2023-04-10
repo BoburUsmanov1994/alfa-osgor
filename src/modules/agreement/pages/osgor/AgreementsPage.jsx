@@ -1,15 +1,15 @@
 import React from 'react';
 import styled from "styled-components";
-import AgreementsContainer from "../../containers/osgor/AgreementsContainer";
+import ListContainer from "../../containers/osgor/AgreementsContainer";
 
 const Styled = styled.div`
 `;
-const AgreementsPage = ({...rest}) => {
+const ListPage = ({...rest}) => {
     return (
         <Styled {...rest}>
-            <AgreementsContainer/>
+            <ListContainer/>
         </Styled>
     );
 };
 
-export default AgreementsPage;
+export default ListPage;

@@ -52,7 +52,7 @@ const CustomDatepicker = ({
                               setValue,
                               getValueFromField = () => {
                               },
-                              dateFormat = "DD/MM/YYYY",
+                              dateFormat = "YYYY-MM-DD",
                               ...rest
                           }) => {
     const [startDate, setStartDate] = useState(new Date());

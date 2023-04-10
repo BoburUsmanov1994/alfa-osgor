@@ -17,6 +17,7 @@ import {getSelectOptionsListFromData} from "../../../../utils";
 import {OverlayLoader} from "../../../../components/loader";
 import qrcodeImg from "../../../../assets/images/qrcode.png"
 import dayjs from "dayjs";
+import {useNavigate} from "react-router-dom";
 
 const getEndDateByInsuranceTerm = (term, startDate) => {
     if (!isNil(term)) {
@@ -44,6 +45,7 @@ const OsgorCreateContainer = ({...rest}) => {
     const [rewardPercent, setRewardPercent] = useState(0)
     const setBreadcrumbs = useStore(state => get(state, 'setBreadcrumbs', () => {
     }))
+    const navigate = useNavigate();
     const breadcrumbs = useMemo(() => [{
         id: 1, title: 'OSGOR', path: '/osgor/list',
     }, {
@@ -131,6 +133,9 @@ const OsgorCreateContainer = ({...rest}) => {
     const {
         mutate: calculatePremiumRequest
     } = usePostQuery({listKeyId: KEYS.osgorCalculate})
+    const {
+        mutate: createRequest
+    } = usePostQuery({listKeyId: KEYS.osgorCreate})
 
     const getInfo = () => {
         getPersonalInfoRequest({
@@ -197,6 +202,66 @@ const OsgorCreateContainer = ({...rest}) => {
             }
         }
     }
+    const create = ({data}) => {
+        const {
+            activityRisk,
+            birthDate,
+            fot,
+            funeralExpensesSum,
+            passportNumber,
+            passportSeries,
+            rewardPercent,
+            rewardSum,
+            risk,
+            rpmPercent,
+            rpmSum,
+            policies,
+            insurant,
+            ...rest
+        } = data
+        createRequest({
+                url: URLS.osgorCreate, attributes: {
+                    regionId: get(insurant, 'person.regionId'),
+                    areaTypeId: get(insurant, 'person.residentType'),
+                    sum: get(head(policies), 'insuranceSum', 0),
+                    contractStartDate: get(head(policies), 'startDate'),
+                    contractEndDate: get(head(policies), 'endDate'),
+                    insurant: get(insurant, 'person') ? {
+                        person: {
+                            passportData: get(insurant, 'person.passportData'),
+                            fullName: get(insurant, 'person.fullName'),
+                            regionId: get(insurant, 'person.regionId'),
+                            gender: get(insurant, 'person.gender'),
+                            birthDate: get(insurant, 'person.birthDate'),
+                            address: get(insurant, 'person.address'),
+                            residentType: get(insurant, 'person.residentType'),
+                            countryId: get(insurant, 'person.countryId'),
+                            phone: get(insurant, 'person.phone'),
+                            email: get(insurant, 'person.email'),
+                        }
+                    } : {},
+                    policies: [
+                        {
+                            ...head(policies),
+                            insuranceRate: get(data, 'comission'),
+                            fot: fotSum,
+                            funeralExpensesSum: parseInt(funeralExpensesSum)
+                        }
+                    ],
+                    ...rest
+                }
+            },
+            {
+                onSuccess: ({data: response}) => {
+                    if (get(response, 'result.osgor_formId')) {
+                        navigate(`/osgor/view/${get(response, 'result.osgor_formId')}`);
+                    } else {
+                        navigate(`/osgor/list`);
+                    }
+                },
+            }
+        )
+    }
     useEffect(() => {
         if (risk && fotSum) {
             calculatePremium()
@@ -224,10 +289,11 @@ const OsgorCreateContainer = ({...rest}) => {
             </Row>
             <Row>
                 <Col xs={12}>
-                    <Form getValueFromField={(value, name) => getFieldData(name, value)}
-                          footer={<Flex className={'mt-32'}><Button className={'mr-16'}>Сохранить</Button><Button
-                              danger className={'mr-16'}>Удалить</Button><Button gray className={'mr-16'}>Подтвердить
-                              оплату</Button><Button gray className={'mr-16'}>Отправить в Фонд</Button></Flex>}>
+                    <Form formRequest={create} getValueFromField={(value, name) => getFieldData(name, value)}
+                          footer={<Flex className={'mt-32'}><Button type={'submit'}
+                                                                    className={'mr-16'}>Сохранить</Button><Button
+                              type={'button'} gray className={'mr-16'}>Подтвердить
+                              оплату</Button><Button type={'button'} gray className={'mr-16'}>Отправить в Фонд</Button></Flex>}>
                         <Row gutterWidth={60} className={'mt-32'}>
                             <Col xs={4} style={{borderRight: '1px solid #DFDFDF'}}>
                                 <Row align={'center'} className={'mb-25'}>
@@ -293,7 +359,11 @@ const OsgorCreateContainer = ({...rest}) => {
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Дата начала покрытия: </Col>
                                     <Col xs={7}><Field
-                                        property={{hideLabel: true, onChange: (val) => setPoliceStartDate(val)}}
+                                        property={{
+                                            hideLabel: true,
+                                            onChange: (val) => setPoliceStartDate(val),
+                                            dateFormat: 'yyyy-MM-dd'
+                                        }}
                                         type={'datepicker'}
                                         name={'policies[0].startDate'}/></Col>
                                 </Row>
@@ -302,18 +372,19 @@ const OsgorCreateContainer = ({...rest}) => {
                                     <Col xs={7}><Field
                                         defaultValue={getEndDateByInsuranceTerm(find(get(insuranceTerms, `data.result`, []), (_insuranceTerm) => get(_insuranceTerm, 'id') == insuranceTerm), policeStartDate)}
                                         disabled={!isEqual(insuranceTerm, 6)}
-                                        property={{hideLabel: true}} type={'datepicker'}
+                                        property={{hideLabel: true, dateFormat: 'yyyy-MM-dd'}} type={'datepicker'}
                                         name={'policies[0].endDate'}/></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Дата выдачи полиса: </Col>
-                                    <Col xs={7}><Field property={{hideLabel: true}} type={'datepicker'}
+                                    <Col xs={7}><Field property={{hideLabel: true, dateFormat: 'yyyy-MM-dd'}}
+                                                       type={'datepicker'}
                                                        name={'policies[0].issueDate'}/></Col>
                                 </Row>
                             </Col>
                         </Row>
                         <Row gutterWidth={60} className={'mt-15'}>
-                            <Col xs={12} className={'mb-15'}><Title >Страхователь</Title></Col>
+                            <Col xs={12} className={'mb-15'}><Title>Страхователь</Title></Col>
                             <Col xs={12}>
                                 <Row>
                                     <Col xs={4}>
@@ -534,7 +605,7 @@ const OsgorCreateContainer = ({...rest}) => {
                             </>}
                         </Row>
                         <Row gutterWidth={60} className={'mt-15'}>
-                            <Col xs={12} className={'mb-15'}><Title >Вид деятельности</Title></Col>
+                            <Col xs={12} className={'mb-15'}><Title>Вид деятельности</Title></Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
                                     options={activityList}
@@ -572,7 +643,7 @@ const OsgorCreateContainer = ({...rest}) => {
                             </Col>
                         </Row>
                         <Row gutterWidth={60} className={'mt-15'}>
-                            <Col xs={12} className={'mb-15'}><Title >Агентсткое вознограждение и РПМ</Title></Col>
+                            <Col xs={12} className={'mb-15'}><Title>Агентсткое вознограждение и РПМ</Title></Col>
                             <Col xs={8}>
                                 <Row>
                                     <Col xs={12} className={'mb-25'}>

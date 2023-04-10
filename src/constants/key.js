@@ -1,6 +1,7 @@
 export const KEYS = {
     login: 'login',
     osgorCreate: 'osgorCreate',
+    osgorList: 'osgorList',
     osgorView: 'osgorView',
     osgorConfirmPayment: 'osgorConfirmPayment',
     osgorCheckPayment: 'osgorCheckPayment',

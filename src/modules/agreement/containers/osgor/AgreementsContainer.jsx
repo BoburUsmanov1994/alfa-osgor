@@ -7,30 +7,26 @@ import {URLS} from "../../../../constants/url";
 import Field from "../../../../containers/form/field";
 import {useTranslation} from "react-i18next";
 
-const ProductsContainer = ({...rest}) => {
+const ListContainer = ({...rest}) => {
     const {t} = useTranslation()
-    const resetProduct = useSettingsStore(state => get(state, 'resetProduct', () => {
-    }))
-    const resetRiskList = useSettingsStore(state => get(state, 'resetRiskList', []))
+
     const setBreadcrumbs = useStore(state => get(state, 'setBreadcrumbs', () => {
     }))
     const breadcrumbs = useMemo(() => [
         {
             id: 1,
             title: 'Продукты',
-            path: '/products',
+            path: '/osgor',
         },
         {
             id: 2,
             title: 'Все продукты',
-            path: '/products/all',
+            path: '/osgor/list',
         }
     ], [])
 
     useEffect(() => {
         setBreadcrumbs(breadcrumbs)
-        resetProduct()
-        resetRiskList()
     }, [])
 
     const ModalBody = ({data, rowId = null}) => <>
@@ -44,50 +40,44 @@ const ProductsContainer = ({...rest}) => {
                 tableHeaderData={[
                     {
                         id: 2,
-                        key: 'productname',
-                        title: 'Наименование продукта'
+                        key: 'seria',
+                        title: 'Seria'
                     },
                     {
                         id: 3,
-                        key: 'typeofpolice',
-                        title: 'Тип страховщика',
-                        isArray:true
+                        key: 'number',
+                        title: 'Number',
                     },
                     {
                         id: 4,
-                        key: 'typeofpayment',
-                        title: 'Тип оплаты',
-                        isArray:true
+                        key: 'sum',
+                        title: 'Sum',
                     },
                     {
                         id: 5,
-                        key: 'typeofinsurerId.name',
-                        title: 'Страхователь',
+                        key: 'contractStartDate',
+                        title: 'Contract start date',
                     },
                     {
                         id: 6,
-                        key: 'policyformatId.name',
-                        title: 'Формат полиса',
+                        key: 'contractEndDate',
+                        title: 'Contract end date',
                     },
-                    {
-                        id: 7,
-                        key: 'fixedpremium',
-                        title: 'Страховая сумма',
-                        hasNumberFormat:true
-                    },
+
                 ]}
-                keyId={KEYS.products}
-                url={URLS.products}
-                title={t('Все продукты')}
-                responseDataKey={'data'}
-                viewUrl={'/products/view'}
-                createUrl={'/products/create'}
-                updateUrl={'/products/update'}
+                keyId={KEYS.osgorList}
+                url={URLS.osgorList}
+                title={t('Osgor agreements list')}
+                responseDataKey={'result'}
+                viewUrl={'/osgor/view'}
+                createUrl={'/osgor/create'}
+                updateUrl={'/osgor/update'}
                 isHideColumn
+                dataKey={'osgor_formId'}
 
             />
         </>
     );
 };
 
-export default ProductsContainer;
+export default ListContainer;

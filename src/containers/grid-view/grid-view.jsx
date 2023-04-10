@@ -28,7 +28,6 @@ import {Check, ChevronUp, Menu} from "react-feather";
 import {useTranslation} from "react-i18next";
 
 
-
 const Styled = styled.div`
   .w-100 > div:first-child {
     width: 100%;
@@ -73,7 +72,8 @@ const GridView = ({
                       updateUrl = null,
                       viewUrl = null,
                       responseDataKey = 'data',
-                      isHideColumn = false
+                      isHideColumn = false,
+                      dataKey = null,
                   }) => {
     const navigate = useNavigate()
     const {t} = useTranslation()
@@ -133,7 +133,7 @@ const GridView = ({
             confirmButtonColor: '#d33',
             cancelButtonColor: '#13D6D1',
             confirmButtonText: t('Delete'),
-            cancelButtonText:t('Cancel'),
+            cancelButtonText: t('Cancel'),
             customClass: {
                 title: 'title-color',
             },
@@ -144,11 +144,11 @@ const GridView = ({
         });
     }
 
-    const hideColumn = (key,has) => {
-        if(has) {
+    const hideColumn = (key, has) => {
+        if (has) {
             setColumns(columns => columns.filter(col => !isEqual(get(col, 'key'), key)))
-        }else{
-            setColumns(columns => [...columns,tableHeaderData.find(col => isEqual(get(col, 'key'), key))])
+        } else {
+            setColumns(columns => [...columns, tableHeaderData.find(col => isEqual(get(col, 'key'), key))])
         }
     }
 
@@ -189,9 +189,12 @@ const GridView = ({
                                 <ul className="column__filter">
                                     <li><span>{t("Выбрать")}</span><ChevronUp/></li>
                                     {
-                                        tableHeaderData && tableHeaderData.map(column => <li onClick={()=>hideColumn(get(column, 'key'),includes(columns.map(({key})=>key),get(column, 'key')))} key={get(column, 'id')}>
+                                        tableHeaderData && tableHeaderData.map(column => <li
+                                            onClick={() => hideColumn(get(column, 'key'), includes(columns.map(({key}) => key), get(column, 'key')))}
+                                            key={get(column, 'id')}>
                                             <span>{t(get(column, 'title'))}</span>
-                                            {includes(columns.map(({key})=>key),get(column, 'key')) &&<Check size={18}/>}
+                                            {includes(columns.map(({key}) => key), get(column, 'key')) &&
+                                                <Check size={18}/>}
                                         </li>)
                                     }
 
@@ -225,6 +228,7 @@ const GridView = ({
                         openEditModal={openEditModal}
                         tableBodyData={get(data, `data[${responseDataKey}]`, [])}
                         isFetching={isFetching}
+                        dataKey={dataKey}
                     /></div>
                     <Pagination page={page} setPage={setPage} totalItems={get(data, `data.totalItems`, 0)}/>
                 </>}

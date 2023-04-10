@@ -20,7 +20,7 @@ const Router = ({...rest}) => {
                     <Routes>
                         <Route path={"/"} element={<MainLayout/>}>
                             <Route path={"osgor"}>
-                                <Route index  element={<OsgorAgreementsPage/>}/>
+                                <Route path={'list'}  element={<OsgorAgreementsPage/>}/>
                                 <Route path={"create"} element={<OsgorAgreementCreatePage/>}/>
                             </Route>
                             <Route path="/auth/logout" element={<LogOutPage/>}/>
