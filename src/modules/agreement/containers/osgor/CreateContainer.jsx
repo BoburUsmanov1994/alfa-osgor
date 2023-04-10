@@ -216,30 +216,36 @@ const CreateContainer = ({...rest}) => {
             rpmPercent,
             rpmSum,
             policies,
-            insurant,
+            insurant:insurantType,
             ...rest
         } = data
+        console.log('data',data)
         createRequest({
                 url: URLS.osgorCreate, attributes: {
-                    regionId: get(insurant, 'person.regionId'),
-                    areaTypeId: get(insurant, 'person.residentType'),
+                    regionId: isEqual(insurant, 'person') ? get(insurantType, 'person.regionId'):get(insurantType, 'organization.regionId'),
+                    areaTypeId: isEqual(insurant, 'person') ? get(insurantType, 'person.residentType') : get(insurantType, 'organization.ownershipFormId'),
                     sum: get(head(policies), 'insuranceSum', 0),
                     contractStartDate: get(head(policies), 'startDate'),
                     contractEndDate: get(head(policies), 'endDate'),
-                    insurant: get(insurant, 'person') ? {
+                    insurant: isEqual(insurant, 'person') ? {
                         person: {
-                            passportData: get(insurant, 'person.passportData'),
-                            fullName: get(insurant, 'person.fullName'),
-                            regionId: get(insurant, 'person.regionId'),
-                            gender: get(insurant, 'person.gender'),
-                            birthDate: get(insurant, 'person.birthDate'),
-                            address: get(insurant, 'person.address'),
-                            residentType: get(insurant, 'person.residentType'),
-                            countryId: get(insurant, 'person.countryId'),
-                            phone: get(insurant, 'person.phone'),
-                            email: get(insurant, 'person.email'),
+                            passportData: get(insurantType, 'person.passportData'),
+                            fullName: get(insurantType, 'person.fullName'),
+                            regionId: get(insurantType, 'person.regionId'),
+                            gender: get(insurantType, 'person.gender'),
+                            birthDate: get(insurantType, 'person.birthDate'),
+                            address: get(insurantType, 'person.address'),
+                            residentType: get(insurantType, 'person.residentType'),
+                            countryId: get(insurantType, 'person.countryId'),
+                            phone: get(insurantType, 'person.phone'),
+                            email: get(insurantType, 'person.email'),
                         }
-                    } : {},
+                    } : {
+                        organization:{
+                            ...get(insurantType, 'organization'),
+                            oked:String(get(insurantType,'organization.oked'))
+                        }
+                    },
                     policies: [
                         {
                             ...head(policies),
@@ -573,6 +579,10 @@ const CreateContainer = ({...rest}) => {
                                 <Col xs={3} className={'mb-25'}>
                                     <Field label={'Должность'} type={'input'}
                                            name={'insurant.organization.position'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field label={'Address'} type={'input'}
+                                           name={'insurant.organization.address'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field defaultValue={get(organization, 'phone')} props={{required: true}}
