@@ -141,7 +141,7 @@ const CreateContainer = ({...rest}) => {
 
     const {
         mutate: calculatePremiumRequest
-    } = usePostQuery({listKeyId: KEYS.osgorCalculate})
+    } = usePostQuery({listKeyId: KEYS.osgorCalculate,hideSuccessToast:true})
     const {
         mutate: createRequest
     } = usePostQuery({listKeyId: KEYS.osgorCreate})

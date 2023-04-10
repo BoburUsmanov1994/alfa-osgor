@@ -21,7 +21,16 @@ import {useNavigate} from "react-router-dom";
 
 const getEndDateByInsuranceTerm = (term, startDate) => {
     if (!isNil(term)) {
-        return dayjs(startDate).add(get(term, 'value'), get(term, 'prefix')).toDate()
+        if (get(term, 'prefix') == 'day') {
+            return dayjs(startDate).add(get(term, 'value') - 1, get(term, 'prefix')).toDate()
+        }
+        if (get(term, 'prefix') == 'month') {
+            return dayjs(startDate).add(get(term, 'value'), get(term, 'prefix')).subtract(1, 'day').toDate()
+        }
+        if (get(term, 'prefix') == 'year') {
+            return dayjs(startDate).add(get(term, 'value'), get(term, 'prefix')).subtract(1, 'day').toDate()
+        }
+
     }
     return dayjs()
 }
