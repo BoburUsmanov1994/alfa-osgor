@@ -3,7 +3,7 @@ import {useMutation, useQueryClient} from 'react-query'
 import {request} from "../../services/api";
 import {toast} from "react-toastify";
 
-const putRequest = (url, attributes) => request.put(url, attributes);
+const putRequest = (url, attributes) => request.patch(url, attributes);
 
 const usePutQuery = ({hideSuccessToast = false, listKeyId = null}) => {
 
