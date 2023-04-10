@@ -11,6 +11,7 @@ import LogOutPage from "../modules/auth/pages/LogOutPage";
 //lazy load
 const OsgorAgreementsPage = lazy(() => import("../modules/agreement/pages/osgor/ListPage"));
 const OsgorViewPage = lazy(() => import("../modules/agreement/pages/osgor/ViewPage"));
+const OsgorUpdatePage = lazy(() => import("../modules/agreement/pages/osgor/UpdatePage"));
 const OsgorAgreementCreatePage = lazy(() => import("../modules/agreement/pages/osgor/CreatePage"));
 
 const Router = ({...rest}) => {
@@ -21,13 +22,14 @@ const Router = ({...rest}) => {
                     <Routes>
                         <Route path={"/"} element={<MainLayout/>}>
                             <Route path={"osgor"}>
-                                <Route path={'list'}  element={<OsgorAgreementsPage/>}/>
+                                <Route index element={<OsgorAgreementsPage/>}/>
                                 <Route path={"create"} element={<OsgorAgreementCreatePage/>}/>
                                 <Route path={"view/:form_id"} element={<OsgorViewPage/>}/>
+                                <Route path={"update/:form_id"} element={<OsgorUpdatePage/>}/>
                             </Route>
                             <Route path="/auth/logout" element={<LogOutPage/>}/>
-                            <Route path={"auth/*"} element={<Navigate to={'/osgor/create'} replace/>}/>
-                            <Route path={"/"} element={<Navigate to={'/osgor/create'} replace/>}/>
+                            <Route path={"auth/*"} element={<Navigate to={'/osgor'} replace/>}/>
+                            <Route path={"/"} element={<Navigate to={'/osgor'} replace/>}/>
                             <Route path={"*"} element={<NotFoundPage/>}/>
                         </Route>
 

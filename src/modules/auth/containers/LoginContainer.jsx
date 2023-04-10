@@ -24,7 +24,7 @@ const LoginContainer = ({...rest}) => {
         mutate({url: URLS.login, attributes: data}, {
             onSuccess: ({data}) => {
                 setToken(get(data, 'result.access_token', null))
-                navigate("/osgor/create");
+                navigate("/osgor");
                 i18next.reloadResources()
                 Swal.fire({
                     position: 'center',

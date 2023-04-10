@@ -4,6 +4,7 @@ export const KEYS = {
     osgorList: 'osgorList',
     osgorView: 'osgorView',
     osgorDelete: 'osgorDelete',
+    osgorEdit: 'osgorEdit',
     osgorConfirmPayment: 'osgorConfirmPayment',
     osgorCheckPayment: 'osgorCheckPayment',
     osgorEpolis: 'osgorEpolis',

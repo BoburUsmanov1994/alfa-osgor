@@ -129,7 +129,7 @@ const ViewContainer = ({form_id = null}) => {
                         footer={<Flex className={'mt-32'}>{isEqual(get(data, 'data.result.status'), 'new') && <><Button
                             danger type={'button'}
                             className={'mr-16'}>Удалить</Button>
-                            <Button yellow type={'button'}
+                            <Button onClick={()=>navigate(`/osgor/update/${form_id}`)} yellow type={'button'}
                                     className={'mr-16'}>Изменить</Button></>}
                             <Button onClick={send} type={'button'} className={'mr-16'}>Отправить в
                                 Фонд</Button>

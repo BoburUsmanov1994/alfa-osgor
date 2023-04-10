@@ -4,6 +4,7 @@ export const URLS = {
     osgorList: 'api/osgor/list',
     osgorView: 'api/osgor/show',
     osgorDelete: 'api/osgor/delete',
+    osgorEdit: 'api/osgor/edit',
     osgorSendFond: 'api/osgor/send',
     osgorConfirmPayment: 'api/osgor/confirm-payed',
     osgorCheckPayment: 'api/osgor/check-payment',
