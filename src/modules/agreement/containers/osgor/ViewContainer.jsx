@@ -95,7 +95,7 @@ const ViewContainer = ({form_id = null}) => {
     const send = () => {
         sendFond({
                 url: URLS.osgorSendFond, attributes: {
-                    osgor_formId: form_id
+                    osgor_formId: parseInt(form_id)
                 }
             },
             {
