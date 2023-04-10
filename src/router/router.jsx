@@ -9,8 +9,9 @@ import NotFoundPage from "../modules/auth/pages/NotFoundPage";
 import {OverlayLoader} from "../components/loader";
 import LogOutPage from "../modules/auth/pages/LogOutPage";
 //lazy load
-const OsgorAgreementsPage = lazy(() => import("../modules/agreement/pages/osgor/AgreementsPage"));
-const OsgorAgreementCreatePage = lazy(() => import("../modules/agreement/pages/osgor/OsgorCreatePage"));
+const OsgorAgreementsPage = lazy(() => import("../modules/agreement/pages/osgor/ListPage"));
+const OsgorViewPage = lazy(() => import("../modules/agreement/pages/osgor/ViewPage"));
+const OsgorAgreementCreatePage = lazy(() => import("../modules/agreement/pages/osgor/CreatePage"));
 
 const Router = ({...rest}) => {
     return (
@@ -22,6 +23,7 @@ const Router = ({...rest}) => {
                             <Route path={"osgor"}>
                                 <Route path={'list'}  element={<OsgorAgreementsPage/>}/>
                                 <Route path={"create"} element={<OsgorAgreementCreatePage/>}/>
+                                <Route path={"view/:form_id"} element={<OsgorViewPage/>}/>
                             </Route>
                             <Route path="/auth/logout" element={<LogOutPage/>}/>
                             <Route path={"auth/*"} element={<Navigate to={'/osgor/create'} replace/>}/>

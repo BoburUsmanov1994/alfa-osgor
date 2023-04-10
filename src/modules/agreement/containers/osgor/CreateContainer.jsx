@@ -26,7 +26,7 @@ const getEndDateByInsuranceTerm = (term, startDate) => {
     return dayjs()
 }
 
-const OsgorCreateContainer = ({...rest}) => {
+const CreateContainer = ({...rest}) => {
     const [person, setPerson] = useState(null)
     const [organization, setOrganization] = useState(null)
     const [insurant, setInsurant] = useState('person')
@@ -692,4 +692,4 @@ const OsgorCreateContainer = ({...rest}) => {
     </>);
 };
 
-export default OsgorCreateContainer;
+export default CreateContainer;

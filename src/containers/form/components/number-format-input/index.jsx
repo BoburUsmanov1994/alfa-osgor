@@ -36,7 +36,7 @@ const NumberFormatInput = ({
                          errors,
                          params,
                          property,
-                         defaultValue,
+                         defaultValue=0,
                          getValues,
                          watch,
                          label,
@@ -49,7 +49,9 @@ const NumberFormatInput = ({
     const [val,setVal] = useState(0)
 
     useEffect(() => {
-        setVal(defaultValue)
+        if(defaultValue) {
+            setVal(defaultValue)
+        }
     }, [defaultValue])
 
     useEffect(() => {

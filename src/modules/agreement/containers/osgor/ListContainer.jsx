@@ -33,38 +33,57 @@ const ListContainer = ({...rest}) => {
         <Field name={'name'} type={'input'} label={'Название продукта'} defaultValue={rowId ? get(data, 'name') : null}
                params={{required: true}}/>
     </>
+    // nomer dogovor, nomer police, klient, insurance premium,insurance sum, oplachena,status,
     return (
         <>
             <GridView
                 ModalBody={ModalBody}
                 tableHeaderData={[
                     {
-                        id: 2,
+                        id: 1,
                         key: 'seria',
-                        title: 'Seria'
+                        title: 'Agreement seria'
+                    },
+                    {
+                        id: 2,
+                        key: 'number',
+                        title: 'Agreement number',
                     },
                     {
                         id: 3,
-                        key: 'number',
-                        title: 'Number',
+                        key: 'policySeria',
+                        title: 'Policy seria',
                     },
                     {
                         id: 4,
-                        key: 'sum',
-                        title: 'Sum',
+                        key: 'policyNumber',
+                        title: 'Policy number',
                     },
                     {
                         id: 5,
-                        key: 'contractStartDate',
-                        title: 'Contract start date',
+                        key: 'insurant.person.fullName.firstname',
+                        title: 'Client',
                     },
                     {
                         id: 6,
-                        key: 'contractEndDate',
-                        title: 'Contract end date',
+                        key: 'policies[0].insurancePremium',
+                        title: 'Insurance premium',
+                        hasNumberFormat: true
                     },
                     {
                         id: 7,
+                        key: 'policies[0].insuranceSum',
+                        title: 'Insurance sum',
+                        hasNumberFormat: true
+                    },
+                    {
+                        id: 8,
+                        key: 'policies[0].payed',
+                        title: 'Оплачено',
+                        hasNumberFormat: true
+                    },
+                    {
+                        id: 9,
                         key: 'status',
                         title: 'Status',
                     },

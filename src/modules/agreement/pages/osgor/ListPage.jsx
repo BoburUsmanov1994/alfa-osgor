@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
-import ListContainer from "../../containers/osgor/AgreementsContainer";
+import ListContainer from "../../containers/osgor/ListContainer";
 
 const Styled = styled.div`
 `;

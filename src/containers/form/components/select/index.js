@@ -155,13 +155,12 @@ const FormSelect = ({
                             <Select
                                 clearIndicator={true}
                                 options={options}
-                                disabled={disabled}
                                 placeholder={get(property, 'placeholder', 'Select...')}
                                 onChange={handleChange}
                                 styles={customStyles}
                                 components={{DropdownIndicator}}
                                 isMulti={isMulti}
-                                isDisabled={isDisabled}
+                                isDisabled={disabled}
                                 className={classNames('form-select',{isDisabled:isDisabled})}
                                 classNamePrefix={classNames('form-select', {error: get(errors, `${name}`, false)})}
                                 value={

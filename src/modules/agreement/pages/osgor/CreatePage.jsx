@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
-import OsgorCreateContainer from "../../containers/osgor/OsgorCreateContainer";
+import CreateContainer from "../../containers/osgor/CreateContainer";
 
 const Styled = styled.div`
   .form-group {
@@ -8,12 +8,12 @@ const Styled = styled.div`
   }
 
 `;
-const OsgorCreatePage = ({...rest}) => {
+const CreatePage = ({...rest}) => {
     return (
         <Styled {...rest}>
-            <OsgorCreateContainer/>
+            <CreateContainer/>
         </Styled>
     );
 };
 
-export default OsgorCreatePage;
+export default CreatePage;

@@ -66,6 +66,7 @@ const MaskedInput = ({
                             placeholder={get(property, "placeholder")}
                             mask={get(property, "mask","aa")}
                             maskChar={get(property, "maskChar"," ")}
+                            disabled={disabled}
                         />
                     )}
                 />

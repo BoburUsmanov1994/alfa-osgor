@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
-import AgreementViewContainer from "../../containers/osgor/AgreementViewContainer";
+import ViewContainer from "../../containers/osgor/ViewContainer";
 import {useParams} from "react-router-dom";
 
 const Styled = styled.div`
@@ -10,13 +10,13 @@ const Styled = styled.div`
     }
   }
 `;
-const AgreementViewPage = ({...rest}) => {
-    const {id = null} = useParams();
+const ViewPage = ({...rest}) => {
+    const {form_id = null} = useParams();
     return (
         <Styled {...rest}>
-            <AgreementViewContainer id={id}/>
+            <ViewContainer form_id={form_id}/>
         </Styled>
     );
 };
 
-export default AgreementViewPage;
+export default ViewPage;
