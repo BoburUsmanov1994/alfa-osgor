@@ -92,7 +92,7 @@ const ListContainer = ({...rest}) => {
                 keyId={KEYS.osgorList}
                 url={URLS.osgorList}
                 title={t('Osgor agreements list')}
-                responseDataKey={'result'}
+                responseDataKey={'result.docs'}
                 viewUrl={'/osgor/view'}
                 createUrl={'/osgor/create'}
                 updateUrl={'/osgor/update'}
