@@ -21,7 +21,16 @@ import {useNavigate} from "react-router-dom";
 
 const getEndDateByInsuranceTerm = (term, startDate) => {
     if (!isNil(term)) {
-        return dayjs(startDate).add(get(term, 'value'), get(term, 'prefix')).toDate()
+        if(get(term, 'prefix') == 'day'){
+            return dayjs(startDate).add( get(term, 'value') - 1, get(term, 'prefix')).toDate()
+        }
+        if(get(term, 'prefix') == 'month'){
+            return dayjs(startDate).add( get(term, 'value') , get(term, 'prefix')).subtract(1,'day').toDate()
+        }
+        if(get(term, 'prefix') == 'year'){
+            return dayjs(startDate).add( get(term, 'value') , get(term, 'prefix')).subtract(1,'day').toDate()
+        }
+
     }
     return dayjs()
 }
@@ -47,7 +56,7 @@ const CreateContainer = ({...rest}) => {
     }))
     const navigate = useNavigate();
     const breadcrumbs = useMemo(() => [{
-        id: 1, title: 'OSGOR', path: '/osgor/list',
+        id: 1, title: 'OSGOR', path: '/osgor',
     }, {
         id: 2, title: 'Добавить OSGOR', path: '/osgor/create',
     }], [])
@@ -216,13 +225,12 @@ const CreateContainer = ({...rest}) => {
             rpmPercent,
             rpmSum,
             policies,
-            insurant:insurantType,
+            insurant: insurantType,
             ...rest
         } = data
-        console.log('data',data)
         createRequest({
                 url: URLS.osgorCreate, attributes: {
-                    regionId: isEqual(insurant, 'person') ? get(insurantType, 'person.regionId'):get(insurantType, 'organization.regionId'),
+                    regionId: isEqual(insurant, 'person') ? get(insurantType, 'person.regionId') : get(insurantType, 'organization.regionId'),
                     areaTypeId: isEqual(insurant, 'person') ? get(insurantType, 'person.residentType') : get(insurantType, 'organization.ownershipFormId'),
                     sum: get(head(policies), 'insuranceSum', 0),
                     contractStartDate: get(head(policies), 'startDate'),
@@ -241,9 +249,9 @@ const CreateContainer = ({...rest}) => {
                             email: get(insurantType, 'person.email'),
                         }
                     } : {
-                        organization:{
+                        organization: {
                             ...get(insurantType, 'organization'),
-                            oked:String(get(insurantType,'organization.oked'))
+                            oked: String(get(insurantType, 'organization.oked'))
                         }
                     },
                     policies: [
