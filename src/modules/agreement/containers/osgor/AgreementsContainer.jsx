@@ -63,6 +63,11 @@ const ListContainer = ({...rest}) => {
                         key: 'contractEndDate',
                         title: 'Contract end date',
                     },
+                    {
+                        id: 7,
+                        key: 'status',
+                        title: 'Status',
+                    },
 
                 ]}
                 keyId={KEYS.osgorList}
