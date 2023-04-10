@@ -74,6 +74,7 @@ const ListContainer = ({...rest}) => {
                 updateUrl={'/osgor/update'}
                 isHideColumn
                 dataKey={'osgor_formId'}
+                deleteUrl={URLS.osgorDelete}
 
             />
         </>

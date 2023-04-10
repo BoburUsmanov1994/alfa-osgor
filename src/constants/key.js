@@ -3,6 +3,7 @@ export const KEYS = {
     osgorCreate: 'osgorCreate',
     osgorList: 'osgorList',
     osgorView: 'osgorView',
+    osgorDelete: 'osgorDelete',
     osgorConfirmPayment: 'osgorConfirmPayment',
     osgorCheckPayment: 'osgorCheckPayment',
     osgorEpolis: 'osgorEpolis',

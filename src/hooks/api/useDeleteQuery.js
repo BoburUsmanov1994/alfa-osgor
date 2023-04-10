@@ -3,7 +3,7 @@ import {useMutation, useQueryClient} from 'react-query'
 import {request} from "../../services/api";
 import {toast} from "react-toastify";
 
-const deleteRequest = (url) => request.delete(url);
+const deleteRequest = (url,params) => request.delete(url,{data:params});
 
 const useDeleteQuery = ({listKeyId = null}) => {
 
@@ -12,8 +12,8 @@ const useDeleteQuery = ({listKeyId = null}) => {
 
         const {mutate, isLoading, isError, error, isFetching} = useMutation(
             ({
-                 url
-             }) => deleteRequest(url),
+                 url,params={}
+             }) => deleteRequest(url,params),
             {
                 onSuccess: (data) => {
                     toast.success(data?.data?.message || 'SUCCESSFULLY DELETED')
