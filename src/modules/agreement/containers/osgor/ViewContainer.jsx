@@ -9,7 +9,7 @@ import Button from "../../../../components/ui/button";
 import Form from "../../../../containers/form/form";
 import Flex from "../../../../components/flex";
 import Field from "../../../../containers/form/field";
-import {useGetAllQuery, usePostQuery} from "../../../../hooks/api";
+import {useDeleteQuery, useGetAllQuery, usePostQuery} from "../../../../hooks/api";
 import {KEYS} from "../../../../constants/key";
 import {URLS} from "../../../../constants/url";
 import {getSelectOptionsListFromData} from "../../../../utils";
@@ -17,10 +17,12 @@ import {OverlayLoader} from "../../../../components/loader";
 import qrcodeImg from "../../../../assets/images/qrcode.png"
 import {useNavigate} from "react-router-dom";
 import {useStore} from "../../../../store";
+import Swal from "sweetalert2";
+import {useTranslation} from "react-i18next";
 
 
 const ViewContainer = ({form_id = null}) => {
-
+    const {t} = useTranslation()
     const navigate = useNavigate();
     const setBreadcrumbs = useStore(state => get(state, 'setBreadcrumbs', () => {
     }))
@@ -88,6 +90,8 @@ const ViewContainer = ({form_id = null}) => {
         mutate: sendFond, isLoading: isLoadingFond
     } = usePostQuery({listKeyId: KEYS.osgorView})
 
+    const {mutate: deleteRequest, isLoading: deleteLoading} = useDeleteQuery({listKeyId: KEYS.osgorDelete})
+
     const send = () => {
         sendFond({
                 url: URLS.osgorSendFond, attributes: {
@@ -102,6 +106,32 @@ const ViewContainer = ({form_id = null}) => {
         )
     }
 
+    const remove = () => {
+        Swal.fire({
+            position: 'center',
+            icon: 'error',
+            backdrop: 'rgba(0,0,0,0.9)',
+            background: 'none',
+            title: t('Are you sure?'),
+            showConfirmButton: true,
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#13D6D1',
+            confirmButtonText: t('Delete'),
+            cancelButtonText: t('Cancel'),
+            customClass: {
+                title: 'title-color',
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteRequest({url: URLS.osgorDelete, params: {osgor_formId: form_id}}, {
+                    onSuccess: () => {
+                        navigate('/osgor')
+                    }
+                })
+            }
+        });
+    }
 
     if (isLoading || isLoadingFilials || isLoadingInsuranceTerms || isLoadingRegion || isLoadingCountry) {
         return <OverlayLoader/>
@@ -109,7 +139,7 @@ const ViewContainer = ({form_id = null}) => {
 
 
     return (<>
-        {(isLoadingFond) && <OverlayLoader/>}
+        {(isLoadingFond || deleteLoading) && <OverlayLoader/>}
         <Panel>
             <Row>
                 <Col xs={12}>
@@ -126,10 +156,10 @@ const ViewContainer = ({form_id = null}) => {
             <Row>
                 <Col xs={12}>
                     <Form
-                        footer={<Flex className={'mt-32'}>{isEqual(get(data, 'data.result.status'), 'new') && <><Button
+                        footer={<Flex className={'mt-32'}>{isEqual(get(data, 'data.result.status'), 'new') && <><Button onClick={remove}
                             danger type={'button'}
                             className={'mr-16'}>Удалить</Button>
-                            <Button onClick={()=>navigate(`/osgor/update/${form_id}`)} yellow type={'button'}
+                            <Button onClick={() => navigate(`/osgor/update/${form_id}`)} yellow type={'button'}
                                     className={'mr-16'}>Изменить</Button></>}
                             <Button onClick={send} type={'button'} className={'mr-16'}>Отправить в
                                 Фонд</Button>
