@@ -16,6 +16,7 @@ const GridTableBody = ({
                            viewUrl = null,
                            updateUrl = null,
                            dataKey = null,
+                           pageSize=20
                        }) => {
     const navigate = useNavigate();
     return (
@@ -24,14 +25,16 @@ const GridTableBody = ({
                 tableBodyData && tableBodyData.map((tr, i) => <tr key={get(tr, '_id', i)}>
                     <td>{(page - 1) * 20 + (i + 1)}</td>
                     {
-                        tableHeaderData && tableHeaderData.map((td, j) => <td key={get(td, 'id', j)}>
-                            {
-                                get(td, 'isArray') ? get(tr, `${get(td, 'key')}`, []).map(
-                                    item => get(item, get(td, 'arrayKey', 'name'))
-                                ).join(" , ") : get(td, 'hasNumberFormat', false) ?
-                                    <NumberFormat displayType={'text'} thousandSeparator={" "}
-                                                  value={get(tr, `${get(td, 'key')}`, 0)}/> : get(td, 'date', false) ? dayjs(get(tr, `${get(td, 'key')}`, new Date())).format(get(td, 'dateFormat', "DD.MM.YYYY")) : get(tr, `${get(td, 'key')}`, '-')
-                            }
+                        tableHeaderData && tableHeaderData.map((td, j) => <td className={get(td, "classnames", "")}>
+                            {get(td, 'render')
+                                ?
+                                get(td, 'render')({
+                                    value:get(tr, get(td, 'key')),
+                                    row:tr,
+                                    index:i+(page-1)*pageSize+1
+                                })
+                                :
+                                get(tr, get(td, 'key'))}
                         </td>)
                     }
                     <td>{viewUrl && <Eye

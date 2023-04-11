@@ -106,6 +106,9 @@ const GlobalStyles = createGlobalStyle`
       margin-bottom: 0;
     }
   }
+  .text-uppercase{
+    text-transform: uppercase !important;
+  }
   .rc-checkbox-inner{
     height: 18px;
     width: 18px;

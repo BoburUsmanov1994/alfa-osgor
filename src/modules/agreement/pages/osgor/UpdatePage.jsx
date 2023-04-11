@@ -9,6 +9,9 @@ const Styled = styled.div`
       width: 100%;
     }
   }
+  .form-group {
+    margin-bottom: 0;
+  }
 `;
 const UpdatePage = ({...rest}) => {
     const {form_id = null} = useParams();

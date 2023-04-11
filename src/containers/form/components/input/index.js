@@ -55,7 +55,17 @@ const Input = ({
         <Styled {...rest}>
             <div className="form-group">
                 {!get(property,'hideLabel',false) && <Label className={classNames({required:get(property,'hasRequiredLabel',false)})}>{label ?? name}</Label>}
-                <input
+                {get(property, "type") == 'number' ? <input
+                    className={classNames('form-input',{error:get(errors,`${name}`,false)})}
+                    name={name}
+                    {...register(name, params)}
+                    placeholder={get(property, "placeholder")}
+                    type={'number'}
+                    disabled={get(property, "disabled")}
+                    defaultValue={defaultValue}
+                    min={0}
+                    max={25}
+                /> : <input
                     className={classNames('form-input',{error:get(errors,`${name}`,false)})}
                     name={name}
                     {...register(name, params)}
@@ -63,7 +73,8 @@ const Input = ({
                     type={get(property, "type", "text")}
                     disabled={get(property, "disabled")}
                     defaultValue={defaultValue}
-                />
+                    min={0}
+                />}
                 <ErrorMessage
                     errors={errors}
                     name={name}

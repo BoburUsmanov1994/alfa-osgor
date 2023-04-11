@@ -19,6 +19,7 @@ import {useNavigate} from "react-router-dom";
 import {useStore} from "../../../../store";
 import Swal from "sweetalert2";
 import {useTranslation} from "react-i18next";
+import dayjs from "dayjs";
 
 
 const ViewContainer = ({form_id = null}) => {
@@ -89,12 +90,34 @@ const ViewContainer = ({form_id = null}) => {
     const {
         mutate: sendFond, isLoading: isLoadingFond
     } = usePostQuery({listKeyId: KEYS.osgorView})
+    const {
+        mutate:confirmPayedRequest, isLoading: isLoadingConfirmPayed
+    } = usePostQuery({listKeyId: KEYS.osgorView})
 
     const {mutate: deleteRequest, isLoading: deleteLoading} = useDeleteQuery({listKeyId: KEYS.osgorDelete})
 
     const send = () => {
         sendFond({
                 url: `${URLS.osgorSendFond}?osgor_formId=${form_id}`, attributes: {
+                }
+            },
+            {
+                onSuccess: ({data}) => {
+
+                }
+            }
+        )
+    }
+
+    const confirmPayed = () => {
+        confirmPayedRequest({
+                url: URLS.osgorConfirmPayment, attributes: {
+                    uuid:get(data, 'data.result.uuid'),
+                    polisUuid:get(head(get(data, 'data.result.policies',[])),'uuid'),
+                    paidAt:dayjs(get(head(get(data, 'data.result.policies',[])),'issueDate')).format("YYYY-MM-DD HH:mm:ss"),
+                    insurancePremium:get(head(get(data, 'data.result.policies',[])),'insurancePremium'),
+                    startDate:get(head(get(data, 'data.result.policies',[])),'startDate'),
+                    endDate:get(head(get(data, 'data.result.policies',[])),'endDate')
                 }
             },
             {
@@ -123,7 +146,7 @@ const ViewContainer = ({form_id = null}) => {
             },
         }).then((result) => {
             if (result.isConfirmed) {
-                deleteRequest({url: URLS.osgorDelete, params: {osgor_formId: form_id}}, {
+                deleteRequest({url: `${URLS.osgorDelete}?osgor_formId=${form_id}`}, {
                     onSuccess: () => {
                         navigate('/osgor')
                     }
@@ -138,7 +161,7 @@ const ViewContainer = ({form_id = null}) => {
 
 
     return (<>
-        {(isLoadingFond || deleteLoading) && <OverlayLoader/>}
+        {(isLoadingFond || deleteLoading || isLoadingConfirmPayed) && <OverlayLoader/>}
         <Panel>
             <Row>
                 <Col xs={12}>
@@ -155,15 +178,15 @@ const ViewContainer = ({form_id = null}) => {
             <Row>
                 <Col xs={12}>
                     <Form
-                        footer={<Flex className={'mt-32'}>{isEqual(get(data, 'data.result.status'), 'new') && <><Button onClick={remove}
+                        footer={!isEqual(get(data, 'data.result.status'), 'payed') && <Flex className={'mt-32'}>{isEqual(get(data, 'data.result.status'), 'new') && <><Button onClick={remove}
                             danger type={'button'}
                             className={'mr-16'}>Удалить</Button>
                             <Button onClick={() => navigate(`/osgor/update/${form_id}`)} yellow type={'button'}
                                     className={'mr-16'}>Изменить</Button></>}
-                            <Button onClick={send} type={'button'} className={'mr-16'}>Отправить в
+                            <Button onClick={isEqual(get(data, 'data.result.status'),'new') ? () =>send() : ()=>{}} gray={!isEqual(get(data, 'data.result.status'),'new')} type={'button'} className={'mr-16'}>Отправить в
                                 Фонд</Button>
-                            <Button
-                                type={'button'} gray className={'mr-16'}>Подтвердить
+                            <Button onClick={isEqual(get(data, 'data.result.status'),'sent') ? ()=>confirmPayed():()=>{}}
+                                type={'button'} gray={!isEqual(get(data, 'data.result.status'),'sent')} className={'mr-16'}>Подтвердить
                                 оплату</Button></Flex>}>
                         <Row gutterWidth={60} className={'mt-32'}>
                             <Col xs={4} style={{borderRight: '1px solid #DFDFDF'}}>
@@ -192,16 +215,43 @@ const ViewContainer = ({form_id = null}) => {
                                                        type={'input'}
                                                        name={'number'}/></Col>
                                 </Row>
+                                {
+                                    isEqual(get(data, 'data.result.status'), 'payed') && <>
+                                        <Row align={'center'} className={'mb-25'}>
+                                            <Col xs={5}>Серия полиса: </Col>
+                                            <Col xs={7}><Field defaultValue={get(data, 'data.result.policies[0].seria')}
+                                                               params={{required: true}}
+                                                               property={{hideLabel: true, disabled: true}}
+                                                               type={'input'}
+                                                               name={'data.result.policies[0].seria'}/></Col>
+                                        </Row>
+                                        <Row align={'center'} className={'mb-25'}>
+                                            <Col xs={5}>Номер полиса: </Col>
+                                            <Col xs={7}><Field defaultValue={get(data, 'data.result.policies[0].number')}
+                                                               params={{required: true}}
+                                                               property={{hideLabel: true, disabled: true}}
+                                                               type={'input'}
+                                                               name={'data.result.policies[0].number'}/></Col>
+                                        </Row>
+                                    </>
+                                }
+                                {
+                                    (isEqual(get(data, 'data.result.status'), 'sent') || isEqual(get(data, 'data.result.status'), 'payed')) && <>
+                                        <Row align={'center'} className={'mb-25'}>
+                                            <Col xs={5}>Дата отправки в Фонд: </Col>
+                                            <Col xs={7}><Field
+                                                defaultValue={get(data, 'data.result.sentDate')} disabled
+                                                property={{
+                                                    hideLabel: true,
+                                                    dateFormat: 'yyyy-MM-dd'
+                                                }}
+                                                type={'datepicker'}
+                                                name={'policies[0].sentDate'}/></Col>
+                                        </Row>
 
+                                    </>
+                                }
 
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={6} className={'text-center'}>
-                                        <img src={qrcodeImg} alt=""/>
-                                    </Col>
-                                    <Col xs={6}>
-                                        <Button type={'button'}>Проверить полис</Button>
-                                    </Col>
-                                </Row>
                             </Col>
                             <Col xs={4}>
 
@@ -220,11 +270,20 @@ const ViewContainer = ({form_id = null}) => {
                                         type={'number-format-input'}
                                         name={'policies[0].insurancePremium'}/></Col>
                                 </Row>
+                                {
+                                    isEqual(get(data, 'data.result.status'), 'payed') &&  <Row align={'center'} className={'mb-25'}>
+                                        <Col xs={5}>Оплачено: </Col>
+                                        <Col xs={7}><Field
+                                            defaultValue={get(data, 'data.result.policies[0].insurancePremium')}
+                                            property={{hideLabel: true, disabled: true}}
+                                            type={'number-format-input'}
+                                            name={'policies[0].insurancePremium'}/></Col>
+                                    </Row>
+                                }
 
 
                             </Col>
                             <Col xs={4}>
-
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Срок страхования:</Col>
                                     <Col xs={7}><Field disabled
@@ -395,6 +454,15 @@ const ViewContainer = ({form_id = null}) => {
                                         type={'input'}
                                         name={'insurant.person.email'}/>
                                 </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        disabled
+                                        defaultValue={parseInt(get(data, 'data.result.insurant.person.oked'))}
+                                        options={okedList}
+                                        label={'Oked'}
+                                        type={'select'}
+                                        name={'insurant.person.oked'}/>
+                                </Col>
 
                             </>}
                             {get(data, 'data.result.insurant.organization') && <>
@@ -491,6 +559,55 @@ const ViewContainer = ({form_id = null}) => {
                                     label={'Фонд оплаты труда'}
                                     type={'number-format-input'}
                                     name={'fot'}/>
+                            </Col>
+                        </Row>
+                        <Row gutterWidth={60} className={'mt-15'}>
+                            <Col xs={12} className={'mb-15'}><Title>Агентсткое вознограждение и РПМ</Title></Col>
+                            <Col xs={8}>
+                                <Row>
+                                    <Col xs={12} className={'mb-25'}>
+                                        <Field
+                                            disabled
+                                            defaultValue={get(data,'data.result.agencyId')}
+                                            options={filialList}
+                                            label={'Агент'}
+                                            type={'select'}
+                                            name={'agencyId'}/>
+                                    </Col>
+
+                                    <Col xs={6} className={'mb-25'}>
+                                        <Field
+                                            defaultValue={25}
+                                            property={{disabled: true}}
+                                            label={'Вознограждение %'}
+                                            type={'input'}
+                                            name={'policies[0].agentReward'}/>
+                                    </Col>
+                                    <Col xs={6} className={'mb-25'}>
+                                        <Field
+                                            defaultValue={5}
+                                            property={{disabled: true}}
+                                            label={'Отчисления в РПМ  %'}
+                                            type={'input'}
+                                            name={'policies[0].rpm'}/>
+                                    </Col>
+                                    <Col xs={6} className={'mb-25'}>
+                                        <Field
+                                            defaultValue={round(25 * get(data,'data.result.policies[0].insurancePremium') / 100, 2)}
+                                            property={{disabled: true}}
+                                            label={'Сумма'}
+                                            type={'number-format-input'}
+                                            name={'rewardSum'}/>
+                                    </Col>
+                                    <Col xs={6} className={'mb-25'}>
+                                        <Field
+                                            defaultValue={round(5 *  get(data,'data.result.policies[0].insurancePremium') / 100, 2)}
+                                            property={{disabled: true}}
+                                            label={'Сумма'}
+                                            type={'number-format-input'}
+                                            name={'rpmSum'}/>
+                                    </Col>
+                                </Row>
                             </Col>
                         </Row>
                     </Form>

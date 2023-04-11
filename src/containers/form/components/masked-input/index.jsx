@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import styled from "styled-components";
-import {get, includes, isEmpty, isFunction} from "lodash";
+import {get, hasIn, includes, isEmpty, isFunction} from "lodash";
 import {ErrorMessage} from "@hookform/error-message";
 import Label from "../../../../components/ui/label";
 import InputMask from 'react-input-mask';
@@ -69,7 +69,7 @@ const MaskedInput = ({
                     render={({field}) => (
                         <InputMask
                             {...field}
-                            className={`masked-input ${!isEmpty(errors) ? "error" : ''}`}
+                            className={`masked-input text-uppercase ${hasIn(errors,name) ? "error" : ''}`}
                             placeholder={get(property, "placeholder")}
                             mask={get(property, "mask","aa")}
                             maskChar={get(property, "maskChar"," ")}
