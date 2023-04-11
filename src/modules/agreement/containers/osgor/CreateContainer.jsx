@@ -263,7 +263,8 @@ const CreateContainer = ({...rest}) => {
                             ...head(policies),
                             insuranceRate: get(data, 'comission', 0),
                             fot: fotSum,
-                            funeralExpensesSum: parseInt(funeralExpensesSum)
+                            funeralExpensesSum: parseInt(funeralExpensesSum),
+                            agentReward:parseInt(get(head(policies), 'agentReward',0))
                         }
                     ],
                     ...rest
