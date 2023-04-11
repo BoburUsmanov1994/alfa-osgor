@@ -64,6 +64,7 @@ const NumberFormatInput = ({
     useEffect(() => {
         getValueFromField(getValues(name), name);
     }, [watch(name)]);
+    console.log('errors',errors)
     return (
         <Styled {...rest}>
             <div className="form-group">

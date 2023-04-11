@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import styled from "styled-components";
-import {get, includes, isEmpty} from "lodash";
+import {get, includes, isEmpty, isFunction} from "lodash";
 import {ErrorMessage} from "@hookform/error-message";
 import Label from "../../../../components/ui/label";
 import InputMask from 'react-input-mask';
@@ -48,6 +48,13 @@ const MaskedInput = ({
     useEffect(() => {
         setValue(name, defaultValue)
     }, [defaultValue])
+    useEffect(()=>{
+        if(watch(name)){
+           if(isFunction(get(property,'onChange'))){
+               get(property,'onChange')(watch(name))
+           }
+        }
+    },[watch(name)])
 
     return (
         <Styled {...rest}>
