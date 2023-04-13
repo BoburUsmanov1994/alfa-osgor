@@ -1,5 +1,5 @@
 import React from 'react';
-import {get} from "lodash";
+import {get, includes} from "lodash";
 import {Trash2, Edit, Eye} from "react-feather";
 import {useNavigate} from "react-router-dom";
 import NumberFormat from 'react-number-format';
@@ -39,7 +39,9 @@ const GridTableBody = ({
                     }
                     <td>{viewUrl && <Eye
                         onClick={() => navigate(`${viewUrl}/${dataKey ? get(tr, dataKey, null) : get(tr, '_id', null)}`)}
-                        className={'cursor-pointer mr-10'} size={20} color={'#78716c'}/>}<Edit
+                        className={'cursor-pointer mr-10'} size={20} color={'#78716c'}/>}
+                        {!includes(['payed','send'],get(tr,'status')) && <>
+                        <Edit
                         onClick={() => {
                             if (updateUrl) {
                                 navigate(`${updateUrl}/${dataKey ? get(tr, dataKey, null) : get(tr, '_id', null)}`)
@@ -49,7 +51,9 @@ const GridTableBody = ({
                         }} className={'cursor-pointer mr-10'} size={20}
                         color={'#13D6D1'}/>
                         <Trash2 onClick={() => remove(dataKey ? get(tr, dataKey, null) : get(tr, '_id', null))}
-                                className={'cursor-pointer '} size={20} color={'#dc2626'}/></td>
+                                className={'cursor-pointer '} size={20} color={'#dc2626'}/>
+                        </>}
+                    </td>
                 </tr>)
             }
         </>

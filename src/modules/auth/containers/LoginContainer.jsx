@@ -18,12 +18,15 @@ const LoginContainer = ({...rest}) => {
 
     const setToken = useSettingsStore(state => get(state, 'setToken', () => {
     }))
+    const setTranslateToken = useSettingsStore(state => get(state, 'setTranslateToken', () => {
+    }))
     const navigate = useNavigate();
 
     const loginRequest = ({data}) => {
         mutate({url: URLS.login, attributes: data}, {
             onSuccess: ({data}) => {
                 setToken(get(data, 'result.access_token', null))
+                setTranslateToken(get(data, 'result.alfa_token', null))
                 navigate("/osgor");
                 i18next.reloadResources()
                 Swal.fire({

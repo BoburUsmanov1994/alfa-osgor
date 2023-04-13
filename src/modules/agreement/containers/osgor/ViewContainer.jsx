@@ -189,12 +189,12 @@ const ViewContainer = ({form_id = null}) => {
             <Row>
                 <Col xs={12}>
                     <Form
-                        footer={!isEqual(get(data, 'data.result.status'), 'payed') && <Flex className={'mt-32'}>{isEqual(get(data, 'data.result.status'), 'new') && <><Button onClick={remove}
+                        footer={!isEqual(get(data, 'data.result.status'), 'payed') && <Flex className={'mt-32'}>{(isEqual(get(data, 'data.result.status'), 'new') || isEqual(get(data, 'data.result.status'), 'edited')) && <><Button onClick={remove}
                             danger type={'button'}
                             className={'mr-16'}>Удалить</Button>
                             <Button onClick={() => navigate(`/osgor/update/${form_id}`)} yellow type={'button'}
                                     className={'mr-16'}>Изменить</Button></>}
-                            <Button onClick={isEqual(get(data, 'data.result.status'),'new') ? () =>send() : ()=>{}} gray={!isEqual(get(data, 'data.result.status'),'new')} type={'button'} className={'mr-16'}>Отправить в
+                            <Button onClick={(isEqual(get(data, 'data.result.status'),'new') || isEqual(get(data, 'data.result.status'),'edited')) ? () =>send() : ()=>{}} gray={!(isEqual(get(data, 'data.result.status'),'new') || isEqual(get(data, 'data.result.status'),'edited'))} type={'button'} className={'mr-16'}>Отправить в
                                 Фонд</Button>
                             <Button onClick={isEqual(get(data, 'data.result.status'),'sent') ? ()=>confirmPayed():()=>{}}
                                 type={'button'} gray={!isEqual(get(data, 'data.result.status'),'sent')} className={'mr-16'}>Подтвердить

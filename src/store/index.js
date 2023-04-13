@@ -15,11 +15,13 @@ let store = (set) => ({
 
 let settingsStore = (set) => ({
     token: null,
+    translateToken: null,
     darkMode: false,
     isMenuOpen: true,
     lang: storage.get('lang') || config.DEFAULT_APP_LANG,
     agreement: {},
     setToken: (token) => set(state => ({...state, token})),
+    setTranslateToken: (translateToken) => set(state => ({...state, translateToken})),
     setLang: (lang) => set(state => ({...state, lang})),
     setMode: () => set(state => ({...state, darkMode: !state.darkMode})),
     setOpenMenu: () => set(state => ({...state, isMenuOpen: !state.isMenuOpen})),

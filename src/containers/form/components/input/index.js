@@ -78,15 +78,14 @@ const Input = ({
                 <ErrorMessage
                     errors={errors}
                     name={name}
-                    render={({ messages = `${label} is required` }) => {
-
-                            if (errors[name]?.type == 'required') {
+                    render={({ messages = 'Field is required' }) => {
+                            if (get(get(errors,name),'type') == 'required') {
                                 messages = `${label ?? name} is required`;
                             }
-                            if (errors[name]?.type == 'pattern') {
-                                messages = `${label ?? name} is not valid`;
+                            if (get(get(errors,name),'type') == "pattern") {
+                                messages = `${label ?? name} is not valid format`;
                             }
-                            if (errors[name]?.type == 'manual') {
+                            if (get(get(errors,name),'type') == 'manual') {
                                 messages = `${label ?? name} ${errors[name].message}`;
                             }
                         return <small className="form-error-message"> {messages}</small>;

@@ -228,10 +228,10 @@ const UpdateContainer = ({form_id}) => {
         if (isEqual(name, 'risk')) {
             setRisk(value)
         }
-        if (isEqual(name, 'rpmPercent')) {
+        if (isEqual(name, 'policies[0].rpm')) {
             setRpmPercent(value)
         }
-        if (isEqual(name, 'rewardPercent')) {
+        if (isEqual(name, 'policies[0].agentReward')) {
             setRewardPercent(value)
         }
         if (isEqual(name, 'insurant.person.oked')) {
@@ -291,7 +291,8 @@ const UpdateContainer = ({form_id}) => {
                             ...head(policies),
                             insuranceRate: get(data, 'comission', 0),
                             fot: fotSum,
-                            funeralExpensesSum: parseInt(funeralExpensesSum)
+                            funeralExpensesSum: parseInt(funeralExpensesSum),
+                            agentReward:parseInt(get(head(policies), 'agentReward',0))
                         }
                     ],
                     ...rest,
@@ -334,6 +335,9 @@ const UpdateContainer = ({form_id}) => {
         }
         if (get(data, 'data.result.agencyId')) {
             setAgencyId(get(data, 'data.result.agencyId'))
+        }
+        if (get(data, 'data.result.insurant.organization.inn')) {
+            setInn(get(data, 'data.result.insurant.organization.inn'))
         }
 
     }, [get(data, 'data.result')])
@@ -662,7 +666,7 @@ const UpdateContainer = ({form_id}) => {
                             </>}
                             {isEqual(insurant, 'organization') && <>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field props={{required: true}} label={'INN'} defaultValue={inn} property={{
+                                    <Field params={{required: true}} label={'INN'} defaultValue={inn} property={{
                                         mask: '999999999',
                                         placeholder: 'Inn',
                                         maskChar: '_'
@@ -670,23 +674,23 @@ const UpdateContainer = ({form_id}) => {
 
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field props={{required: true}} defaultValue={get(organization, 'name')}
+                                    <Field params={{required: true}} defaultValue={get(organization, 'name')}
                                            label={'Наименование'} type={'input'}
                                            name={'insurant.organization.name'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field label={'Руководитель'} type={'input'}
+                                    <Field defaultValue={get(data,'data.result.insurant.organization.representativeName')} label={'Руководитель'} type={'input'}
                                            name={'insurant.organization.representativeName'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field label={'Должность'} type={'input'}
+                                    <Field defaultValue={get(data,'data.result.insurant.organization.position')} label={'Должность'} type={'input'}
                                            name={'insurant.organization.position'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         params={{required: true}}
                                         options={areaTypesList}
-                                        defaultValue={get(person, 'areaTypeId')}
+                                        defaultValue={get(data,'data.result.areaTypeId')}
                                         label={'Тип местности'}
                                         type={'select'}
                                         name={'areaTypeId'}/>
@@ -696,9 +700,9 @@ const UpdateContainer = ({form_id}) => {
                                            name={'insurant.organization.address'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(organization, 'phone')} props={{
+                                    <Field defaultValue={get(organization, 'phone')} params={{
                                         required: true,
-                                        pattern: /^998(9[012345789]|6[125679]|7[01234569])[0-9]{7}$/
+                                        pattern: {value:/^998(9[012345789]|6[125679]|7[01234569])[0-9]{7}$/,message: 'Invalid format'}
                                     }}
                                            label={'Телефон'} type={'input'}
                                            name={'insurant.organization.phone'}/>
@@ -716,13 +720,13 @@ const UpdateContainer = ({form_id}) => {
                                            name={'insurant.organization.oked'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field label={'Расчетный счет'} type={'input'}
+                                    <Field defaultValue={get(data,'data.result.insurant.organization.checkingAccount')} label={'Расчетный счет'} type={'input'}
                                            name={'insurant.organization.checkingAccount'}/>
                                 </Col>
-                                <Col xs={3}><Field label={'Область'} params={{required: true}} options={regionList}
+                                <Col xs={3}><Field defaultValue={get(data,'data.result.insurant.organization.regionId')} label={'Область'} params={{required: true}} options={regionList}
                                                    type={'select'}
                                                    name={'insurant.organization.regionId'}/></Col>
-                                <Col xs={3}><Field label={'Форма собственности'} params={{required: true}}
+                                <Col xs={3}><Field defaultValue={get(data,'data.result.insurant.organization.ownershipFormId')} label={'Форма собственности'} params={{required: true}}
                                                    options={ownershipFormList}
                                                    type={'select'}
                                                    name={'insurant.organization.ownershipFormId'}/></Col>
@@ -756,7 +760,7 @@ const UpdateContainer = ({form_id}) => {
                                 <Field
                                     defaultValue={get(data, 'data.result.policies[0].funeralExpensesSum',0)}
                                     label={'Расходы на погребение'}
-                                    type={'input'}
+                                    type={'number-format-input'}
                                     name={'funeralExpensesSum'}/>
                             </Col>
                             <Col xs={3} className={'mb-25'}>
@@ -787,7 +791,7 @@ const UpdateContainer = ({form_id}) => {
                                             label={'Вознограждение %'}
                                             property={{type:'number'}}
                                             type={'input'}
-                                            name={'rewardPercent'}/>
+                                            name={'policies[0].agentReward'}/>
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
@@ -795,7 +799,7 @@ const UpdateContainer = ({form_id}) => {
                                             property={{disabled:true}}
                                             label={'Отчисления в РПМ  %'}
                                             type={'input'}
-                                            name={'rpmPercent'}/>
+                                            name={'policies[0].rpm'}/>
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field

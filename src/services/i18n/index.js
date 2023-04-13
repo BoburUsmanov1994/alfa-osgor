@@ -24,7 +24,7 @@ const i18config = i18n.use(initReactI18next)
         },
         backend: {
             customHeaders: {
-                auth: get(JSON.parse(storage.get('settings')), 'state.token')
+                auth: get(JSON.parse(storage.get('settings')), 'state.translateToken')
             },
             loadPath: `${config.API_ROOT_TRANSLATION}/translations/lang/{{lng}}`,
             addPath: `${config.API_ROOT_TRANSLATION}translations`,
