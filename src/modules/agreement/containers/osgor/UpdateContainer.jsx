@@ -146,7 +146,7 @@ const UpdateContainer = ({form_id}) => {
 
     const {data: agents} = useGetAllQuery({
         key: [KEYS.agents, agencyId],
-        url: URLS.districts,
+        url: URLS.agents,
         params: {
             params: {
                 branch: agencyId
