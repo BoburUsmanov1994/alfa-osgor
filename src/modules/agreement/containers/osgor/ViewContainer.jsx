@@ -588,7 +588,7 @@ const ViewContainer = ({form_id = null}) => {
 
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={25}
+                                            defaultValue={get(data,'data.result.policies[0].agentReward',25)}
                                             property={{disabled: true}}
                                             label={'Вознограждение %'}
                                             type={'input'}
