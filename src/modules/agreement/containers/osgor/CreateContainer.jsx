@@ -614,7 +614,7 @@ const CreateContainer = ({...rest}) => {
                             </>}
                             {isEqual(insurant, 'organization') && <>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field props={{required: true}} label={'INN'} defaultValue={inn} property={{
+                                    <Field params={{required: true}} label={'INN'} defaultValue={inn} property={{
                                         mask: '999999999',
                                         placeholder: 'Inn',
                                         maskChar: '_'
@@ -622,7 +622,7 @@ const CreateContainer = ({...rest}) => {
 
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field props={{required: true}} defaultValue={get(organization, 'name')}
+                                    <Field params={{required: true}} defaultValue={get(organization, 'name')}
                                            label={'Наименование'} type={'input'}
                                            name={'insurant.organization.name'}/>
                                 </Col>
@@ -648,7 +648,7 @@ const CreateContainer = ({...rest}) => {
                                            name={'insurant.organization.address'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(organization, 'phone')} props={{
+                                    <Field defaultValue={get(organization, 'phone')} params={{
                                         required: true,
                                         pattern: /^998(9[012345789]|6[125679]|7[01234569])[0-9]{7}$/
                                     }}

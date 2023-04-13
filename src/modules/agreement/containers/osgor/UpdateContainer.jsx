@@ -398,14 +398,14 @@ const UpdateContainer = ({form_id}) => {
                                 </Row>
 
 
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={6} className={'text-center'}>
-                                        <img src={qrcodeImg} alt=""/>
-                                    </Col>
-                                    <Col xs={6}>
-                                        <Button type={'button'}>Проверить полис</Button>
-                                    </Col>
-                                </Row>
+                                {/*<Row align={'center'} className={'mb-25'}>*/}
+                                {/*    <Col xs={6} className={'text-center'}>*/}
+                                {/*        <img src={qrcodeImg} alt=""/>*/}
+                                {/*    </Col>*/}
+                                {/*    <Col xs={6}>*/}
+                                {/*        <Button type={'button'}>Проверить полис</Button>*/}
+                                {/*    </Col>*/}
+                                {/*</Row>*/}
                             </Col>
                             <Col xs={4}>
 
@@ -534,24 +534,24 @@ const UpdateContainer = ({form_id}) => {
                             </Col>
                             {isEqual(insurant, 'person') && <>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required: true}} defaultValue={get(person, 'firstNameLatin')}
+                                    <Field params={{required: true}} defaultValue={get(person, 'firstNameLatin',get(data,'data.result.insurant.person.fullName.firstname'))}
                                            label={'Firstname'}
                                            type={'input'}
                                            name={'insurant.person.fullName.firstname'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required: true}} defaultValue={get(person, 'lastNameLatin')}
+                                    <Field params={{required: true}} defaultValue={get(person, 'lastNameLatin',get(data,'data.result.insurant.person.fullName.lastname'))}
                                            label={'Lastname'} type={'input'}
                                            name={'insurant.person.fullName.lastname'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required: true}} defaultValue={get(person, 'middleNameLatin')}
+                                    <Field params={{required: true}} defaultValue={get(person, 'middleNameLatin',get(data,'data.result.insurant.person.fullName.middlename'))}
                                            label={'Middlename'}
                                            type={'input'}
                                            name={'insurant.person.fullName.middlename'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(person, 'pinfl')} label={'ПИНФЛ'} type={'input'}
+                                    <Field defaultValue={get(person, 'pinfl',get(data,'data.result.insurant.person.passportData.pinfl'))} label={'ПИНФЛ'} type={'input'}
                                            name={'insurant.person.passportData.pinfl'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
@@ -559,7 +559,7 @@ const UpdateContainer = ({form_id}) => {
                                         mask: 'aa',
                                         placeholder: 'AA',
                                         maskChar: '_'
-                                    }} defaultValue={passportSeries} label={'Passport seria'} type={'input-mask'}
+                                    }} defaultValue={passportSeries ?? get(data,'data.result.insurant.person.passportData.seria')} label={'Passport seria'} type={'input-mask'}
                                            name={'insurant.person.passportData.seria'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
@@ -567,19 +567,19 @@ const UpdateContainer = ({form_id}) => {
                                         mask: '9999999',
                                         placeholder: '1234567',
                                         maskChar: '_'
-                                    }} defaultValue={passportNumber} label={'Passport number'} type={'input-mask'}
+                                    }} defaultValue={passportNumber??get(data,'data.result.insurant.person.passportData.number')} label={'Passport number'} type={'input-mask'}
                                            name={'insurant.person.passportData.number'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}}
-                                           defaultValue={dayjs(get(person, 'birthDate')).toDate()}
+                                           defaultValue={dayjs(get(person, 'birthDate',get(data,'data.result.insurant.person.birthDate'))).toDate()}
                                            label={'Birth date'}
                                            type={'datepicker'}
                                            name={'insurant.person.birthDate'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}}
-                                           defaultValue={get(person, 'gender')}
+                                           defaultValue={get(person, 'gender',get(data,'data.result.insurant.person.gender'))}
                                            options={genderList}
                                            label={'Gender'}
                                            type={'select'}
@@ -588,7 +588,7 @@ const UpdateContainer = ({form_id}) => {
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         options={countryList}
-                                        defaultValue={get(person, 'birthCountry')}
+                                        defaultValue={get(person, 'birthCountry',get(data,'data.result.insurant.person.countryId'))}
                                         label={'Country'}
                                         type={'select'}
                                         name={'insurant.person.countryId'}/>
@@ -596,7 +596,7 @@ const UpdateContainer = ({form_id}) => {
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         options={regionList}
-                                        defaultValue={get(person, 'regionId')}
+                                        defaultValue={get(person, 'regionId',get(data,'data.result.insurant.person.regionId'))}
                                         label={'Region'}
                                         type={'select'}
                                         name={'insurant.person.regionId'}/>
@@ -604,7 +604,7 @@ const UpdateContainer = ({form_id}) => {
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         options={districtList}
-                                        defaultValue={get(person, 'districtId')}
+                                        defaultValue={get(person, 'districtId',get(data,'data.result.insurant.person.districtId'))}
                                         label={'District'}
                                         type={'select'}
                                         name={'insurant.person.districtId'}/>
@@ -613,7 +613,7 @@ const UpdateContainer = ({form_id}) => {
                                     <Field
                                         params={{required: true}}
                                         options={areaTypesList}
-                                        defaultValue={get(person, 'areaTypeId')}
+                                        defaultValue={get(person, 'areaTypeId',get(data,'data.result.areaTypeId'))}
                                         label={'Тип местности'}
                                         type={'select'}
                                         name={'areaTypeId'}/>
@@ -621,14 +621,14 @@ const UpdateContainer = ({form_id}) => {
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}}
                                            options={residentTypeList}
-                                           defaultValue={get(person, 'residentType')}
+                                           defaultValue={get(person, 'residentType',get(data,'data.result.insurant.person.residentType'))}
                                            label={'Resident type'}
                                            type={'select'}
                                            name={'insurant.person.residentType'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}}
-                                           defaultValue={get(person, 'address')}
+                                           defaultValue={get(person, 'address',get(data,'data.result.insurant.person.address'))}
                                            label={'Address'}
                                            type={'input'}
                                            name={'insurant.person.address'}/>
@@ -642,7 +642,7 @@ const UpdateContainer = ({form_id}) => {
                                                 message: 'Invalid format'
                                             }
                                         }}
-                                        defaultValue={get(person, 'phone')}
+                                        defaultValue={get(person, 'phone',get(data,'data.result.insurant.person.phone'))}
                                         label={'Phone'}
                                         type={'input'}
                                         property={{placeholder: '998XXXXXXXXX'}}
@@ -650,13 +650,14 @@ const UpdateContainer = ({form_id}) => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(person, 'email')}
+                                        defaultValue={get(person, 'email',get(data,'data.result.insurant.person.email'))}
                                         label={'Email'}
                                         type={'input'}
                                         name={'insurant.person.email'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        defaultValue={parseInt(get(data,'data.result.insurant.person.oked'))}
                                         options={okedList}
                                         params={{required: true}}
                                         label={'Oked'}
@@ -787,7 +788,7 @@ const UpdateContainer = ({form_id}) => {
 
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={25}
+                                            defaultValue={get(data,'data.result.policies[0].agentReward',25)}
                                             label={'Вознограждение %'}
                                             property={{type:'number'}}
                                             type={'input'}
