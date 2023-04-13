@@ -35,4 +35,5 @@ export const KEYS = {
     okeds: 'okeds',
     activityAndRisk: 'activityAndRisk',
     osgorCalculate: 'osgorCalculate',
+    agents: 'agents',
 }

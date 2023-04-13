@@ -14,7 +14,6 @@ import {KEYS} from "../../../../constants/key";
 import {URLS} from "../../../../constants/url";
 import {getSelectOptionsListFromData} from "../../../../utils";
 import {OverlayLoader} from "../../../../components/loader";
-import qrcodeImg from "../../../../assets/images/qrcode.png"
 import {useNavigate} from "react-router-dom";
 import {useStore} from "../../../../store";
 import Swal from "sweetalert2";
@@ -85,6 +84,18 @@ const ViewContainer = ({form_id = null}) => {
         key: KEYS.residentTypes, url: URLS.residentTypes
     })
     const residentTypeList = getSelectOptionsListFromData(get(residentTypes, `data.result`, []), 'id', 'name')
+
+    const {data: agents} = useGetAllQuery({
+        key: [KEYS.agents, get(data,'data.result.agencyId')],
+        url: URLS.agents,
+        params: {
+            params: {
+                branch: get(data,'data.result.agencyId')
+            }
+        },
+        enabled: !!(get(data,'data.result.agencyId'))
+    })
+    const agentsList = getSelectOptionsListFromData(get(agents, `data.result`, []), 'id', 'name')
 
 
     const {
@@ -568,11 +579,11 @@ const ViewContainer = ({form_id = null}) => {
                                     <Col xs={12} className={'mb-25'}>
                                         <Field
                                             disabled
-                                            defaultValue={get(data,'data.result.agencyId')}
-                                            options={filialList}
+                                            defaultValue={get(data,'data.result.agentId')}
+                                            options={agentsList}
                                             label={'Агент'}
                                             type={'select'}
-                                            name={'agencyId'}/>
+                                            name={'agentId'}/>
                                     </Col>
 
                                     <Col xs={6} className={'mb-25'}>

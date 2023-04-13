@@ -1,5 +1,5 @@
 export const URLS = {
-    login: 'api/auth/get-token',
+    login: 'api/auth/login',
     osgorCreate: 'api/osgor/create',
     osgorList: 'api/osgor/list',
     osgorView: 'api/osgor/show',
@@ -32,6 +32,7 @@ export const URLS = {
     insuranceTerms: 'api/references/insurance-terms',
     ownershipForms: 'api/references/ownership-forms',
     agencies: 'api/references/agencies',
+    agents: 'api/references/agents',
     vehicleTypes: 'api/references/vehicle-types',
     okeds: 'api/references/okeds',
     activityAndRisk: 'api/references/activity-and-risks',

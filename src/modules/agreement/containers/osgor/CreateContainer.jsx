@@ -44,6 +44,7 @@ const CreateContainer = ({...rest}) => {
     const [birthDate, setBirthDate] = useState(null)
     const [inn, setInn] = useState(null)
     const [regionId, setRegionId] = useState(null)
+    const [agencyId, setAgencyId] = useState(null)
     const [insuranceTerm, setInsuranceTerm] = useState(null)
     const [policeStartDate, setPoliceStartDate] = useState(dayjs())
     const [oked, setOked] = useState(null)
@@ -120,6 +121,18 @@ const CreateContainer = ({...rest}) => {
         enabled: !!(regionId || get(person, 'regionId'))
     })
     const districtList = getSelectOptionsListFromData(get(district, `data.result`, []), 'id', 'name')
+
+    const {data: agents} = useGetAllQuery({
+        key: [KEYS.agents, agencyId],
+        url: URLS.districts,
+        params: {
+            params: {
+                branch: agencyId
+            }
+        },
+        enabled: !!(agencyId)
+    })
+    const agentsList = getSelectOptionsListFromData(get(agents, `data.result`, []), 'id', 'name')
 
     const {data: activity} = useGetAllQuery({
         key: [KEYS.activityAndRisk, oked],
@@ -213,6 +226,9 @@ const CreateContainer = ({...rest}) => {
         if (isEqual(name, 'insurant.person.oked')) {
                 setOked(value)
         }
+        if (isEqual(name, 'agencyId')) {
+            setAgencyId(value)
+        }
     }
     const create = ({data}) => {
         const {
@@ -228,11 +244,13 @@ const CreateContainer = ({...rest}) => {
             rpmPercent,
             rpmSum,
             policies,
+            agentId,
             insurant: insurantType,
             ...rest
         } = data
         createRequest({
                 url: URLS.osgorCreate, attributes: {
+                    agentId:String(agentId),
                     regionId: isEqual(insurant, 'person') ? get(insurantType, 'person.regionId') : get(insurantType, 'organization.regionId'),
                     sum: get(head(policies), 'insuranceSum', 0),
                     contractStartDate: get(head(policies), 'startDate'),
@@ -706,10 +724,10 @@ const CreateContainer = ({...rest}) => {
                                 <Row>
                                     <Col xs={12} className={'mb-25'}>
                                         <Field
-                                            options={filialList}
+                                            options={agentsList}
                                             label={'Агент'}
                                             type={'select'}
-                                            name={'agencyId'}/>
+                                            name={'agentId'}/>
                                     </Col>
 
                                     <Col xs={6} className={'mb-25'}>
