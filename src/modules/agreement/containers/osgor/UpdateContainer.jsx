@@ -234,6 +234,9 @@ const UpdateContainer = ({form_id}) => {
         if (isEqual(name, 'policies[0].agentReward')) {
             setRewardPercent(value)
         }
+        if (isEqual(name, 'agencyId')) {
+            setAgencyId(value)
+        }
     }
     const update = ({data}) => {
         const {
