@@ -222,7 +222,7 @@ const UpdateContainer = ({form_id}) => {
         if (isEqual(name, 'policies[0].insuranceTermId')) {
             setInsuranceTerm(value)
         }
-        if (isEqual(name, 'insurant.organization.oked')) {
+        if (isEqual(name, 'insurant.organization.oked') || isEqual(name, 'insurant.person.oked')) {
             setOked(value)
         }
         if (isEqual(name, 'risk')) {
@@ -233,11 +233,6 @@ const UpdateContainer = ({form_id}) => {
         }
         if (isEqual(name, 'policies[0].agentReward')) {
             setRewardPercent(value)
-        }
-        if (isEqual(name, 'insurant.person.oked')) {
-            if (value?.length >= 4) {
-                setOked(value)
-            }
         }
     }
     const update = ({data}) => {
@@ -318,6 +313,9 @@ const UpdateContainer = ({form_id}) => {
     useEffect(() => {
         if (get(data, 'data.result.insurant.organization.oked')) {
             setOked(get(data, 'data.result.insurant.organization.oked'))
+        }
+        if (get(data, 'data.result.insurant.person.oked')) {
+            setOked(get(data, 'data.result.insurant.person.oked'))
         }
         if (get(data, 'data.result.policies[0].fot')) {
             setFotSum(get(data, 'data.result.policies[0].fot'))
@@ -484,6 +482,7 @@ const UpdateContainer = ({form_id}) => {
                                     <Col xs={8} className={'text-right'}>
                                         {isEqual(insurant, 'person') && <Flex justify={'flex-end'}>
                                             <Field
+                                                defaultValue={get(data,'data.result.insurant.person.passportData.seria')}
                                                 className={'mr-16'} style={{width: 75}}
                                                 property={{
                                                     hideLabel: true,
@@ -496,7 +495,9 @@ const UpdateContainer = ({form_id}) => {
                                                 name={'passportSeries'}
                                                 type={'input-mask'}
                                             />
-                                            <Field property={{
+                                            <Field
+                                                defaultValue={get(data,'data.result.insurant.person.passportData.number')}
+                                                property={{
                                                 hideLabel: true,
                                                 mask: '9999999',
                                                 placeholder: '1234567',
@@ -504,7 +505,9 @@ const UpdateContainer = ({form_id}) => {
                                                 onChange: (val) => setPassportNumber(val)
                                             }} name={'passportNumber'} type={'input-mask'}/>
 
-                                            <Field className={'ml-15'}
+                                            <Field
+                                                defaultValue={get(data,'data.result.insurant.person.birthDate')}
+                                                className={'ml-15'}
                                                    property={{
                                                        hideLabel: true,
                                                        placeholder: 'Дата рождения',
@@ -515,14 +518,13 @@ const UpdateContainer = ({form_id}) => {
                                                 данные</Button>
                                         </Flex>}
                                         {isEqual(insurant, 'organization') && <Flex justify={'flex-end'}>
-                                            <Field property={{
+                                            <Field defaultValue={get(data,'data.result.insurant.organization.inn')} property={{
                                                 hideLabel: true,
                                                 mask: '999999999',
                                                 placeholder: 'Inn',
                                                 maskChar: '_',
                                                 onChange: (val) => setInn(val)
                                             }} name={'inn'} type={'input-mask'}/>
-
                                             <Button onClick={getOrgInfo} className={'ml-15'} type={'button'}>Получить
                                                 данные</Button>
                                         </Flex>}
@@ -601,14 +603,14 @@ const UpdateContainer = ({form_id}) => {
                                         type={'select'}
                                         name={'insurant.person.regionId'}/>
                                 </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field
-                                        options={districtList}
-                                        defaultValue={get(person, 'districtId',get(data,'data.result.insurant.person.districtId'))}
-                                        label={'District'}
-                                        type={'select'}
-                                        name={'insurant.person.districtId'}/>
-                                </Col>
+                                {/*<Col xs={3} className={'mb-25'}>*/}
+                                {/*    <Field*/}
+                                {/*        options={districtList}*/}
+                                {/*        defaultValue={get(person, 'districtId',get(data,'data.result.insurant.person.districtId'))}*/}
+                                {/*        label={'District'}*/}
+                                {/*        type={'select'}*/}
+                                {/*        name={'insurant.person.districtId'}/>*/}
+                                {/*</Col>*/}
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         params={{required: true}}
@@ -667,7 +669,7 @@ const UpdateContainer = ({form_id}) => {
                             </>}
                             {isEqual(insurant, 'organization') && <>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required: true}} label={'INN'} defaultValue={inn} property={{
+                                    <Field params={{required: true}} label={'INN'} defaultValue={inn ?? get(data,'data.result.insurant.organization.inn')} property={{
                                         mask: '999999999',
                                         placeholder: 'Inn',
                                         maskChar: '_'
@@ -737,6 +739,7 @@ const UpdateContainer = ({form_id}) => {
                             <Col xs={12} className={'mb-15'}><Title>Вид деятельности</Title></Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
+                                    defaultValue={get(head(activityList),'value')}
                                     options={activityList}
                                     label={'Вид деятельности (по правилам)'}
                                     type={'select'}

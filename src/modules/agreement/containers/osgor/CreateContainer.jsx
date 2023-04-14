@@ -732,6 +732,7 @@ const CreateContainer = ({...rest}) => {
 
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
+                                            params={{required:true}}
                                             property={{type:'number'}}
                                             defaultValue={25}
                                             label={'Вознограждение %'}
@@ -740,6 +741,7 @@ const CreateContainer = ({...rest}) => {
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
+                                            params={{required:true}}
                                             defaultValue={5}
                                             property={{disabled: true}}
                                             label={'Отчисления в РПМ  %'}

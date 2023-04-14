@@ -560,7 +560,7 @@ const ViewContainer = ({form_id = null}) => {
                                     property={{disabled: true}}
                                     defaultValue={get(data, 'data.result.policies[0].funeralExpensesSum', 0)}
                                     label={'Расходы на погребение'}
-                                    type={'input'}
+                                    type={'number-format-input'}
                                     name={'funeralExpensesSum'}/>
                             </Col>
                             <Col xs={3} className={'mb-25'}>
