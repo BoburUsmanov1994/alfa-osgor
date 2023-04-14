@@ -97,6 +97,21 @@ const ViewContainer = ({form_id = null}) => {
     })
     const agentsList = getSelectOptionsListFromData(get(agents, `data.result`, []), 'id', 'name')
 
+    const {data: activity} = useGetAllQuery({
+        key: [KEYS.activityAndRisk],
+        url: URLS.activityAndRisk,
+        params: {
+            params: {
+                oked:get(data, 'data.result.insurant.organization.oked') ?? get(data, 'data.result.insurant.person.oked')
+            }
+        },
+        enabled: !!(get(data, 'data.result.insurant.organization.oked') || get(data, 'data.result.insurant.person.oked'))
+    })
+    const activityList = getSelectOptionsListFromData([{
+        oked: get(activity, `data.result.oked`),
+        name: get(activity, `data.result.name`)
+    }], 'oked', 'name')
+
 
     const {
         mutate: sendFond, isLoading: isLoadingFond
@@ -547,6 +562,24 @@ const ViewContainer = ({form_id = null}) => {
                         </Row>
                         <Row gutterWidth={60} className={'mt-15'}>
                             <Col xs={12} className={'mb-15'}><Title>Вид деятельности</Title></Col>
+                            <Col xs={3} className={'mb-25'}>
+                                <Field
+                                    disabled
+                                    defaultValue={get(head(activityList),'value')}
+                                    options={activityList}
+                                    label={'Вид деятельности (по правилам)'}
+                                    type={'select'}
+                                    name={'activityRisk'}/>
+                            </Col>
+                            <Col xs={3} className={'mb-25'}>
+                                <Field
+                                    disabled
+                                    defaultValue={get(data, 'data.result.policies[0].risk')}
+                                    options={getSelectOptionsListFromData(get(activity, 'data.result.risks', []), 'number', 'number')}
+                                    label={'Класс проф. риска'}
+                                    type={'select'}
+                                    name={'risk'}/>
+                            </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
                                     defaultValue={get(data, 'data.result.policies[0].insuranceRate', 0)}

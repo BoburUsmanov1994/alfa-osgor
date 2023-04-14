@@ -1,4 +1,5 @@
 export const URLS = {
+    getMe: 'api/auth/get-me',
     login: 'api/auth/login',
     osgorCreate: 'api/osgor/create',
     osgorList: 'api/osgor/list',

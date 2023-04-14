@@ -1,4 +1,5 @@
 export const KEYS = {
+    getMe:'getMe',
     login: 'login',
     osgorCreate: 'osgorCreate',
     osgorList: 'osgorList',

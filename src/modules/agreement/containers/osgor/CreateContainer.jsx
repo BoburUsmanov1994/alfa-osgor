@@ -62,6 +62,9 @@ const CreateContainer = ({...rest}) => {
         id: 2, title: 'Добавить OSGOR', path: '/osgor/create',
     }], [])
 
+    const user = useStore((state) => get(state,'user'))
+    console.log('user',user)
+
 
     useEffect(() => {
         setBreadcrumbs(breadcrumbs)
@@ -214,7 +217,7 @@ const CreateContainer = ({...rest}) => {
         if (isEqual(name, 'insurant.organization.oked')) {
             setOked(value)
         }
-        if (isEqual(name, 'risk')) {
+        if (isEqual(name, 'policies[0].risk')) {
             setRisk(value)
         }
         if (isEqual(name, 'policies[0].rpm')) {
@@ -282,7 +285,8 @@ const CreateContainer = ({...rest}) => {
                             insuranceRate: get(data, 'comission', 0),
                             fot: fotSum,
                             funeralExpensesSum: parseInt(funeralExpensesSum),
-                            agentReward:parseInt(get(head(policies), 'agentReward',0))
+                            agentReward:parseInt(get(head(policies), 'agentReward',0)),
+                            risk:parseInt(get(head(policies), 'risk',0))
                         }
                     ],
                     ...rest
@@ -339,7 +343,7 @@ const CreateContainer = ({...rest}) => {
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Филиал </Col>
-                                    <Col xs={7}><Field label={'Filial'} params={{required: true}} options={filialList}
+                                    <Col xs={7}><Field defaultValue={get(user,'branch_Id._id')} label={'Filial'} params={{required: true}} options={filialList}
                                                        property={{hideLabel: true}} type={'select'}
                                                        name={'agencyId'}/></Col>
                                 </Row>
@@ -691,10 +695,11 @@ const CreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
+                                    params={{required:true}}
                                     options={getSelectOptionsListFromData(get(activity, 'data.result.risks', []), 'number', 'number')}
                                     label={'Класс проф. риска'}
                                     type={'select'}
-                                    name={'risk'}/>
+                                    name={'policies[0].risk'}/>
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field

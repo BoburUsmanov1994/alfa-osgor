@@ -287,7 +287,8 @@ const UpdateContainer = ({form_id}) => {
                             insuranceRate: get(data, 'comission', 0),
                             fot: fotSum,
                             funeralExpensesSum: parseInt(funeralExpensesSum),
-                            agentReward:parseInt(get(head(policies), 'agentReward',0))
+                            agentReward:parseInt(get(head(policies), 'agentReward',0)),
+                            risk:parseInt(get(head(policies), 'risk',0))
                         }
                     ],
                     ...rest,
@@ -747,6 +748,7 @@ const UpdateContainer = ({form_id}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
+                                    defaultValue={get(data, 'data.result.policies[0].risk')}
                                     options={getSelectOptionsListFromData(get(activity, 'data.result.risks', []), 'number', 'number')}
                                     label={'Класс проф. риска'}
                                     type={'select'}
