@@ -325,7 +325,7 @@ const ViewContainer = ({form_id = null}) => {
                                         defaultValue={get(data, 'data.result.policies[0].startDate')} disabled
                                         property={{
                                             hideLabel: true,
-                                            dateFormat: 'yyyy-MM-dd'
+                                            dateFormat: 'dd.MM.yyyy'
                                         }}
                                         type={'datepicker'}
                                         name={'policies[0].startDate'}/></Col>
@@ -334,13 +334,13 @@ const ViewContainer = ({form_id = null}) => {
                                     <Col xs={5}>Дача окончания покрытия: </Col>
                                     <Col xs={7}><Field
                                         defaultValue={get(data, 'data.result.policies[0].endDate')} disabled
-                                        property={{hideLabel: true, dateFormat: 'yyyy-MM-dd'}} type={'datepicker'}
+                                        property={{hideLabel: true, dateFormat: 'dd.MM.yyyy'}} type={'datepicker'}
                                         name={'policies[0].endDate'}/></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Дата выдачи полиса: </Col>
                                     <Col xs={7}><Field defaultValue={get(data, 'data.result.policies[0].issueDate')}
-                                                       disabled property={{hideLabel: true, dateFormat: 'yyyy-MM-dd'}}
+                                                       disabled property={{hideLabel: true, dateFormat: 'dd.MM.yyyy'}}
                                                        type={'datepicker'}
                                                        name={'policies[0].issueDate'}/></Col>
                                 </Row>

@@ -445,7 +445,7 @@ const UpdateContainer = ({form_id}) => {
                                         property={{
                                             hideLabel: true,
                                             onChange: (val) => setPoliceStartDate(val),
-                                            dateFormat: 'yyyy-MM-dd'
+                                            dateFormat: 'dd.MM.yyyy'
                                         }}
                                         type={'datepicker'}
                                         name={'policies[0].startDate'}/></Col>
@@ -455,12 +455,12 @@ const UpdateContainer = ({form_id}) => {
                                     <Col xs={7}><Field
                                         defaultValue={getEndDateByInsuranceTerm(find(get(insuranceTerms, `data.result`, []), (_insuranceTerm) => get(_insuranceTerm, 'id') == insuranceTerm), policeStartDate)}
                                         disabled={!isEqual(insuranceTerm, 6)}
-                                        property={{hideLabel: true, dateFormat: 'yyyy-MM-dd'}} type={'datepicker'}
+                                        property={{hideLabel: true, dateFormat: 'dd.MM.yyyy'}} type={'datepicker'}
                                         name={'policies[0].endDate'}/></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Дата выдачи полиса: </Col>
-                                    <Col xs={7}><Field property={{hideLabel: true, dateFormat: 'yyyy-MM-dd'}}
+                                    <Col xs={7}><Field property={{hideLabel: true, dateFormat: 'dd.MM.yyyy'}}
                                                        type={'datepicker'}
                                                        name={'policies[0].issueDate'}/></Col>
                                 </Row>
