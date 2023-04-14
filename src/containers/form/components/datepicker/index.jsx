@@ -7,6 +7,7 @@ import {get, isEmpty, isFunction} from "lodash";
 import {ErrorMessage} from "@hookform/error-message";
 import {Calendar} from "react-feather";
 import dayjs from "dayjs";
+import ru from "date-fns/locale/ru"
 
 const Styled = styled.div`
   .custom-datepicker {
@@ -77,6 +78,8 @@ const CustomDatepicker = ({
                 {!get(property,'hideLabel',false) &&  <Label>{label ?? name}</Label>}
                 <div className={"custom__box"}>
                     <DatePicker
+                        locale={ru}
+                        calendarStartDay={1}
                         dateFormat={get(property,'dateFormat','dd.MM.yyyy')}
                         className={`custom-datepicker ${!isEmpty(errors) ? "error" : ''}`}
                         selected={dayjs(startDate).toDate()}
