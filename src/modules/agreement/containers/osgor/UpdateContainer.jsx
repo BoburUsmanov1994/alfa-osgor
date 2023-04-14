@@ -225,7 +225,7 @@ const UpdateContainer = ({form_id}) => {
         if (isEqual(name, 'insurant.organization.oked') || isEqual(name, 'insurant.person.oked')) {
             setOked(value)
         }
-        if (isEqual(name, 'risk')) {
+        if (isEqual(name, 'policies[0].risk')) {
             setRisk(value)
         }
         if (isEqual(name, 'policies[0].rpm')) {
@@ -752,7 +752,7 @@ const UpdateContainer = ({form_id}) => {
                                     options={getSelectOptionsListFromData(get(activity, 'data.result.risks', []), 'number', 'number')}
                                     label={'Класс проф. риска'}
                                     type={'select'}
-                                    name={'risk'}/>
+                                    name={'policies[0].risk'}/>
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
