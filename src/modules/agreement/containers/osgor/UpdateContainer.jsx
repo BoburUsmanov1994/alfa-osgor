@@ -18,6 +18,7 @@ import {OverlayLoader} from "../../../../components/loader";
 import qrcodeImg from "../../../../assets/images/qrcode.png"
 import dayjs from "dayjs";
 import {useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 const getEndDateByInsuranceTerm = (term, startDate) => {
     if (!isNil(term)) {
@@ -55,6 +56,7 @@ const UpdateContainer = ({form_id}) => {
     const [rewardPercent, setRewardPercent] = useState(25)
     const setBreadcrumbs = useStore(state => get(state, 'setBreadcrumbs', () => {
     }))
+    const {t} = useTranslation()
     const navigate = useNavigate();
     const breadcrumbs = useMemo(() => [{
         id: 1, title: 'OSGOR', path: '/osgor/list',
@@ -788,7 +790,7 @@ const UpdateContainer = ({form_id}) => {
                                     <Col xs={12} className={'mb-25'}>
                                         <Field
                                             defaultValue={get(data, 'data.result.agentId')}
-                                            options={agentsList}
+                                            options={[{label:t('No agent'),value:undefined},...agentsList]}
                                             label={'Агент'}
                                             type={'select'}
                                             name={'agentId'}/>
