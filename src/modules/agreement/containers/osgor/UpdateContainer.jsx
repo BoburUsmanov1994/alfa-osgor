@@ -38,6 +38,7 @@ const getEndDateByInsuranceTerm = (term, startDate) => {
 
 const UpdateContainer = ({form_id}) => {
     const [person, setPerson] = useState(null)
+    const [agentId, setAgentId] = useState(null)
     const [organization, setOrganization] = useState(null)
     const [insurant, setInsurant] = useState('person')
     const [passportSeries, setPassportSeries] = useState(null)
@@ -238,6 +239,9 @@ const UpdateContainer = ({form_id}) => {
         }
         if (isEqual(name, 'agencyId')) {
             setAgencyId(value)
+        }
+        if (isEqual(name, 'agentId')) {
+            setAgentId(value)
         }
     }
     const update = ({data}) => {
@@ -798,9 +802,9 @@ const UpdateContainer = ({form_id}) => {
 
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={get(data,'data.result.policies[0].agentReward',25)}
+                                            defaultValue={isEqual(agentId,undefined) ? 0 : get(data,'data.result.policies[0].agentReward',25)}
                                             label={'Вознограждение %'}
-                                            property={{type:'number'}}
+                                            property={{type:'number',disabled:isEqual(agentId,undefined)}}
                                             type={'input'}
                                             name={'policies[0].agentReward'}/>
                                     </Col>

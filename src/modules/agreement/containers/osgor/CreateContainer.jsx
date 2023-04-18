@@ -38,6 +38,7 @@ const getEndDateByInsuranceTerm = (term, startDate) => {
 
 const CreateContainer = ({...rest}) => {
     const [person, setPerson] = useState(null)
+    const [agentId, setAgentId] = useState(null)
     const [organization, setOrganization] = useState(null)
     const [insurant, setInsurant] = useState('person')
     const [passportSeries, setPassportSeries] = useState(null)
@@ -234,6 +235,9 @@ const CreateContainer = ({...rest}) => {
         }
         if (isEqual(name, 'agencyId')) {
             setAgencyId(value)
+        }
+        if (isEqual(name, 'agentId')) {
+            setAgentId(value)
         }
     }
     const create = ({data}) => {
@@ -741,8 +745,8 @@ const CreateContainer = ({...rest}) => {
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
                                             params={{required:true}}
-                                            property={{type:'number'}}
-                                            defaultValue={25}
+                                            property={{type:'number',disabled:isEqual(agentId,undefined)}}
+                                            defaultValue={isEqual(agentId,undefined) ? 0 : 25}
                                             label={'Вознограждение %'}
                                             type={'input'}
                                             name={'policies[0].agentReward'}/>
