@@ -350,7 +350,7 @@ const CreateContainer = ({...rest}) => {
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Филиал </Col>
-                                    <Col xs={7}><Field defaultValue={get(user,'branch_Id._id')} label={'Filial'} params={{required: true}} options={filialList}
+                                    <Col xs={7}><Field defaultValue={get(user,'branch_Id.fond_id')} label={'Filial'} params={{required: true}} options={filialList}
                                                        property={{hideLabel: true}} type={'select'}
                                                        name={'agencyId'}/></Col>
                                 </Row>
