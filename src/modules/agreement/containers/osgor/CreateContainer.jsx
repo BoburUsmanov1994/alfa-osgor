@@ -66,8 +66,7 @@ const CreateContainer = ({...rest}) => {
 
     const {t} = useTranslation()
 
-    const user = useStore((state) => get(state,'user'))
-
+    const user = useStore((state) => get(state, 'user'))
 
 
     useEffect(() => {
@@ -231,7 +230,7 @@ const CreateContainer = ({...rest}) => {
             setRewardPercent(value)
         }
         if (isEqual(name, 'insurant.person.oked')) {
-                setOked(value)
+            setOked(value)
         }
         if (isEqual(name, 'agencyId')) {
             setAgencyId(value)
@@ -260,7 +259,7 @@ const CreateContainer = ({...rest}) => {
         } = data
         createRequest({
                 url: URLS.osgorCreate, attributes: {
-                    agentId:String(agentId),
+                    agentId: String(agentId),
                     regionId: isEqual(insurant, 'person') ? get(insurantType, 'person.regionId') : get(insurantType, 'organization.regionId'),
                     sum: get(head(policies), 'insuranceSum', 0),
                     contractStartDate: get(head(policies), 'startDate'),
@@ -276,14 +275,14 @@ const CreateContainer = ({...rest}) => {
                             residentType: get(insurantType, 'person.residentType'),
                             countryId: get(insurantType, 'person.countryId'),
                             phone: get(insurantType, 'person.phone'),
-                            email: isEmpty(get(insurantType, 'person.email')) ? undefined :get(insurantType, 'person.email'),
+                            email: isEmpty(get(insurantType, 'person.email')) ? undefined : get(insurantType, 'person.email'),
                             oked: String(get(insurantType, 'person.oked')),
                         }
                     } : {
                         organization: {
                             ...get(insurantType, 'organization'),
                             oked: String(get(insurantType, 'organization.oked')),
-                            email: isEmpty(get(insurantType, 'organization.email')) ? undefined :get(insurantType, 'organization.email'),
+                            email: isEmpty(get(insurantType, 'organization.email')) ? undefined : get(insurantType, 'organization.email'),
                         }
                     },
                     policies: [
@@ -292,8 +291,8 @@ const CreateContainer = ({...rest}) => {
                             insuranceRate: get(data, 'comission', 0),
                             fot: fotSum,
                             funeralExpensesSum: parseInt(funeralExpensesSum),
-                            agentReward:parseInt(get(head(policies), 'agentReward',0)),
-                            risk:parseInt(get(head(policies), 'risk',0))
+                            agentReward: parseInt(get(head(policies), 'agentReward', 0)),
+                            risk: parseInt(get(head(policies), 'risk', 0))
                         }
                     ],
                     ...rest
@@ -319,6 +318,7 @@ const CreateContainer = ({...rest}) => {
         return <OverlayLoader/>
     }
 
+    console.log('rewardPercent',  rewardPercent)
 
     return (<>
         {(isLoadingPersonalInfo || isLoadingOrganizationInfo) && <OverlayLoader/>}
@@ -350,7 +350,8 @@ const CreateContainer = ({...rest}) => {
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Филиал </Col>
-                                    <Col xs={7}><Field defaultValue={get(user,'branch_Id.fond_id')} label={'Filial'} params={{required: true}} options={filialList}
+                                    <Col xs={7}><Field disabled defaultValue={get(user, 'branch_Id.fond_id')}
+                                                       label={'Filial'} params={{required: true}} options={filialList}
                                                        property={{hideLabel: true}} type={'select'}
                                                        name={'agencyId'}/></Col>
                                 </Row>
@@ -655,7 +656,8 @@ const CreateContainer = ({...rest}) => {
                                         name={'areaTypeId'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(organization, 'address')} params={{required: true}} label={'Address'} type={'input'}
+                                    <Field defaultValue={get(organization, 'address')} params={{required: true}}
+                                           label={'Address'} type={'input'}
                                            name={'insurant.organization.address'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
@@ -702,7 +704,7 @@ const CreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
-                                    params={{required:true}}
+                                    params={{required: true}}
                                     options={getSelectOptionsListFromData(get(activity, 'data.result.risks', []), 'number', 'number')}
                                     label={'Класс проф. риска'}
                                     type={'select'}
@@ -736,7 +738,7 @@ const CreateContainer = ({...rest}) => {
                                 <Row>
                                     <Col xs={12} className={'mb-25'}>
                                         <Field
-                                            options={[{label:t('No agent'),value:undefined},...agentsList]}
+                                            options={[{label: t('No agent'), value: undefined}, ...agentsList]}
                                             label={'Агент'}
                                             type={'select'}
                                             name={'agentId'}/>
@@ -744,16 +746,16 @@ const CreateContainer = ({...rest}) => {
 
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            params={{required:true}}
-                                            property={{type:'number',disabled:isEqual(agentId,undefined)}}
-                                            defaultValue={isEqual(agentId,undefined) ? 0 : 25}
+                                            params={{required: true}}
+                                            property={{type: 'number', disabled: isEqual(agentId, undefined)}}
+                                            defaultValue={isEqual(agentId, undefined) ? 0 : 25}
                                             label={'Вознограждение %'}
                                             type={'input'}
                                             name={'policies[0].agentReward'}/>
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            params={{required:true}}
+                                            params={{required: true}}
                                             defaultValue={5}
                                             property={{disabled: true}}
                                             label={'Отчисления в РПМ  %'}
@@ -762,7 +764,7 @@ const CreateContainer = ({...rest}) => {
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={round(rewardPercent * insurancePremium / 100, 2)}
+                                            defaultValue={ round(rewardPercent * insurancePremium / 100, 2)}
                                             property={{disabled: true}}
                                             label={'Сумма'}
                                             type={'number-format-input'}

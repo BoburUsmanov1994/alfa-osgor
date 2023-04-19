@@ -347,6 +347,9 @@ const UpdateContainer = ({form_id}) => {
         if (get(data, 'data.result.insurant.organization.inn')) {
             setInn(get(data, 'data.result.insurant.organization.inn'))
         }
+        if (!isNil(get(data, 'data.result.policies[0].agentReward'))) {
+            setRewardPercent(get(data, 'data.result.policies[0].agentReward'))
+        }
 
     }, [get(data, 'data.result')])
 
@@ -354,7 +357,7 @@ const UpdateContainer = ({form_id}) => {
     if (isLoadingFilials || isLoadingInsuranceTerms || isLoadingCountry || isLoadingRegion || isLoading) {
         return <OverlayLoader/>
     }
-
+    console.log(rewardPercent)
 
     return (<>
         {(isLoadingPersonalInfo || isLoadingOrganizationInfo,isLoadingPatch) && <OverlayLoader/>}
@@ -386,7 +389,7 @@ const UpdateContainer = ({form_id}) => {
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Филиал </Col>
-                                    <Col xs={7}><Field defaultValue={get(data, 'data.result.agencyId')}
+                                    <Col xs={7}><Field disabled defaultValue={get(data, 'data.result.agencyId')}
                                                        params={{required: true}} options={filialList}
                                                        property={{hideLabel: true}} type={'select'}
                                                        name={'agencyId'}/></Col>

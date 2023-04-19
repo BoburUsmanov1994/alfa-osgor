@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import styled from "styled-components";
-import {get, hasIn, isEmpty, isFunction} from "lodash";
+import {get, hasIn, isEmpty, isFunction,isNil} from "lodash";
 import {ErrorMessage} from "@hookform/error-message";
 import Label from "../../../../components/ui/label";
 import NumberFormat from 'react-number-format';
@@ -49,7 +49,7 @@ const NumberFormatInput = ({
     const [val,setVal] = useState(0)
 
     useEffect(() => {
-        if(defaultValue) {
+        if(!isNil(defaultValue)) {
             setVal(defaultValue)
         }
     }, [defaultValue])

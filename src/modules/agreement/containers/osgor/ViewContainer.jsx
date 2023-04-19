@@ -613,7 +613,7 @@ const ViewContainer = ({form_id = null}) => {
                                         <Field
                                             disabled
                                             defaultValue={get(data,'data.result.agentId')}
-                                            options={agentsList}
+                                            options={[{value:'undefined',label:t('No agent')},...agentsList]}
                                             label={'Агент'}
                                             type={'select'}
                                             name={'agentId'}/>
@@ -637,7 +637,7 @@ const ViewContainer = ({form_id = null}) => {
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={round(25 * get(data,'data.result.policies[0].insurancePremium') / 100, 2)}
+                                            defaultValue={round(get(data,'data.result.agentId')=="undefined" ? 0  : 25 * get(data,'data.result.policies[0].insurancePremium') / 100, 2)}
                                             property={{disabled: true}}
                                             label={'Сумма'}
                                             type={'number-format-input'}
