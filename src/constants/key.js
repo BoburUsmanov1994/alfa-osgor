@@ -1,4 +1,5 @@
 export const KEYS = {
+    getMeAlfa:'getMeAlfa',
     getMe:'getMe',
     login: 'login',
     osgorCreate: 'osgorCreate',

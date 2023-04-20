@@ -1,4 +1,5 @@
 import useGetAllQuery from "./useGetAllQuery";
+import useGetAllQueryAlfa from "./useGetAllQueryAlfa";
 import useGetOneQuery from "./useGetOneQuery";
 import usePostQuery from "./usePostQuery";
 import useDeleteQuery from "./useDeleteQuery";
@@ -16,5 +17,6 @@ export {
     usePutQuery,
     usePaginateQuery,
     useInfiniteLoadingQuery,
-    useParallelQuery
+    useParallelQuery,
+    useGetAllQueryAlfa
 }

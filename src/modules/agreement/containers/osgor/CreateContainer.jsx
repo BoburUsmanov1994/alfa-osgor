@@ -318,7 +318,7 @@ const CreateContainer = ({...rest}) => {
         return <OverlayLoader/>
     }
 
-    console.log('rewardPercent',  rewardPercent)
+    console.log('user',user)
 
     return (<>
         {(isLoadingPersonalInfo || isLoadingOrganizationInfo) && <OverlayLoader/>}
