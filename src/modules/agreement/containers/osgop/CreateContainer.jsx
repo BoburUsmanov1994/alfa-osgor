@@ -429,163 +429,72 @@ const CreateContainer = () => {
                                                        property={{hideLabel: true}} type={'select'}
                                                        name={'agencyId'}/></Col>
                                 </Row>
-
                                 <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Наличие страховых случаев:</Col>
-                                    <Col xs={7}><Field options={accidentTypeList} params={{required: true}}
-                                                       label={'Accident type'} property={{hideLabel: true}}
-                                                       type={'select'}
-                                                       name={'accident'}/></Col>
+                                    <Col xs={5}>Серия договора:</Col>
+                                    <Col xs={7}><Field property={{hideLabel: true}} type={'input'}
+                                                       name={'seria'}/></Col>
                                 </Row>
+                                <Row align={'center'} className={'mb-25'}>
+                                    <Col xs={5}>Номер договора: </Col>
+                                    <Col xs={7}><Field params={{required: true}} property={{hideLabel: true}}
+                                                       type={'input'}
+                                                       name={'number'}/></Col>
+                                </Row>
+
+
                             </Col>
                             <Col xs={4}>
 
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Страховая сумма: </Col>
-                                    <Col xs={7}><Field defaultValue={40000000}
+                                    <Col xs={7}><Field params={{required: true}} defaultValue={0}
                                                        property={{hideLabel: true, disabled: true}}
                                                        type={'number-format-input'}
                                                        name={'policies[0].insuranceSum'}/></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Страховая премия: </Col>
-                                    <Col xs={7}><Field defaultValue={insurancePremium}
+                                    <Col xs={7}><Field params={{required: true}} defaultValue={insurancePremium}
                                                        property={{hideLabel: true, disabled: true}}
                                                        type={'number-format-input'}
                                                        name={'policies[0].insurancePremium'}/></Col>
                                 </Row>
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Период использования:</Col>
-                                    <Col xs={7}><Field options={termCategoryList} params={{required: true}}
-                                                       label={'Insurance term'} property={{hideLabel: true}}
-                                                       type={'select'}
-                                                       name={'termCategories'}/></Col>
-                                </Row>
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Наличие нарушений:</Col>
-                                    <Col xs={7}><Field options={termCategoryList} params={{required: true}}
-                                                       label={'Insurance term'} property={{hideLabel: true}}
-                                                       type={'select'}
-                                                       name={'termCategories'}/></Col>
-                                </Row>
+
 
                             </Col>
                             <Col xs={4}>
+
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Срок страхования:</Col>
                                     <Col xs={7}><Field options={insuranceTermsList} params={{required: true}}
                                                        label={'Insurance term'} property={{hideLabel: true}}
                                                        type={'select'}
-                                                       name={'terms'}/></Col>
+                                                       name={'policies[0].insuranceTermId'}/></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Дата начала покрытия: </Col>
                                     <Col xs={7}><Field
                                         params={{required: true}}
-                                        property={{hideLabel: true, onChange: (val) => setPoliceStartDate(val)}}
+                                        property={{
+                                            hideLabel: true,
+                                            onChange: (val) => setPoliceStartDate(val),
+                                            dateFormat: 'dd.MM.yyyy'
+                                        }}
                                         type={'datepicker'}
-                                        name={'details.startDate'}/></Col>
+                                        name={'policies[0].startDate'}/></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Дача окончания покрытия: </Col>
                                     <Col xs={7}><Field
+                                        params={{required: true}}
                                         defaultValue={getEndDateByInsuranceTerm(find(get(insuranceTerms, `data.result`, []), (_insuranceTerm) => get(_insuranceTerm, 'id') == insuranceTerm), policeStartDate)}
-                                        disabled
-                                        property={{hideLabel: true}}
-                                        type={'datepicker'}
-                                        name={'details.endDate'}/></Col>
-                                </Row>
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Дата выдачи полиса: </Col>
-                                    <Col xs={7}><Field property={{hideLabel: true}} type={'datepicker'}
-                                                       name={'details.issueDate'}/></Col>
-                                </Row>
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Наличие льгот:</Col>
-                                    <Col xs={7}><Field options={discountList} params={{required: true}}
-                                                       label={'Discounts'} property={{hideLabel: true}}
-                                                       type={'select'}
-                                                       name={'discount'}/></Col>
+                                        disabled={!isEqual(insuranceTerm, 6)}
+                                        property={{hideLabel: true, dateFormat: 'dd.MM.yyyy'}} type={'datepicker'}
+                                        name={'policies[0].endDate'}/></Col>
                                 </Row>
                             </Col>
                         </Row>
-                        <Row gutterWidth={60} className={'mt-30'}>
-                            <Col xs={12} className={'mb-25'}><Title>Транспортное средство</Title></Col>
-                            <Col xs={4} style={{borderRight: '1px solid #DFDFDF'}}>
-                                <div className={'mb-15'}>Государственный номер</div>
-                                <div className={'mb-25'}><CarNumber getGovNumber={setGovNumber}/></div>
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Серия тех.паспорта:</Col>
-                                    <Col xs={7}><Field defaultValue={techPassportSeria} property={{hideLabel: true}}
-                                                       type={'input'}
-                                                       name={'vehicle.techPassport.seria'}/></Col>
-                                </Row>
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Номер тех.паспорта:</Col>
-                                    <Col xs={7}><Field defaultValue={techPassportNumber} property={{hideLabel: true}}
-                                                       type={'input'}
-                                                       name={'vehicle.techPassport.number'}/></Col>
-                                </Row>
-                                <Button type={'button'} onClick={getVehicleInfo} className={'w-100'}>Получить
-                                    данные</Button>
-                            </Col>
-                            <Col xs={8}>
-                                <Row>
-                                    <Col xs={4} className="mb-25">
-                                        <Field defaultValue={get(vehicle, 'regionId')} options={regionList}
-                                               params={{required: true}}
-                                               label={'Территория пользования'}
-                                               type={'select'}
-                                               name={'vehicle.regionId'}/>
-                                    </Col>
-                                    <Col xs={4} className="mb-25">
-                                        <Field defaultValue={get(vehicle, 'modelName')} params={{required: true}}
-                                               label={'Марка / модель'}
-                                               type={'input'}
-                                               name={'vehicle.modelCustomName'}/>
-                                    </Col>
-                                    <Col xs={4} className="mb-25">
-                                        <Field defaultValue={get(vehicle, 'vehicleTypeId')} options={vehicleTypeList}
-                                               params={{required: true}}
-                                               label={'Вид транспорта'}
-                                               type={'select'}
-                                               name={'vehicle.typeId'}/>
-                                    </Col>
-                                    <Col xs={4} className="mb-25">
-                                        <Field defaultValue={get(vehicle, 'issueYear')}
-                                               property={{mask: '9999', maskChar: '_'}} params={{required: true}}
-                                               label={'Год'}
-                                               type={'input-mask'}
-                                               name={'vehicle.issueYear'}/>
-                                    </Col>
-                                    <Col xs={4} className="mb-25">
-                                        <Field defaultValue={get(vehicle, 'bodyNumber')} params={{required: true}}
-                                               label={'Номер кузова (шасси)'}
-                                               type={'input'}
-                                               name={'vehicle.bodyNumber'}/>
-                                    </Col>
-                                    <Col xs={4} className="mb-25">
-                                        <Field defaultValue={get(vehicle, 'engineNumber')} params={{required: true}}
-                                               label={'Номер двигателя'}
-                                               type={'input'}
-                                               name={'vehicle.engineNumber'}/>
-                                    </Col>
-                                    <Col xs={4} className="mb-25">
-                                        <Field defaultValue={get(vehicle, 'fullWeight')} params={{required: true}}
-                                               label={'Объем'}
-                                               type={'input'}
-                                               name={'vehicle.fullWeight'}/>
-                                    </Col>
-                                    <Col xs={4} className="mb-25">
-                                        <Field defaultValue={get(vehicle, 'techPassportIssueDate')}
-                                               params={{required: true}}
-                                               label={'Дата выдачи тех.паспорта'}
-                                               type={'datepicker'}
-                                               name={'vehicle.techPassport.issueDate'}/>
-                                    </Col>
-                                </Row>
-                            </Col>
-                        </Row>
+
                         <Row gutterWidth={60} className={'mt-30'}>
                             <Col xs={12} className={'mb-25'}><Title>Собственник </Title></Col>
                             <Col xs={12}>
@@ -817,12 +726,11 @@ const CreateContainer = () => {
                             </>}
                             <Col xs={12} className={'mt-15'}><Checkbox checked={applicantIsOwner}
                                                                        onChange={(e) => setApplicantIsOwner(e.target.checked)}
-                                                                       className={'mr-5'}/><strong>Собственник является
-                                Заявителем</strong></Col>
+                                                                       className={'mr-5'}/><strong>Собственник является Страхователем</strong></Col>
                         </Row>
 
                         <Row gutterWidth={60} className={'mt-30'}>
-                            <Col xs={12} className={'mb-25'}><Title>Заявитель </Title></Col>
+                            <Col xs={12} className={'mb-25'}><Title>Страхователь </Title></Col>
                             <Col xs={12}>
                                 <Row>
                                     <Col xs={4}>
@@ -1068,21 +976,17 @@ const CreateContainer = () => {
                         </Row>
 
                         <Row gutterWidth={60} className={'mt-30'}>
-                            <Col xs={12} className={'mb-25'}><Title>Водители / Родственники</Title></Col>
+                            <Col xs={12} className={'mb-15'}><Title>Объекты страхования</Title></Col>
                             <Col xs={12}>
                                 <Flex justify={'flex-end'}>
-                                    <Field label={'Количество водителей'}
-                                           defaultValue={1}
-                                                                  options={driverTypeList} type={'radio-group'}
-                                                                  name={'driverType'}/>
                                     <Button
                                     onClick={() => setVisible(true)} className={'ml-15'}
                                     type={'button'}>Добавить</Button></Flex>
                             </Col>
                             <Col xs={12}>
-                                <div className={'horizontal-scroll mt-15 '}>
+                                <div className={'horizontal-scroll mt-15 mb-25'}>
                                     <Table bordered hideThead={false}
-                                           thead={['Фамилия ', 'Имя', 'Отчество', 'Сария паспорта', 'Номер паспорта', 'Pinfl', 'Дата паспорта', 'Серия вод.удостоверения', 'Номер вод.удостоверения', 'Дата вод.удостоверения', 'Степень родства', 'Action']}>
+                                           thead={['№ ', 'Вид ТС', 'Модель ТС', 'Гос.номер', 'Страховая премия', 'Страховая сумма', 'Серия полиса', 'Номер полиса',  'Action']}>
                                         {
                                             drivers.map((item, index) => <tr>
                                                 <td>{get(item, 'fullName.lastname')}</td>
