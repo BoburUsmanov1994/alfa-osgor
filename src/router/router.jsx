@@ -14,6 +14,10 @@ const OsgorViewPage = lazy(() => import("../modules/agreement/pages/osgor/ViewPa
 const OsgorUpdatePage = lazy(() => import("../modules/agreement/pages/osgor/UpdatePage"));
 const OsgorAgreementCreatePage = lazy(() => import("../modules/agreement/pages/osgor/CreatePage"));
 
+const OsgopListPage = lazy(() => import("../modules/agreement/pages/osgop/ListPage"));
+const OsgopViewPage = lazy(() => import("../modules/agreement/pages/osgop/ViewPage"));
+const OsgopCreatePage = lazy(() => import("../modules/agreement/pages/osgop/CreatePage"));
+
 const Router = ({...rest}) => {
     return (
         <BrowserRouter>
@@ -26,6 +30,11 @@ const Router = ({...rest}) => {
                                 <Route path={"create"} element={<OsgorAgreementCreatePage/>}/>
                                 <Route path={"view/:form_id"} element={<OsgorViewPage/>}/>
                                 <Route path={"update/:form_id"} element={<OsgorUpdatePage/>}/>
+                            </Route>
+                            <Route path={"osgop"}>
+                                <Route index element={<OsgopListPage/>}/>
+                                <Route path={"create"} element={<OsgopCreatePage/>}/>
+                                <Route path={"view/:form_id"} element={<OsgopViewPage/>}/>
                             </Route>
                             <Route path="/auth/logout" element={<LogOutPage/>}/>
                             <Route path={"auth/*"} element={<Navigate to={'/osgor'} replace/>}/>

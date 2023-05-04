@@ -13,6 +13,8 @@ export const URLS = {
     osgorEpolis: 'api/osgor/get-e-polis',
     osgopCreate: 'api/osgop/create',
     osgopView: 'api/osgop/show',
+    osgopDelete: 'api/osgop/delete',
+    osgopList: 'api/osgop/list',
     osgopConfirmPayment: 'api/osgop/confirm-payed',
     osgopCheckPayment: 'api/osgop/check-payment',
     osgopEpolis: 'api/osgop/get-e-polis',

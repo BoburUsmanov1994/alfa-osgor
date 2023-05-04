@@ -12,6 +12,8 @@ export const KEYS = {
     osgorEpolis: 'osgorEpolis',
     osgopCreate: 'osgopCreate',
     osgopView: 'osgopView',
+    osgopDelete: 'osgopDelete',
+    osgopList: 'osgopList',
     osgopConfirmPayment: 'osgopConfirmPayment',
     osgopCheckPayment: 'osgopCheckPayment',
     osgopEpolis: 'osgopEpolis',
