@@ -16,7 +16,6 @@ import {URLS} from "../../../../constants/url";
 import {getSelectOptionsListFromData} from "../../../../utils";
 import {OverlayLoader} from "../../../../components/loader";
 import dayjs from "dayjs";
-import CarNumber from "../../../../components/car-number";
 import {toast} from "react-toastify";
 import Checkbox from 'rc-checkbox';
 import Modal from "../../../../components/modal";
@@ -36,9 +35,9 @@ const CreateContainer = () => {
     const [owner, setOwner] = useState('person')
     const [ownerPerson, setOwnerPerson] = useState(null)
     const [ownerOrganization, setOwnerOrganization] = useState(null)
-    const [applicant, setApplicant] = useState('person')
-    const [applicantPerson, setApplicantPerson] = useState(null)
-    const [applicantOrganization, setApplicantOrganization] = useState(null)
+    const [insurant, setInsurant] = useState('person')
+    const [insurantPerson, setInsurantPerson] = useState(null)
+    const [insurantOrganization, setInsurantOrganization] = useState(null)
     const [vehicle, setVehicle] = useState(null)
     const [passportSeries, setPassportSeries] = useState(null)
     const [passportNumber, setPassportNumber] = useState(null)
@@ -58,7 +57,7 @@ const CreateContainer = () => {
     const [driverType, setDriverType] = useState(1)
     const [termCategories, setTermCategories] = useState(null)
     const [accident, setAccident] = useState(null)
-    const [applicantIsOwner, setApplicantIsOwner] = useState(false)
+    const [insurantIsOwner, setInsuranttIsOwner] = useState(false)
     const [cost, setCost] = useState(null)
     const [visible, setVisible] = useState(false)
     const [driverPassportSeries, setDriverPassportSeries] = useState(null)
@@ -181,6 +180,9 @@ const CreateContainer = () => {
     const {
         mutate: calculatePremiumRequest
     } = usePostQuery({listKeyId: KEYS.calculator, hideSuccessToast: false})
+    const {
+        mutate: calcRequest
+    } = usePostQuery({listKeyId: KEYS.calculator, hideSuccessToast: false})
 
     const {
         mutate: getDriverInfoRequest, isLoading: isLoadingDriverInfo
@@ -200,8 +202,8 @@ const CreateContainer = () => {
                     if (type == 'owner') {
                         setOwnerPerson(get(data, 'result'));
                     }
-                    if (type == 'applicant') {
-                        setApplicantPerson(get(data, 'result'));
+                    if (type == 'insurant') {
+                        setInsurantPerson(get(data, 'result'));
                     }
                 }
             }
@@ -218,8 +220,8 @@ const CreateContainer = () => {
                     if (type == 'owner') {
                         setOwnerOrganization(get(data, 'result'))
                     }
-                    if (type == 'applicant') {
-                        setApplicantOrganization(get(data, 'result'))
+                    if (type == 'insurant') {
+                        setInsurantOrganization(get(data, 'result'))
                     }
                 }
             }
@@ -335,6 +337,9 @@ const CreateContainer = () => {
         if (isEqual(name, 'agentId')) {
             setAgentId(value)
         }
+        if (isEqual(name, 'policies[0].insuranceTermId')) {
+            setInsuranceTerm(value)
+        }
     }
 
     const create = ({data}) => {
@@ -365,7 +370,7 @@ const CreateContainer = () => {
                     vehicle: {...vehicleRestData, govNumber, regionId},
                     owner: {
                         ...owner,
-                        applicantIsOwner: applicantIsOwner
+                        insurantIsOwner: insurantIsOwner
                     },
                     agentReward: parseInt(agentReward),
                     drivers,
@@ -395,7 +400,7 @@ const CreateContainer = () => {
     if (isLoadingAccidentType || isLoadingTermCategory || isLoadingRegion || isLoadingInsuranceTerms || isLoadingDiscount) {
         return <OverlayLoader/>
     }
-
+    
     return (<>
         {(isLoadingPersonalInfo || isLoadingOrganizationInfo || isLoadingVehicleInfo || isLoadingPost) &&
             <OverlayLoader/>}
@@ -447,7 +452,7 @@ const CreateContainer = () => {
 
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Страховая сумма: </Col>
-                                    <Col xs={7}><Field params={{required: true}} defaultValue={0}
+                                    <Col xs={7}><Field params={{required: true}} defaultValue={40000000}
                                                        property={{hideLabel: true, disabled: true}}
                                                        type={'number-format-input'}
                                                        name={'policies[0].insuranceSum'}/></Col>
@@ -724,8 +729,8 @@ const CreateContainer = () => {
                                                    type={'select'}
                                                    name={'owner.organization.ownershipFormId'}/></Col>
                             </>}
-                            <Col xs={12} className={'mt-15'}><Checkbox checked={applicantIsOwner}
-                                                                       onChange={(e) => setApplicantIsOwner(e.target.checked)}
+                            <Col xs={12} className={'mt-15'}><Checkbox checked={insurantIsOwner}
+                                                                       onChange={(e) => setInsuranttIsOwner(e.target.checked)}
                                                                        className={'mr-5'}/><strong>Собственник является Страхователем</strong></Col>
                         </Row>
 
@@ -736,18 +741,18 @@ const CreateContainer = () => {
                                     <Col xs={4}>
                                         <Flex>
                                             <h4 className={'mr-16'}>Заявитель </h4>
-                                            <Button onClick={() => !applicantIsOwner && setApplicant('person')}
-                                                    gray={!isEqual(applicantIsOwner ? owner : applicant, 'person')}
+                                            <Button onClick={() => !insurantIsOwner && setInsurant('person')}
+                                                    gray={!isEqual(insurantIsOwner ? owner : insurant, 'person')}
                                                     className={'mr-16'}
                                                     type={'button'}>Физ. лицо</Button>
-                                            <Button onClick={() => !applicantIsOwner && setApplicant('organization')}
-                                                    gray={!isEqual(applicantIsOwner ? owner : applicant, 'organization')}
+                                            <Button onClick={() => !insurantIsOwner && setInsurant('organization')}
+                                                    gray={!isEqual(insurantIsOwner ? owner : insurant, 'organization')}
                                                     type={'button'}>Юр.
                                                 лицо</Button>
                                         </Flex>
                                     </Col>
                                     <Col xs={8} className={'text-right'}>
-                                        {isEqual(applicantIsOwner ? owner : applicant, 'person') &&
+                                        {isEqual(insurantIsOwner ? owner : insurant, 'person') &&
                                             <Flex justify={'flex-end'}>
                                                 <Field onChange={(e) => setPassportSeries(upperCase(e.target.value))}
                                                        className={'mr-16'} style={{width: 75}}
@@ -763,7 +768,7 @@ const CreateContainer = () => {
                                                     placeholder: '1234567',
                                                     maskChar: '_'
                                                 }} name={'passportNumber'} type={'input-mask'}/>
-
+                        
                                                 <Field className={'ml-15'}
                                                        property={{
                                                            hideLabel: true,
@@ -771,11 +776,11 @@ const CreateContainer = () => {
                                                            onChange: (e) => setBirthDate(e)
                                                        }}
                                                        name={'birthDate'} type={'datepicker'}/>
-                                                <Button onClick={() => getInfo('applicant')} className={'ml-15'}
+                                                <Button onClick={() => getInfo('insurant')} className={'ml-15'}
                                                         type={'button'}>Получить
                                                     данные</Button>
                                             </Flex>}
-                                        {isEqual(applicantIsOwner ? owner : applicant, 'organization') &&
+                                        {isEqual(insurantIsOwner ? owner : insurant, 'organization') &&
                                             <Flex justify={'flex-end'}>
                                                 <Field onChange={(e) => setInn(e.target.value)} property={{
                                                     hideLabel: true,
@@ -783,7 +788,7 @@ const CreateContainer = () => {
                                                     placeholder: 'Inn',
                                                     maskChar: '_'
                                                 }} name={'inn'} type={'input-mask'}/>
-
+                        
                                                 <Button onClick={() => getOrgInfo('applicant')} className={'ml-15'}
                                                         type={'button'}>Получить
                                                     данные</Button>
@@ -794,36 +799,36 @@ const CreateContainer = () => {
                             <Col xs={12}>
                                 <hr className={'mt-15 mb-15'}/>
                             </Col>
-                            {isEqual(applicantIsOwner ? owner : applicant, 'person') && <>
+                            {isEqual(insurantIsOwner ? owner : insurant, 'person') && <>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         params={{required: true}}
-                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'firstNameLatin')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'firstNameLatin')}
                                         label={'Firstname'}
                                         type={'input'}
-                                        name={'applicant.person.fullName.firstname'}/>
+                                        name={'insurant.person.fullName.firstname'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         params={{required: true}}
-                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'lastNameLatin')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'lastNameLatin')}
                                         label={'Lastname'}
                                         type={'input'}
-                                        name={'applicant.person.fullName.lastname'}/>
+                                        name={'insurant.person.fullName.lastname'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         params={{required: true}}
-                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'middleNameLatin')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'middleNameLatin')}
                                         label={'Middlename'}
                                         type={'input'}
-                                        name={'applicant.person.fullName.middlename'}/>
+                                        name={'insurant.person.fullName.middlename'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}}
-                                           defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'pinfl')}
+                                           defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'pinfl')}
                                            label={'ПИНФЛ'} type={'input'}
-                                           name={'applicant.person.passportData.pinfl'}/>
+                                           name={'insurant.person.passportData.pinfl'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}} property={{
@@ -831,7 +836,7 @@ const CreateContainer = () => {
                                         placeholder: 'AA',
                                         maskChar: '_'
                                     }} defaultValue={passportSeries} label={'Passport seria'} type={'input-mask'}
-                                           name={'applicant.person.passportData.seria'}/>
+                                           name={'insurant.person.passportData.seria'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
@@ -841,138 +846,148 @@ const CreateContainer = () => {
                                             placeholder: '1234567',
                                             maskChar: '_'
                                         }} defaultValue={passportNumber} label={'Passport number'} type={'input-mask'}
-                                        name={'applicant.person.passportData.number'}/>
+                                        name={'insurant.person.passportData.number'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'issueDate')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'issueDate')}
                                         params={{required: true}}
                                         label={'Issue date'} type={'datepicker'}
-                                        name={'applicant.person.passportData.issueDate'}/>
+                                        name={'insurant.person.passportData.issueDate'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}}
                                            defaultValue={get(ownerPerson, 'issuedBy')}
                                            label={'Issued by'}
                                            type={'input'}
-                                           name={'applicant.person.passportData.issuedBy'}/>
+                                           name={'insurant.person.passportData.issuedBy'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={dayjs(get(applicantIsOwner ? ownerPerson : applicantPerson, 'birthDate')).toDate()}
+                                        defaultValue={dayjs(get(insurantIsOwner ? ownerPerson : insurant, 'birthDate')).toDate()}
                                         label={'Birth date'}
                                         type={'datepicker'}
-                                        name={'applicant.person.birthDate'}/>
+                                        name={'insurant.person.birthDate'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'gender')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'gender')}
                                         options={genderList}
                                         label={'Gender'}
                                         type={'select'}
-                                        name={'applicant.person.gender'}/>
+                                        name={'insurant.person.gender'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'birthCountry')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'birthCountry')}
                                         label={'Country'}
                                         type={'input'}
-                                        name={'applicant.person.birthCountryCode'}/>
+                                        name={'insurant.person.birthCountryCode'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         options={regionList}
-                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'regionId')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'regionId')}
                                         label={'Region'}
                                         type={'select'}
-                                        name={'applicant.person.regionId'}/>
+                                        name={'insurant.person.regionId'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         options={districtList}
-                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'districtId')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'districtId')}
                                         label={'District'}
                                         type={'select'}
-                                        name={'applicant.person.districtId'}/>
+                                        name={'insurant.person.districtId'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         options={residentTypeList}
-                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'residentType')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'residentType')}
                                         label={'Resident type'}
                                         type={'select'}
-                                        name={'applicant.person.residentType'}/>
+                                        name={'insurant.person.residentType'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'address')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'address')}
                                         label={'Address'}
                                         type={'input'}
-                                        name={'applicant.person.address'}/>
+                                        name={'insurant.person.address'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'phone')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'phone')}
                                         label={'Phone'}
                                         type={'input'}
-                                        name={'applicant.person.phoneNumber'}/>
+                                        name={'insurant.person.phoneNumber'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'email')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'email')}
                                         label={'Email'}
                                         type={'input'}
-                                        name={'applicant.person.email'}/>
+                                        name={'insurant.person.email'}/>
                                 </Col>
                             </>}
-                            {isEqual(applicantIsOwner ? owner : applicant, 'organization') && <>
+                            {isEqual(insurantIsOwner ? owner : insurant, 'organization') && <>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}} label={'INN'} defaultValue={inn} property={{
                                         mask: '999999999',
                                         placeholder: 'Inn',
                                         maskChar: '_'
-                                    }} name={'applicant.organization.inn'} type={'input-mask'}/>
-
+                                    }} name={'insurant.organization.inn'} type={'input-mask'}/>
+                        
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}}
-                                           defaultValue={get(applicantIsOwner ? ownerOrganization : applicantOrganization, 'name')}
+                                           defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'name')}
                                            label={'Наименование'} type={'input'}
-                                           name={'applicant.organization.name'}/>
+                                           name={'insurant.organization.name'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field label={'Руководитель'} type={'input'}
-                                           name={'applicant.organization.representativeName'}/>
+                                           name={'insurant.organization.representativeName'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field label={'Должность'} type={'input'}
-                                           name={'applicant.organization.position'}/>
+                                           name={'insurant.organization.position'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(applicantIsOwner ? ownerOrganization : applicantOrganization, 'phone')}
+                                        defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'phone')}
                                         params={{required: true}}
                                         label={'Телефон'} type={'input'}
-                                        name={'applicant.organization.phone'}/>
+                                        name={'insurant.organization.phone'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(applicantIsOwner ? ownerOrganization : applicantOrganization, 'email')}
+                                        defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'email')}
                                         label={'Email'} type={'input'}
-                                        name={'applicant.organization.email'}/>
+                                        name={'insurant.organization.email'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field label={'Расчетный счет'} type={'input'}
-                                           name={'applicant.organization.checkingAccount'}/>
+                                           name={'insurant.organization.checkingAccount'}/>
                                 </Col>
                                 <Col xs={3}><Field label={'Область'} params={{required: true}} options={regionList}
                                                    type={'select'}
-                                                   name={'applicant.organization.regionId'}/></Col>
+                                                   name={'insurant.organization.regionId'}/></Col>
                                 <Col xs={3}><Field label={'Форма собственности'} params={{required: true}}
                                                    options={[]}
                                                    type={'select'}
-                                                   name={'applicant.organization.ownershipFormId'}/></Col>
+                                                   name={'insurant.organization.ownershipFormId'}/></Col>
                             </>}
+                        </Row>
+
+                        <Row gutterWidth={60} className={'mt-30'}>
+                            <Col xs={12} className={'mb-15'}><Title>Убыточность предыдущих периодов</Title></Col>
+                            <Col xs={3}><Field label={'Сумма старховых возмещений в предыдущем году'}
+                                               type={'number-format-input'}
+                                               name={'lastYearPayment'}/></Col>
+                            <Col xs={3}><Field label={'Сумма старховой премии в предыдущем году'}
+                                               type={'number-format-input'}
+                                               name={'lastYearInsurancePremium'}/></Col>
                         </Row>
 
                         <Row gutterWidth={60} className={'mt-30'}>
