@@ -3,7 +3,7 @@ import styled, {css} from "styled-components";
 
 const Styled = styled.div`
   display: flex;
-  align-items: ${({align}) => align || 'center'};;
+  align-items: ${({align}) => align || 'center'};
   justify-content: ${({justify}) => justify || 'flex-start'};
 `;
 const Flex = ({
