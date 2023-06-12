@@ -41,4 +41,5 @@ export const URLS = {
     okeds: 'api/references/okeds',
     activityAndRisk: 'api/references/activity-and-risks',
     osgorCalculate: 'api/osgor/calculate',
+    getRatio: 'api/osgop/ratio',
 }

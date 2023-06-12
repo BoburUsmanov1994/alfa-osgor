@@ -1,6 +1,6 @@
 export const KEYS = {
-    getMeAlfa:'getMeAlfa',
-    getMe:'getMe',
+    getMeAlfa: 'getMeAlfa',
+    getMe: 'getMe',
     login: 'login',
     osgorCreate: 'osgorCreate',
     osgorList: 'osgorList',
@@ -40,4 +40,5 @@ export const KEYS = {
     activityAndRisk: 'activityAndRisk',
     osgorCalculate: 'osgorCalculate',
     agents: 'agents',
+    getRatio: 'getRatio',
 }
