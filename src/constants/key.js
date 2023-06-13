@@ -41,4 +41,5 @@ export const KEYS = {
     osgorCalculate: 'osgorCalculate',
     agents: 'agents',
     getRatio: 'getRatio',
+    osgopCalculate: 'osgopCalculate',
 }

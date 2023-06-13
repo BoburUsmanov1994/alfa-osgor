@@ -28,6 +28,7 @@ const Styled = styled.div`
   .custom__box {
     position: relative;
     max-width: 400px;
+
     .custom__icon {
       position: absolute;
       right: 8px;
@@ -58,33 +59,33 @@ const CustomDatepicker = ({
                           }) => {
     const [startDate, setStartDate] = useState(new Date());
 
-    useEffect(()=>{
-        setValue(name,dayjs(startDate).format(dateFormat))
-        if(get(property,'onChange') && isFunction(get(property,'onChange'))) {
+    useEffect(() => {
+        setValue(name, dayjs(startDate).format(dateFormat))
+        if (get(property, 'onChange') && isFunction(get(property, 'onChange'))) {
             get(property, 'onChange')(startDate)
         }
-    },[startDate])
+    }, [startDate])
 
-    useEffect(()=>{
-        if(defaultValue){
-            if(dayjs(defaultValue).isValid()) {
+    useEffect(() => {
+        if (defaultValue) {
+            if (dayjs(defaultValue).isValid()) {
                 setStartDate(dayjs(defaultValue).toDate())
             }
         }
-    },[defaultValue])
+    }, [defaultValue])
     return (
         <Styled {...rest}>
             <div className="form-group">
-                {!get(property,'hideLabel',false) &&  <Label>{label ?? name}</Label>}
+                {!get(property, 'hideLabel', false) && <Label>{label ?? name}</Label>}
                 <div className={"custom__box"}>
                     <DatePicker
                         locale={ru}
                         calendarStartDay={1}
-                        dateFormat={get(property,'dateFormat','dd.MM.yyyy')}
+                        dateFormat={get(property, 'dateFormat', 'dd.MM.yyyy')}
                         className={`custom-datepicker ${!isEmpty(errors) ? "error" : ''}`}
                         selected={dayjs(startDate).toDate()}
                         onChange={(date) => {
-                            if(dayjs(date).isValid()){
+                            if (dayjs(date).isValid()) {
                                 setStartDate(date)
                             }
                         }}

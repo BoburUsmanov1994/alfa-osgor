@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {useStore} from "../../../../store";
-import {find, get, head, isEqual, isNil, round, upperCase} from "lodash";
+import {find, get, each, isEqual, isNil, round, upperCase,values} from "lodash";
 import Panel from "../../../../components/panel";
 import Search from "../../../../components/search";
 import {Col, Row} from "react-grid-system";
@@ -36,29 +36,23 @@ const CreateContainer = () => {
     const [ownerPerson, setOwnerPerson] = useState(null)
     const [ownerOrganization, setOwnerOrganization] = useState(null)
     const [insurant, setInsurant] = useState('person')
-    const [insurantPerson, setInsurantPerson] = useState(null)
     const [insurantOrganization, setInsurantOrganization] = useState(null)
     const [vehicle, setVehicle] = useState(null)
     const [passportSeries, setPassportSeries] = useState(null)
     const [passportNumber, setPassportNumber] = useState(null)
     const [birthDate, setBirthDate] = useState(null)
     const [inn, setInn] = useState(null)
-    const [regionId, setRegionId] = useState(null)
     const [insuranceTerm, setInsuranceTerm] = useState(null)
     const [policeStartDate, setPoliceStartDate] = useState(dayjs())
-    const [insurancePremium, setInsurancePremium] = useState(0)
     const [rpmPercent, setRpmPercent] = useState(0)
     const [rewardPercent, setRewardPercent] = useState(0)
     const [govNumber, setGovNumber] = useState(null)
     const [techPassportSeria, setTechPassportSeria] = useState(null)
     const [techPassportNumber, setTechPassportNumber] = useState(null)
     const [vehicleType, setVehicleType] = useState(null)
-    const [discount, setDiscount] = useState(null)
-    const [driverType, setDriverType] = useState(1)
     const [termCategories, setTermCategories] = useState(null)
     const [accident, setAccident] = useState(null)
     const [insurantIsOwner, setInsuranttIsOwner] = useState(false)
-    const [cost, setCost] = useState(null)
     const [visible, setVisible] = useState(false)
     const [lastYearPayment, setlastYearPayment] = useState(0)
     const [lastYearInsurancePremium, setLastYearInsurancePremium] = useState(0)
@@ -66,6 +60,14 @@ const CreateContainer = () => {
     const [drivers, setDrivers] = useState([])
     const [agencyId, setAgencyId] = useState(null)
     const [agentId, setAgentId] = useState(null)
+    const [osgopCalculateData, setOsgopCalculateData] = useState({
+        insuranceSumForPassenger: 0,
+        passengerCapacity: 0,
+        vehicleTypeId: 0,
+        lossRatio: 0
+    })
+    const [osgopCalculateResponse, setOsgopCalculateResponse] = useState({})
+
     const navigate = useNavigate();
     const {t} = useTranslation()
 
@@ -162,11 +164,8 @@ const CreateContainer = () => {
     } = usePostQuery({listKeyId: KEYS.getRatio, hideSuccessToast: true})
     const {
         mutate: calcRequest
-    } = usePostQuery({listKeyId: KEYS.calculator, hideSuccessToast: false})
+    } = usePostQuery({listKeyId: KEYS.osgopCalculate, hideSuccessToast: true})
 
-    const {
-        mutate: getDriverInfoRequest, isLoading: isLoadingDriverInfo
-    } = usePostQuery({listKeyId: KEYS.driverInfo})
     const {
         mutate: createRequest, isLoading: isLoadingPost
     } = usePostQuery({listKeyId: KEYS.create})
@@ -183,7 +182,7 @@ const CreateContainer = () => {
                         setOwnerPerson(get(data, 'result'));
                     }
                     if (type == 'insurant') {
-                        setInsurantPerson(get(data, 'result'));
+
                     }
                 }
             }
@@ -228,21 +227,12 @@ const CreateContainer = () => {
     }
 
     const calculatePremium = () => {
-        calculatePremiumRequest({
-                url: URLS.calculator, attributes: {
-                    vehicleType,
-                    region: regionId,
-                    discount,
-                    driverType,
-                    terms: insuranceTerm,
-                    termCategories,
-                    accident
-                }
+        calcRequest({
+                url: URLS.osgopCalculate, attributes: osgopCalculateData
             },
             {
                 onSuccess: ({data}) => {
-                    setInsurancePremium(get(data, 'result.amount'))
-                    setCost(get(data, 'result.cost'))
+                    setOsgopCalculateResponse(get(data, 'result'))
                 }
             }
         )
@@ -262,19 +252,7 @@ const CreateContainer = () => {
             }
         )
     }
-    const addDriver = ({data}) => {
-        if (get(data, 'driver.fullName.firstname')) {
-            setDrivers(prev => [...prev, get(data, 'driver')])
-            setVisible(false);
-        }
-    }
-    const removeDriver = (index) => {
-        setDrivers(drivers.filter((d, i) => i != index))
-    }
     const getFieldData = (name, value) => {
-        if (isEqual(name, 'owner.person.regionId')) {
-            setRegionId(value)
-        }
         if (isEqual(name, 'terms')) {
             setInsuranceTerm(value)
         }
@@ -288,17 +266,11 @@ const CreateContainer = () => {
         if (isEqual(name, 'vehicle.typeId')) {
             setVehicleType(value)
         }
-        if (isEqual(name, 'discount')) {
-            setDiscount(value)
-        }
         if (isEqual(name, 'termCategories')) {
             setTermCategories(value)
         }
         if (isEqual(name, 'accident')) {
             setAccident(value)
-        }
-        if (isEqual(name, 'vehicle.regionId')) {
-            setRegionId(value)
         }
         if (isEqual(name, 'agencyId')) {
             setAgencyId(value)
@@ -314,6 +286,18 @@ const CreateContainer = () => {
         }
         if (isEqual(name, 'lastYearInsurancePremium')) {
             setLastYearInsurancePremium(value)
+        }
+        if (isEqual(name, 'vehicle.insuranceSumForPassenger')) {
+            setOsgopCalculateData(prev => ({...prev, insuranceSumForPassenger: parseInt(value)}))
+        }
+        if (isEqual(name, 'vehicle.passengerCapacity')) {
+            setOsgopCalculateData(prev => ({...prev, passengerCapacity: parseInt(value)}))
+        }
+        if (isEqual(name, 'vehicle.vehicleTypeId')) {
+            setOsgopCalculateData(prev => ({...prev, vehicleTypeId: parseInt(value)}))
+        }
+        if (isEqual(name, 'lossRatio')) {
+            setOsgopCalculateData(prev => ({...prev, lossRatio: parseInt(value)}))
         }
     }
 
@@ -331,26 +315,12 @@ const CreateContainer = () => {
             seria,
             termCategories,
             terms,
-            details,
-            vehicle,
-            owner,
             agentReward,
             ...rest
         } = data
-        const {regionId, ...vehicleRestData} = vehicle;
         createRequest({
                 url: URLS.create, attributes: {
-                    contractStartDate: get(head(policies), 'startDate'),
-                    contractEndDate: get(head(policies), 'endDate'),
-                    cost,
-                    details: {...details, driverNumberRestriction: true, specialNote: '', insuredActivityType: ''},
-                    vehicle: {...vehicleRestData, govNumber, regionId},
-                    owner: {
-                        ...owner,
-                        insurantIsOwner: insurantIsOwner
-                    },
                     agentReward: parseInt(agentReward),
-                    drivers,
                     ...rest
                 }
             },
@@ -368,25 +338,26 @@ const CreateContainer = () => {
 
 
     useEffect(() => {
-        if (accident && insuranceTerm && termCategories && driverType && vehicleType) {
-            calculatePremium()
-        }
-    }, [accident, insuranceTerm, termCategories, driverType, vehicleType])
-
-    useEffect(() => {
         if (lastYearPayment && lastYearInsurancePremium) {
             getRatio()
         }
     }, [lastYearPayment, lastYearInsurancePremium])
 
+    useEffect(() => {
+        if (each(values(osgopCalculateData),(_item)=>!isNil(_item))) {
+            calculatePremium()
+        }
+    }, [osgopCalculateData])
+
 
     if (isLoadingRegion || isLoadingInsuranceTerms) {
         return <OverlayLoader/>
     }
+    console.log('osgopCalculateData',osgopCalculateData,values(osgopCalculateData))
 
     return (<>
         {(isLoadingCountry || isLoadingPersonalInfo || isLoadingOrganizationInfo || isLoadingVehicleInfo || isLoadingPost) &&
-            <OverlayLoader/>}
+        <OverlayLoader/>}
         <Panel>
             <Row>
                 <Col xs={12}>
@@ -428,7 +399,6 @@ const CreateContainer = () => {
                                                        type={'input'}
                                                        name={'number'}/></Col>
                                 </Row>
-
                             </Col>
                             <Col xs={4}>
 
@@ -441,7 +411,7 @@ const CreateContainer = () => {
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Страховая премия: </Col>
-                                    <Col xs={7}><Field params={{required: true}} defaultValue={insurancePremium}
+                                    <Col xs={7}><Field params={{required: true}} defaultValue={0}
                                                        property={{hideLabel: true, disabled: true}}
                                                        type={'number-format-input'}
                                                        name={'premium'}/></Col>
@@ -726,46 +696,46 @@ const CreateContainer = () => {
                                     </Col>
                                     <Col xs={8} className={'text-right'}>
                                         {isEqual(insurantIsOwner ? owner : insurant, 'person') &&
-                                            <Flex justify={'flex-end'}>
-                                                <Field onChange={(e) => setPassportSeries(upperCase(e.target.value))}
-                                                       className={'mr-16'} style={{width: 75}}
-                                                       property={{
-                                                           hideLabel: true, mask: 'aa', placeholder: 'AA', maskChar: '_'
-                                                       }}
-                                                       name={'passportSeries'}
-                                                       type={'input-mask'}
-                                                />
-                                                <Field onChange={(e) => setPassportNumber(e.target.value)} property={{
-                                                    hideLabel: true,
-                                                    mask: '9999999',
-                                                    placeholder: '1234567',
-                                                    maskChar: '_'
-                                                }} name={'passportNumber'} type={'input-mask'}/>
+                                        <Flex justify={'flex-end'}>
+                                            <Field onChange={(e) => setPassportSeries(upperCase(e.target.value))}
+                                                   className={'mr-16'} style={{width: 75}}
+                                                   property={{
+                                                       hideLabel: true, mask: 'aa', placeholder: 'AA', maskChar: '_'
+                                                   }}
+                                                   name={'passportSeries'}
+                                                   type={'input-mask'}
+                                            />
+                                            <Field onChange={(e) => setPassportNumber(e.target.value)} property={{
+                                                hideLabel: true,
+                                                mask: '9999999',
+                                                placeholder: '1234567',
+                                                maskChar: '_'
+                                            }} name={'passportNumber'} type={'input-mask'}/>
 
-                                                <Field className={'ml-15'}
-                                                       property={{
-                                                           hideLabel: true,
-                                                           placeholder: 'Дата рождения',
-                                                           onChange: (e) => setBirthDate(e)
-                                                       }}
-                                                       name={'birthDate'} type={'datepicker'}/>
-                                                <Button onClick={() => getInfo('insurant')} className={'ml-15'}
-                                                        type={'button'}>Получить
-                                                    данные</Button>
-                                            </Flex>}
+                                            <Field className={'ml-15'}
+                                                   property={{
+                                                       hideLabel: true,
+                                                       placeholder: 'Дата рождения',
+                                                       onChange: (e) => setBirthDate(e)
+                                                   }}
+                                                   name={'birthDate'} type={'datepicker'}/>
+                                            <Button onClick={() => getInfo('insurant')} className={'ml-15'}
+                                                    type={'button'}>Получить
+                                                данные</Button>
+                                        </Flex>}
                                         {isEqual(insurantIsOwner ? owner : insurant, 'organization') &&
-                                            <Flex justify={'flex-end'}>
-                                                <Field onChange={(e) => setInn(e.target.value)} property={{
-                                                    hideLabel: true,
-                                                    mask: '999999999',
-                                                    placeholder: 'Inn',
-                                                    maskChar: '_'
-                                                }} name={'inn'} type={'input-mask'}/>
+                                        <Flex justify={'flex-end'}>
+                                            <Field onChange={(e) => setInn(e.target.value)} property={{
+                                                hideLabel: true,
+                                                mask: '999999999',
+                                                placeholder: 'Inn',
+                                                maskChar: '_'
+                                            }} name={'inn'} type={'input-mask'}/>
 
-                                                <Button onClick={() => getOrgInfo('applicant')} className={'ml-15'}
-                                                        type={'button'}>Получить
-                                                    данные</Button>
-                                            </Flex>}
+                                            <Button onClick={() => getOrgInfo('applicant')} className={'ml-15'}
+                                                    type={'button'}>Получить
+                                                данные</Button>
+                                        </Flex>}
                                     </Col>
                                 </Row>
                             </Col>
@@ -952,15 +922,18 @@ const CreateContainer = () => {
                                        type={'number-format-input'}
                                        name={'lastYearPayment'}/>
                             </Col>
-                            <Col xs={3}><Field  name={'lastYearInsurancePremium'}
+                            <Col xs={3}><Field name={'lastYearInsurancePremium'}
                                                label={'Сумма старховой премии в предыдущем году '}
                                                type={'number-format-input'}
                             /></Col>
-                            <Col xs={3}><Field defaultValue={get(ratioResponse,'lossRatio',0)}  property={{disabled:true}} name={'lossRatio'}
+                            <Col xs={3}><Field defaultValue={get(ratioResponse, 'lossRatio', 0)}
+                                               property={{disabled: true}} name={'lossRatio'}
                                                label={'Уровень убыточности '}
                                                type={'number-format-input'}
                             /></Col>
-                            <Col xs={3}><Field property={{disabled:true}} defaultValue={get(ratioResponse,'lossCoefficient',0)} name={'lossCoefficient'}
+                            <Col xs={3}><Field property={{disabled: true}}
+                                               defaultValue={get(ratioResponse, 'lossCoefficient', 0)}
+                                               name={'lossCoefficient'}
                                                label={'Коэффициент страховых тарифов'}
                                                type={'number-format-input'}
                             /></Col>
@@ -990,7 +963,7 @@ const CreateContainer = () => {
                                                 <td>{get(item, 'licenseSeria')}</td>
                                                 <td>{get(item, 'licenseNumber')}</td>
                                                 <td>{get(item, 'issueDate')}</td>
-                                                <td><Trash2 onClick={() => removeDriver(index)}
+                                                <td><Trash2 onClick={() => console.log(index)}
                                                             className={'cursor-pointer'} color={'red'}/></td>
                                             </tr>)
                                         }
@@ -1031,7 +1004,7 @@ const CreateContainer = () => {
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={round(rewardPercent * insurancePremium / 100, 2)}
+                                            defaultValue={round(rewardPercent * 0 / 100, 2)}
                                             property={{disabled: true}}
                                             label={'Сумма'}
                                             type={'number-format-input'}
@@ -1039,7 +1012,7 @@ const CreateContainer = () => {
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={round(rpmPercent * insurancePremium / 100, 2)}
+                                            defaultValue={round(rpmPercent * 0 / 100, 2)}
                                             property={{disabled: true}}
                                             label={'Сумма'}
                                             type={'number-format-input'}
@@ -1052,9 +1025,11 @@ const CreateContainer = () => {
                 </Col>
             </Row>
             <Modal title={'Добавление объекта страхования'} hide={() => setVisible(false)} visible={visible}>
-                {isLoadingDriverInfo && <OverlayLoader/>}
+                {false && <OverlayLoader/>}
                 <Form
-                    formRequest={addDriver}
+                    formRequest={() => {
+                    }}
+                    getValueFromField={(value, name) => getFieldData(name, value)}
                     footer={<Flex className={'mt-32'}><Button>Добавить</Button></Flex>}>
                     <Row align={'end'}>
                         <Col xs={9} className={' mt-15'}>
@@ -1088,7 +1063,7 @@ const CreateContainer = () => {
                         <Col xs={4} className={'mt-15'}>
                             <Field params={{required: true}}
                                    options={vehicleTypeList}
-                                   defaultValue={get(vehicle, 'vehicleTypeId')} label={'Вид ТС'}
+                                   defaultValue={get(vehicle, 'vehicleTypeId',0)} label={'Вид ТС'}
                                    type={'select'}
                                    name={'vehicle.vehicleTypeId'}/>
                         </Col>
@@ -1146,8 +1121,8 @@ const CreateContainer = () => {
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field params={{required: true}}
-                                   property={{type:'number'}}
-                                   defaultValue={get(vehicle, 'passengerCapacity',0)}
+                                   property={{type: 'number'}}
+                                   defaultValue={get(vehicle, 'passengerCapacity', 0)}
                                    label={'Пассажировместимость ТС'}
                                    type={'input'}
                                    name={'vehicle.passengerCapacity'}/>

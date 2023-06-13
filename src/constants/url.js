@@ -42,4 +42,5 @@ export const URLS = {
     activityAndRisk: 'api/references/activity-and-risks',
     osgorCalculate: 'api/osgor/calculate',
     getRatio: 'api/osgop/ratio',
+    osgopCalculate: 'api/osgop/calculate',
 }
