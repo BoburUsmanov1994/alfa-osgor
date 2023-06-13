@@ -34,7 +34,7 @@ const Router = ({...rest}) => {
                             <Route path={"osgop"}>
                                 <Route index element={<OsgopListPage/>}/>
                                 <Route path={"create"} element={<OsgopCreatePage/>}/>
-                                <Route path={"view/:form_id"} element={<OsgopViewPage/>}/>
+                                <Route path={"view/:osgop_formId"} element={<OsgopViewPage/>}/>
                             </Route>
                             <Route path="/auth/logout" element={<LogOutPage/>}/>
                             <Route path={"auth/*"} element={<Navigate to={'/osgor'} replace/>}/>

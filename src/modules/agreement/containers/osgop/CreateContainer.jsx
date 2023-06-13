@@ -307,7 +307,7 @@ const CreateContainer = () => {
             agentReward,
             inn,
             insurant: insurantType,
-            owner:ownerType,
+            owner: ownerType,
             ...rest
         } = data
         createRequest({
@@ -316,8 +316,18 @@ const CreateContainer = () => {
                     areaTypeId: isEqual(insurantIsOwner ? owner : insurant, 'person') ? get(insurantType, 'person.areaTypeId') : get(insurantType, 'organization.areaTypeId'),
                     agentReward: parseInt(agentReward),
                     insurantIsOwner,
-                    insurant: isEqual(insurantIsOwner ? owner : insurant, 'person') ?  {person: get(insurantType,'person',{})} : {organization:{...get(insurantType,'organization',{}),  oked: String(get(insurantType, 'organization.oked')),}},
-                    owner: isEqual(owner, 'person') ? {person:get(ownerType,'person',{})} : {organization:{...get(ownerType,'organization',{}),  oked: String(get(ownerType, 'organization.oked')),}},
+                    insurant: isEqual(insurantIsOwner ? owner : insurant, 'person') ? {person: get(insurantType, 'person', {})} : {
+                        organization: {
+                            ...get(insurantType, 'organization', {}),
+                            oked: String(get(insurantType, 'organization.oked')),
+                        }
+                    },
+                    owner: isEqual(owner, 'person') ? {person: get(ownerType, 'person', {})} : {
+                        organization: {
+                            ...get(ownerType, 'organization', {}),
+                            oked: String(get(ownerType, 'organization.oked')),
+                        }
+                    },
                     policies: policies,
                     ...rest
                 }
@@ -352,9 +362,6 @@ const CreateContainer = () => {
         return <OverlayLoader/>
     }
 
-    console.log('insurant',insurant)
-    console.log('owner',owner)
-    console.log('insurantIsOwner',insurantIsOwner)
     return (<>
         {(isLoadingCountry || isLoadingPersonalInfo || isLoadingOrganizationInfo || isLoadingVehicleInfo || isLoadingPost) &&
             <OverlayLoader/>}
