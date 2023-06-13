@@ -64,7 +64,7 @@ const Input = ({
                     disabled={get(property, "disabled")}
                     defaultValue={defaultValue}
                     min={0}
-                    max={25}
+                    max={get(property,'max',25)}
                 /> : <input
                     className={classNames('form-input',{error:get(errors,`${name}`,false)})}
                     name={name}

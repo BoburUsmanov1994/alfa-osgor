@@ -75,6 +75,7 @@ const GridView = ({
                       isHideColumn = false,
                       dataKey = null,
                       deleteUrl = null,
+                      deleteParam = null,
                   }) => {
     const navigate = useNavigate()
     const {t} = useTranslation()
@@ -140,9 +141,9 @@ const GridView = ({
             },
         }).then((result) => {
             if (result.isConfirmed) {
-                if(dataKey){
-                    deleteRequest({url:`${deleteUrl}?osgor_formId=${id}` ?? url})
-                }else {
+                if (dataKey) {
+                    deleteRequest({url: `${deleteUrl}?${deleteParam ?? 'osgor_formId'}=${id}` ?? url})
+                } else {
                     deleteRequest({url: `${url}/${id}`})
                 }
             }

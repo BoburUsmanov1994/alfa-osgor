@@ -42,12 +42,12 @@ const ListContainer = ({...rest}) => {
                 tableHeaderData={[
                     {
                         id: 3,
-                        key: 'policies[0].seria',
+                        key: 'seria',
                         title: 'Policy seria',
                     },
                     {
                         id: 4,
-                        key: 'policies[0].number',
+                        key: 'number',
                         title: 'Policy number',
                     },
                     {
@@ -58,31 +58,25 @@ const ListContainer = ({...rest}) => {
                     },
                     {
                         id: 55,
-                        key: 'applicant',
-                        title: 'Applicant',
-                        render: ({row}) => get(row, 'applicant.person') ? `${get(row, 'applicant.person.fullName.lastname')} ${get(row, 'applicant.person.fullName.firstname')}  ${get(row, 'applicant.person.fullName.middlename')}` : get(row, 'applicant.organization.name')
-                    },
-                    {
-                        id: 44,
-                        key: 'vehicle',
-                        title: 'Vehicle',
-                        render: ({row}) => get(row, 'vehicle.modelCustomName')
+                        key: 'insurant',
+                        title: 'Isnurant',
+                        render: ({row}) => get(row, 'insurant.person') ? `${get(row, 'insurant.person.fullName.lastname')} ${get(row, 'insurant.person.fullName.firstname')}  ${get(row, 'insurant.person.fullName.middlename')}` : get(row, 'insurant.organization.name')
                     },
                     {
                         id: 6,
-                        key: 'cost.insurancePremium',
+                        key: 'premium',
                         title: 'Insurance premium',
                         render: ({value}) => <NumberFormat displayType={'text'} thousandSeparator={' '} value={value}/>
                     },
                     {
                         id: 7,
-                        key: 'cost.sumInsured',
+                        key: 'sum',
                         title: 'Insurance sum',
                         render: ({value}) => <NumberFormat displayType={'text'} thousandSeparator={' '} value={value}/>
                     },
                     {
                         id: 8,
-                        key: 'cost.insurancePremium',
+                        key: 'premium',
                         title: 'Оплачено',
                         render: ({value, row}) => get(row, 'status') == 'payed' ?
                             <NumberFormat displayType={'text'} thousandSeparator={' '} value={value}/> : 0
@@ -102,8 +96,9 @@ const ListContainer = ({...rest}) => {
                 createUrl={'/osgop/create'}
                 updateUrl={'/osgop/update'}
                 isHideColumn
-                dataKey={'application_number'}
+                dataKey={'osgop_formId'}
                 deleteUrl={URLS.osgopDelete}
+                deleteParam={'osgop_formId'}
 
             />
         </>
