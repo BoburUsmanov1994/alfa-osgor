@@ -296,27 +296,30 @@ const CreateContainer = () => {
     }
 
     const create = ({data}) => {
+        debugger
         const {
             birthDate,
             passportNumber,
             passportSeries,
-            rewardSum,
             rpmSum,
             seria,
             termCategories,
             terms,
             agentReward,
+            inn,
             insurant: insurantType,
+            owner:ownerType,
             ...rest
         } = data
         createRequest({
                 url: URLS.osgopCreate, attributes: {
-                    regionId: isEqual(insurant, 'person') ? get(insurantType, 'person.regionId') : get(insurantType, 'organization.regionId'),
-                    areaTypeId: isEqual(insurant, 'person') ? get(insurantType, 'person.areaTypeId') : get(insurantType, 'organization.areaTypeId'),
+                    regionId: isEqual(insurantIsOwner ? owner : insurant, 'person') ? get(insurantType, 'person.regionId') : get(insurantType, 'organization.regionId'),
+                    areaTypeId: isEqual(insurantIsOwner ? owner : insurant, 'person') ? get(insurantType, 'person.areaTypeId') : get(insurantType, 'organization.areaTypeId'),
                     agentReward: parseInt(agentReward),
-                    policies: policies,
                     insurantIsOwner,
-                    insurant: insurantType,
+                    insurant: isEqual(insurantIsOwner ? owner : insurant, 'person') ? get(insurantType,'person',{}) : get(insurantType,'organization',{}),
+                    owner: isEqual(owner, 'person') ? get(ownerType,'person',{}) : get(ownerType,'organization',{}),
+                    policies: policies,
                     ...rest
                 }
             },
@@ -350,10 +353,9 @@ const CreateContainer = () => {
         return <OverlayLoader/>
     }
 
-    console.log('osgopCalculateData', osgopCalculateData)
-    console.log('policies', policies)
-
-
+    console.log('insurant',insurant)
+    console.log('owner',owner)
+    console.log('insurantIsOwner',insurantIsOwner)
     return (<>
         {(isLoadingCountry || isLoadingPersonalInfo || isLoadingOrganizationInfo || isLoadingVehicleInfo || isLoadingPost) &&
             <OverlayLoader/>}
@@ -922,7 +924,7 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3}><Field label={'Область'} params={{required: true}} options={regionList}
                                                    type={'select'}
-                                                   name={'policies[0].objects[0].ownerOrganization.regionId'}/></Col>
+                                                   name={'owner.organization.regionId'}/></Col>
                                 <Col xs={3}>
                                     <Field
                                         defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'address')}
