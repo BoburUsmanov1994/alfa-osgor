@@ -71,6 +71,21 @@ const ViewContainer = ({osgop_formId = null}) => {
     })
     const residentTypeList = getSelectOptionsListFromData(get(residentTypes, `data.result`, []), 'id', 'name')
 
+    const {data: country, isLoading: isLoadingCountry} = useGetAllQuery({
+        key: KEYS.countries, url: URLS.countries
+    })
+    const countryList = getSelectOptionsListFromData(get(country, `data.result`, []), 'id', 'name')
+
+    const {data: areaTypes} = useGetAllQuery({
+        key: KEYS.areaTypes, url: URLS.areaTypes
+    })
+    const areaTypesList = getSelectOptionsListFromData(get(areaTypes, `data.result`, []), 'id', 'name')
+
+    const {data: ownershipForms} = useGetAllQuery({
+        key: KEYS.ownershipForms, url: URLS.ownershipForms
+    })
+    const ownershipFormList = getSelectOptionsListFromData(get(ownershipForms, `data.result`, []), 'id', 'name')
+
 
     const {data: agents} = useGetAllQuery({
         key: [KEYS.agents],
@@ -82,6 +97,11 @@ const ViewContainer = ({osgop_formId = null}) => {
         },
     })
     const agentsList = getSelectOptionsListFromData(get(agents, `data.result`, []), 'id', 'name')
+
+    const {data: okeds} = useGetAllQuery({
+        key: KEYS.okeds, url: URLS.okeds
+    })
+    const okedList = getSelectOptionsListFromData(get(okeds, `data.result`, []), 'id', 'name')
 
 
     const {
@@ -95,7 +115,7 @@ const ViewContainer = ({osgop_formId = null}) => {
 
     const send = () => {
         sendFond({
-                url: `${URLS.send}?osgop_formId=${osgop_formId}`, attributes: {}
+                url: `${URLS.osgopSendFond}?osgop_formId=${osgop_formId}`, attributes: {}
             },
             {
                 onSuccess: ({data}) => {
@@ -107,13 +127,12 @@ const ViewContainer = ({osgop_formId = null}) => {
 
     const confirmPayed = () => {
         confirmPayedRequest({
-                url: URLS.confirmPayment, attributes: {
+                url: URLS.osgopConfirmPayment, attributes: {
                     uuid: get(data, 'data.result.uuid'),
-                    polisUuid: get(head(get(data, 'data.result.policies', [])), 'uuid'),
-                    paidAt: dayjs(get(head(get(data, 'data.result.policies', [])), 'issueDate')).format("YYYY-MM-DD HH:mm:ss"),
-                    insurancePremium: get(head(get(data, 'data.result.policies', [])), 'insurancePremium'),
-                    startDate: get(head(get(data, 'data.result.policies', [])), 'startDate'),
-                    endDate: get(head(get(data, 'data.result.policies', [])), 'endDate')
+                    paidAt: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+                    insurancePremium: get(data, 'data.result.premium', 0),
+                    startDate: get(data, 'data.result.contractStartDate'),
+                    endDate: get(data, 'data.result.contractEndDate')
                 }
             },
             {
@@ -144,14 +163,14 @@ const ViewContainer = ({osgop_formId = null}) => {
             if (result.isConfirmed) {
                 deleteRequest({url: `${URLS.delete}?osgop_formId=${osgop_formId}`}, {
                     onSuccess: () => {
-                        navigate('/osaga')
+                        navigate('/osgop')
                     }
                 })
             }
         });
     }
 
-    if (isLoading || isLoadingRegion || isLoadingInsuranceTerms) {
+    if (isLoading || isLoadingRegion || isLoadingInsuranceTerms || isLoadingCountry) {
         return <OverlayLoader/>
     }
 
@@ -265,7 +284,277 @@ const ViewContainer = ({osgop_formId = null}) => {
 
                     </Col>
                 </Row>
+                <Row gutterWidth={60} className={'mt-30'}>
+                    <Col xs={12} className={'mb-25'}><Title>Собственник </Title></Col>
+                    <Col xs={12}>
+                        <Row>
+                            <Col xs={4}>
+                                <Flex>
+                                    <h4 className={'mr-16'}>Собственник </h4>
+                                    <Button
+                                        gray={!get(data, 'data.result.owner.person')} className={'mr-16'}
+                                        type={'button'}>Физ. лицо</Button>
+                                    <Button
+                                        gray={!get(data, 'data.result.owner.organization')} type={'button'}>Юр.
+                                        лицо</Button>
+                                </Flex>
+                            </Col>
+                            <Col xs={8} className={'text-right'}>
+                                {get(data, 'data.result.owner.person') && <Flex justify={'flex-end'}>
+                                    <Field
+                                        defaultValue={get(data, 'data.result.owner.person.passportData.seria')}
+                                        disabled
+                                        className={'mr-16'} style={{width: 75}}
+                                        property={{
+                                            hideLabel: true,
+                                            mask: 'aa',
+                                            placeholder: 'AA',
+                                            maskChar: '_',
+                                            disabled: true
+                                        }}
+                                        name={'passportSeries'}
+                                        type={'input-mask'}
+                                    />
+                                    <Field
+                                        defaultValue={get(data, 'data.result.owner.person.passportData.number')}
+                                        disabled
+                                        property={{
+                                            hideLabel: true,
+                                            mask: '9999999',
+                                            placeholder: '1234567',
+                                            maskChar: '_'
+                                        }} name={'passportNumber'} type={'input-mask'}/>
 
+                                    <Field className={'ml-15'}
+                                           defaultValue={get(data, 'data.result.owner.person.birthDate')}
+                                           disabled
+                                           property={{
+                                               hideLabel: true,
+                                               placeholder: 'Дата рождения',
+                                           }}
+                                           name={'birthDate'} type={'datepicker'}/>
+                                </Flex>}
+                                {get(data, 'data.result.owner.organization') && <Flex justify={'flex-end'}>
+                                    <Field disabled defaultValue={get(data, 'data.result.owner.organization.inn')}
+                                           property={{
+                                               hideLabel: true,
+                                               mask: '999999999',
+                                               placeholder: 'Inn',
+                                               maskChar: '_'
+                                           }} name={'inn'} type={'input-mask'}/>
+                                </Flex>}
+                            </Col>
+                        </Row>
+                    </Col>
+                    <Col xs={12}>
+                        <hr className={'mt-15 mb-15'}/>
+                    </Col>
+                    {get(data, 'data.result.owner.person') && <>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field
+                                property={{disabled: true}}
+                                params={{required: true}}
+                                defaultValue={get(data, 'data.result.owner.person.fullName.firstname')}
+                                label={'Firstname'}
+                                type={'input'}
+                                name={'insurant.person.fullName.firstname'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field property={{disabled: true}} params={{required: true}}
+                                   defaultValue={get(data, 'data.result.owner.person.fullName.lastname')}
+                                   label={'Lastname'}
+                                   type={'input'}
+                                   name={'insurant.person.fullName.lastname'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field property={{disabled: true}}
+                                   defaultValue={get(data, 'data.result.owner.person.fullName.middlename')}
+                                   params={{required: true}}
+                                   label={'Middlename'}
+                                   type={'input'}
+                                   name={'insurant.person.fullName.middlename'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field property={{disabled: true}} params={{required: true}}
+                                   defaultValue={get(data, 'data.result.owner.person.passportData.pinfl')}
+                                   label={'ПИНФЛ'} type={'input'}
+                                   name={'insurant.person.passportData.pinfl'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field disabled defaultValue={get(data, 'data.result.owner.person.passportData.seria')}
+                                   params={{required: true}} property={{
+                                mask: 'aa',
+                                placeholder: 'AA',
+                                maskChar: '_'
+                            }} label={'Passport seria'} type={'input-mask'}
+                                   name={'insurant.person.passportData.seria'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field disabled defaultValue={get(data, 'data.result.owner.person.passportData.number')}
+                                   params={{required: true}} property={{
+                                mask: '9999999',
+                                placeholder: '1234567',
+                                maskChar: '_'
+                            }} label={'Passport number'} type={'input-mask'}
+                                   name={'insurant.person.passportData.number'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field disabled params={{required: true}}
+                                   defaultValue={dayjs(get(data, 'data.result.owner.person.birthDate')).toDate()}
+                                   label={'Birth date'}
+                                   type={'datepicker'}
+                                   name={'insurant.person.birthDate'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field
+                                disabled
+                                defaultValue={get(data, 'data.result.owner.person.gender')}
+                                options={genderList}
+                                label={'Gender'}
+                                type={'select'}
+                                name={'insurant.person.gender'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field
+                                disabled
+                                defaultValue={get(data, 'data.result.owner.person.countryId')}
+                                label={'Country'}
+                                type={'select'}
+                                options={countryList}
+                                name={'insurant.person.countryId'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field
+                                disabled
+                                params={{required: true}}
+                                options={regionList}
+                                defaultValue={get(data, 'data.result.owner.person.regionId')}
+                                label={'Region'}
+                                type={'select'}
+                                name={'insurant.person.regionId'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field
+                                disabled
+                                options={residentTypeList}
+                                defaultValue={get(data, 'data.result.owner.person.residentType')}
+                                label={'Resident type'}
+                                type={'select'}
+                                name={'insurant.person.residentType'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field
+                                property={{disabled: true}}
+                                defaultValue={get(data, 'data.result.owner.person.address')}
+                                label={'Address'}
+                                type={'input'}
+                                name={'insurant.person.address'}/>
+                        </Col>
+                        <Col xs={3}>
+                            <Field
+                                disabled
+                                params={{required: true}}
+                                options={areaTypesList}
+                                defaultValue={get(data, 'data.result.owner.person.areaTypeId')}
+                                label={'Тип местности'}
+                                type={'select'}
+                                name={'insurant.person.areaTypeId'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field
+                                property={{disabled: true}}
+                                params={{required: true}}
+                                defaultValue={get(data, 'data.result.owner.person.phone')}
+                                label={'Phone'}
+                                type={'input'}
+                                name={'insurant.person.phone'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field
+                                property={{disabled: true}}
+                                defaultValue={get(data, 'data.result.owner.person.email')}
+                                label={'Email'}
+                                type={'input'}
+                                name={'insurant.person.email'}/>
+                        </Col>
+                    </>}
+                    {get(data, 'data.result.owner.organization') && <>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field disabled params={{required: true}} label={'INN'}
+                                   defaultValue={get(data, 'data.result.owner.organization.inn')} property={{
+                                mask: '999999999',
+                                placeholder: 'Inn',
+                                maskChar: '_'
+                            }} name={'insurant.organization.inn'} type={'input-mask'}/>
+
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field property={{disabled:true}} params={{required: true}}
+                                   defaultValue={get(data, 'data.result.owner.organization.name')}
+                                   label={'Наименование'} type={'input'}
+                                   name={'insurant.organization.name'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field property={{disabled:true}}  defaultValue={get(data, 'data.result.owner.organization.representativeName')} label={'Руководитель'} type={'input'}
+                                   name={'insurant.organization.representativeName'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field property={{disabled:true}} defaultValue={get(data, 'data.result.owner.organization.position')}
+                                   label={'Должность'} type={'input'}
+                                   name={'insurant.organization.position'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field property={{disabled:true}} defaultValue={get(data, 'data.result.owner.organization.phone')}
+                                   params={{required: true}}
+                                   label={'Телефон'} type={'input'}
+                                   name={'insurant.organization.phone'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field property={{disabled:true}} defaultValue={get(data, 'data.result.owner.organization.email')} label={'Email'}
+                                   type={'input'}
+                                   name={'insurant.organization.email'}/>
+                        </Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field property={{disabled:true}} defaultValue={get(data, 'data.result.owner.organization.checkingAccount')}
+                                   label={'Расчетный счет'} type={'input'}
+                                   name={'insurant.organization.checkingAccount'}/>
+                        </Col>
+                        <Col xs={3}><Field defaultValue={get(data, 'data.result.owner.organization.regionId')} disabled label={'Область'} params={{required: true}} options={regionList}
+                                           type={'select'}
+                                           name={'insurant.organization.regionId'}/></Col>
+                        <Col xs={3} className={'mb-25'}>
+                            <Field
+                                property={{disabled:true}}
+                                defaultValue={get(data, 'data.result.owner.organization.address')}
+                                label={'Address'}
+                                type={'input'}
+                                name={'insurant.organization.address'}/>
+                        </Col>
+                        <Col xs={3}><Field disabled defaultValue={get(data, 'data.result.owner.organization.ownershipFormId')} label={'Форма собственности'} params={{required: true}}
+                                           options={ownershipFormList}
+                                           type={'select'}
+                                           name={'insurant.organization.ownershipFormId'}/></Col>
+                        <Col xs={3}>
+                            <Field
+                                disabled
+                                params={{required: true}}
+                                options={areaTypesList}
+                                defaultValue={get(data, 'data.result.owner.organization.areaTypeId')}
+                                label={'Тип местности'}
+                                type={'select'}
+                                name={'insurant.organization.areaTypeId'}/>
+                        </Col>
+                        <Col xs={3}><Field disabled defaultValue={parseInt(get(data, 'data.result.owner.organization.oked'))}
+                                           label={'Oked'} params={{required: true}}
+                                           options={okedList}
+                                           type={'select'}
+                                           name={'insurant.organization.oked'}/></Col>
+                    </>}
+                    <Col xs={12} className={'mt-15'}><Checkbox disabled
+                                                               checked={get(data, 'data.result.insurantIsOwner')}
+                                                               className={'mr-5'}/><strong>Собственник является
+                        Страхователем</strong></Col>
+                </Row>
 
                 <Row gutterWidth={60} className={'mt-30'}>
                     <Col xs={12} className={'mb-25'}><Title>Агентсткое вознограждение и РПМ</Title></Col>

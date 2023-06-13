@@ -18,6 +18,7 @@ export const URLS = {
     osgopConfirmPayment: 'api/osgop/confirm-payed',
     osgopCheckPayment: 'api/osgop/check-payment',
     osgopEpolis: 'api/osgop/get-e-polis',
+    osgopSendFond: 'api/osgop/send',
     personalInfoProvider: 'api/provider/personal-info',
     personalInfoNonCitizenProvider: 'api/provider/personal-info-non-citizen',
     organizationInfoProvider: 'api/provider/organization-info',
