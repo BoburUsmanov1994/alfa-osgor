@@ -304,7 +304,6 @@ const CreateContainer = () => {
             passportSeries,
             rpmSum,
             seria,
-            agentReward,
             inn,
             insurant: insurantType,
             owner: ownerType,
@@ -312,18 +311,16 @@ const CreateContainer = () => {
         } = data
         createRequest({
                 url: URLS.osgopCreate, attributes: {
-                    agentReward: parseInt(agentReward),
+                    regionId: isEqual(insurant, 'person') ? get(insurantType, 'person.regionId') : get(insurantType, 'organization.regionId'),
                     insurantIsOwner,
                     insurant: isEqual(insurantIsOwner ? owner : insurant, 'person') ? {person: get(insurantType, 'person', {})} : {
                         organization: {
-                            ...get(insurantType, 'organization', {}),
-                            oked: String(get(insurantType, 'organization.oked')),
+                            ...get(insurantType, 'organization', {})
                         }
                     },
                     owner: isEqual(owner, 'person') ? {person: get(ownerType, 'person', {})} : {
                         organization: {
-                            ...get(ownerType, 'organization', {}),
-                            oked: String(get(ownerType, 'organization.oked')),
+                            ...get(ownerType, 'organization', {})
                         }
                     },
                     policies: policies,
@@ -591,7 +588,7 @@ const CreateContainer = () => {
                                         defaultValue={get(ownerPerson, 'regionId')}
                                         label={'Region'}
                                         type={'select'}
-                                        name={'regionId'}/>
+                                        name={'insurant.person.regionId'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
@@ -685,7 +682,7 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3}><Field label={'Область'} params={{required: true}} options={regionList}
                                                    type={'select'}
-                                                   name={'regionId'}/></Col>
+                                                   name={'insurant.organization.regionId'}/></Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         params={{required: true}}
@@ -708,7 +705,7 @@ const CreateContainer = () => {
                                         name={'areaTypeId'}/>
                                 </Col>
                                 <Col xs={3}><Field defaultValue={parseInt(get(ownerOrganization, 'oked'))}
-                                                   label={'Oked'} params={{required: true}}
+                                                   label={'Oked'} params={{required: true, valueAsString: true}}
                                                    options={okedList}
                                                    type={'select'}
                                                    name={'insurant.organization.oked'}/></Col>
@@ -865,7 +862,7 @@ const CreateContainer = () => {
                                         defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'regionId')}
                                         label={'Region'}
                                         type={'select'}
-                                        name={'regionId'}/>
+                                        name={'owner.person.regionId'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
@@ -963,7 +960,7 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3}><Field label={'Область'} params={{required: true}} options={regionList}
                                                    type={'select'}
-                                                   name={'regionId'}/></Col>
+                                                   name={'owner.organization.regionId'}/></Col>
                                 <Col xs={3}>
                                     <Field
                                         params={{required: true}}
@@ -987,7 +984,7 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3}><Field
                                     defaultValue={parseInt(get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'oked'))}
-                                    label={'Oked'} params={{required: true}}
+                                    label={'Oked'} params={{required: true, valueAsString: true}}
                                     options={okedList}
                                     type={'select'}
                                     name={'owner.organization.oked'}/></Col>
@@ -1069,7 +1066,11 @@ const CreateContainer = () => {
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
                                             params={{required: true}}
-                                            property={{type: 'number', disabled: isEqual(agentId, undefined)}}
+                                            property={{
+                                                type: 'number',
+                                                disabled: isEqual(agentId, undefined),
+                                                valueAsNumber: true
+                                            }}
                                             defaultValue={isEqual(agentId, undefined) ? 0 : 20}
                                             label={'Вознограждение %'}
                                             type={'input'}
