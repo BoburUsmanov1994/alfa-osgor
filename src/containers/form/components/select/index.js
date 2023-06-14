@@ -133,7 +133,7 @@ const FormSelect = ({
     }
 
     useEffect(()=>{
-        setValue(name,selectedValue)
+        setValue(name,get(params,'valueAsString') ? String(selectedValue):selectedValue)
     },[selectedValue])
 
     useEffect(() => {

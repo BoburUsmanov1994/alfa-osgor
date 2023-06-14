@@ -303,7 +303,6 @@ const CreateContainer = () => {
             passportNumber,
             passportSeries,
             rpmSum,
-            seria,
             inn,
             insurant: insurantType,
             owner: ownerType,
@@ -311,7 +310,7 @@ const CreateContainer = () => {
         } = data
         createRequest({
                 url: URLS.osgopCreate, attributes: {
-                    regionId: isEqual(insurant, 'person') ? get(insurantType, 'person.regionId') : get(insurantType, 'organization.regionId'),
+                    regionId: isEqual(insurantIsOwner ? owner : insurant, 'person') ? get(insurantType, 'person.regionId') : get(insurantType, 'organization.regionId'),
                     insurantIsOwner,
                     insurant: isEqual(insurantIsOwner ? owner : insurant, 'person') ? {person: get(insurantType, 'person', {})} : {
                         organization: {
@@ -329,8 +328,8 @@ const CreateContainer = () => {
             },
             {
                 onSuccess: ({data: response}) => {
-                    if (get(response, 'result.application_number')) {
-                        navigate(`/osgop/view/${get(response, 'result.application_number')}`);
+                    if (get(response, 'result.osgop_formId')) {
+                        navigate(`/osgop/view/${get(response, 'result.osgop_formId')}`);
                     } else {
                         navigate(`/osgop`);
                     }
@@ -722,7 +721,7 @@ const CreateContainer = () => {
                                 <Row>
                                     <Col xs={4}>
                                         <Flex>
-                                            <h4 className={'mr-16'}>Заявитель </h4>
+                                            <h4 className={'mr-16'}>Страхователь </h4>
                                             <Button onClick={() => !insurantIsOwner && setInsurant('person')}
                                                     gray={!isEqual(insurantIsOwner ? owner : insurant, 'person')}
                                                     className={'mr-16'}
@@ -984,7 +983,8 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3}><Field
                                     defaultValue={parseInt(get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'oked'))}
-                                    label={'Oked'} params={{required: true, valueAsString: true}}
+                                    label={'Oked'}
+                                    params={{required: true, valueAsString: true}}
                                     options={okedList}
                                     type={'select'}
                                     name={'owner.organization.oked'}/></Col>
@@ -1033,7 +1033,7 @@ const CreateContainer = () => {
                                         {
                                             policies.map((item, index) => <tr>
                                                 <td>{index + 1}</td>
-                                                <td>{get(item, 'objects[0].vehicle.vehicleTypeId')}</td>
+                                                <td>{get(find(vehicleTypeList,(_vehicle)=>get(_vehicle,'value') == get(item, 'objects[0].vehicle.vehicleTypeId')),'label','-')}</td>
                                                 <td>{get(item, 'objects[0].vehicle.modelCustomName')}</td>
                                                 <td>{get(item, 'objects[0].vehicle.govNumber')}</td>
                                                 <td><NumberFormat value={get(item, 'insurancePremium', 0)}
