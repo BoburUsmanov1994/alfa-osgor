@@ -287,7 +287,7 @@ const CreateContainer = () => {
         if (isEqual(name, 'passengerCapacity')) {
             setOsgopCalculateData(prev => ({...prev, passengerCapacity: parseInt(value)}))
         }
-        if (isEqual(name, 'vehicle.objects[0].vehicleTypeId')) {
+        if (isEqual(name, 'vehicle.objects[0].vehicle.vehicleTypeId')) {
             setOsgopCalculateData(prev => ({...prev, vehicleTypeId: parseInt(value)}))
         }
         if (isEqual(name, 'lossRatio')) {
@@ -1038,7 +1038,7 @@ const CreateContainer = () => {
                                                 <td>{index + 1}</td>
                                                 <td>{get(item, 'objects[0].vehicle.vehicleTypeId')}</td>
                                                 <td>{get(item, 'objects[0].vehicle.modelCustomName')}</td>
-                                                <td>{get(item, 'objects[0].govNumber')}</td>
+                                                <td>{get(item, 'objects[0].vehicle.govNumber')}</td>
                                                 <td><NumberFormat value={get(item, 'insurancePremium', 0)}
                                                                   displayType={'text'} thousandSeparator={' '}/></td>
                                                 <td><NumberFormat value={get(item, 'insuranceSum', 0)}
@@ -1124,18 +1124,18 @@ const CreateContainer = () => {
                                 <Field params={{required: true}} onChange={(e) => setGovNumber(e.target.value)}
                                        className={'mr-16'}
                                        label={'Гос.номер'}
-                                       name={'vehicle.objects[0].govNumber'}
+                                       name={'vehicle.objects[0].vehicle.govNumber'}
                                        type={'input'}
                                 />
                                 <Field params={{required: true}} className={'mr-16'}
                                        onChange={(e) => setTechPassportSeria(e.target.value)}
-                                       name={'vehicle.objects[0].techPassport.seria'}
+                                       name={'vehicle.objects[0].vehicle.techPassport.seria'}
                                        type={'input'}
                                        label={'Серия тех.паспорта'}
                                 />
 
                                 <Field params={{required: true}} onChange={(e) => setTechPassportNumber(e.target.value)}
-                                       name={'vehicle.objects[0].techPassport.number'} type={'input'}
+                                       name={'vehicle.objects[0].vehicle.techPassport.number'} type={'input'}
                                        label={'Номер тех.паспорта'}
                                 />
 
@@ -1176,7 +1176,7 @@ const CreateContainer = () => {
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field
-                                params={{required: true}}
+                                params={{required: true, valueAsNumber: true}}
                                 defaultValue={get(vehicle, 'seats')} label={'Количество мест сидения'}
                                 property={{type: 'number'}}
                                 type={'input'}
