@@ -428,7 +428,7 @@ const ViewContainer = ({osgop_formId = null}) => {
                                 disabled
                                 params={{required: true}}
                                 options={regionList}
-                                defaultValue={get(data, 'data.result.owner.person.regionId')}
+                                defaultValue={get(data, 'data.result.regionId')}
                                 label={'Region'}
                                 type={'select'}
                                 name={'insurant.person.regionId'}/>
@@ -455,7 +455,7 @@ const ViewContainer = ({osgop_formId = null}) => {
                                 disabled
                                 params={{required: true}}
                                 options={areaTypesList}
-                                defaultValue={get(data, 'data.result.owner.person.areaTypeId')}
+                                defaultValue={get(data, 'data.result.areaTypeId')}
                                 label={'Тип местности'}
                                 type={'select'}
                                 name={'insurant.person.areaTypeId'}/>
@@ -489,48 +489,57 @@ const ViewContainer = ({osgop_formId = null}) => {
 
                         </Col>
                         <Col xs={3} className={'mb-25'}>
-                            <Field property={{disabled:true}} params={{required: true}}
+                            <Field property={{disabled: true}} params={{required: true}}
                                    defaultValue={get(data, 'data.result.owner.organization.name')}
                                    label={'Наименование'} type={'input'}
                                    name={'insurant.organization.name'}/>
                         </Col>
                         <Col xs={3} className={'mb-25'}>
-                            <Field property={{disabled:true}}  defaultValue={get(data, 'data.result.owner.organization.representativeName')} label={'Руководитель'} type={'input'}
+                            <Field property={{disabled: true}}
+                                   defaultValue={get(data, 'data.result.owner.organization.representativeName')}
+                                   label={'Руководитель'} type={'input'}
                                    name={'insurant.organization.representativeName'}/>
                         </Col>
                         <Col xs={3} className={'mb-25'}>
-                            <Field property={{disabled:true}} defaultValue={get(data, 'data.result.owner.organization.position')}
+                            <Field property={{disabled: true}}
+                                   defaultValue={get(data, 'data.result.owner.organization.position')}
                                    label={'Должность'} type={'input'}
                                    name={'insurant.organization.position'}/>
                         </Col>
                         <Col xs={3} className={'mb-25'}>
-                            <Field property={{disabled:true}} defaultValue={get(data, 'data.result.owner.organization.phone')}
+                            <Field property={{disabled: true}}
+                                   defaultValue={get(data, 'data.result.owner.organization.phone')}
                                    params={{required: true}}
                                    label={'Телефон'} type={'input'}
                                    name={'insurant.organization.phone'}/>
                         </Col>
                         <Col xs={3} className={'mb-25'}>
-                            <Field property={{disabled:true}} defaultValue={get(data, 'data.result.owner.organization.email')} label={'Email'}
+                            <Field property={{disabled: true}}
+                                   defaultValue={get(data, 'data.result.owner.organization.email')} label={'Email'}
                                    type={'input'}
                                    name={'insurant.organization.email'}/>
                         </Col>
                         <Col xs={3} className={'mb-25'}>
-                            <Field property={{disabled:true}} defaultValue={get(data, 'data.result.owner.organization.checkingAccount')}
+                            <Field property={{disabled: true}}
+                                   defaultValue={get(data, 'data.result.owner.organization.checkingAccount')}
                                    label={'Расчетный счет'} type={'input'}
                                    name={'insurant.organization.checkingAccount'}/>
                         </Col>
-                        <Col xs={3}><Field defaultValue={get(data, 'data.result.owner.organization.regionId')} disabled label={'Область'} params={{required: true}} options={regionList}
+                        <Col xs={3}><Field defaultValue={get(data, 'data.result.owner.organization.regionId')} disabled
+                                           label={'Область'} params={{required: true}} options={regionList}
                                            type={'select'}
                                            name={'insurant.organization.regionId'}/></Col>
                         <Col xs={3} className={'mb-25'}>
                             <Field
-                                property={{disabled:true}}
+                                property={{disabled: true}}
                                 defaultValue={get(data, 'data.result.owner.organization.address')}
                                 label={'Address'}
                                 type={'input'}
                                 name={'insurant.organization.address'}/>
                         </Col>
-                        <Col xs={3}><Field disabled defaultValue={get(data, 'data.result.owner.organization.ownershipFormId')} label={'Форма собственности'} params={{required: true}}
+                        <Col xs={3}><Field disabled
+                                           defaultValue={get(data, 'data.result.owner.organization.ownershipFormId')}
+                                           label={'Форма собственности'} params={{required: true}}
                                            options={ownershipFormList}
                                            type={'select'}
                                            name={'insurant.organization.ownershipFormId'}/></Col>
@@ -544,7 +553,8 @@ const ViewContainer = ({osgop_formId = null}) => {
                                 type={'select'}
                                 name={'insurant.organization.areaTypeId'}/>
                         </Col>
-                        <Col xs={3}><Field disabled defaultValue={parseInt(get(data, 'data.result.owner.organization.oked'))}
+                        <Col xs={3}><Field disabled
+                                           defaultValue={parseInt(get(data, 'data.result.owner.organization.oked'))}
                                            label={'Oked'} params={{required: true}}
                                            options={okedList}
                                            type={'select'}

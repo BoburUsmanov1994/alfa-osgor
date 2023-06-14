@@ -281,10 +281,10 @@ const CreateContainer = () => {
         if (isEqual(name, 'lastYearInsurancePremium')) {
             setLastYearInsurancePremium(value)
         }
-        if (isEqual(name, 'vehicle.insuranceSumForPassenger')) {
+        if (isEqual(name, 'insuranceSumForPassenger')) {
             setOsgopCalculateData(prev => ({...prev, insuranceSumForPassenger: parseInt(value)}))
         }
-        if (isEqual(name, 'vehicle.passengerCapacity')) {
+        if (isEqual(name, 'passengerCapacity')) {
             setOsgopCalculateData(prev => ({...prev, passengerCapacity: parseInt(value)}))
         }
         if (isEqual(name, 'vehicle.objects[0].vehicleTypeId')) {
@@ -296,14 +296,15 @@ const CreateContainer = () => {
     }
 
     const create = ({data}) => {
+        debugger
         const {
+            insuranceSumForPassenger,
+            passengerCapacity,
             birthDate,
             passportNumber,
             passportSeries,
             rpmSum,
             seria,
-            termCategories,
-            terms,
             agentReward,
             inn,
             insurant: insurantType,
@@ -312,8 +313,6 @@ const CreateContainer = () => {
         } = data
         createRequest({
                 url: URLS.osgopCreate, attributes: {
-                    regionId: isEqual(insurantIsOwner ? owner : insurant, 'person') ? get(insurantType, 'person.regionId') : get(insurantType, 'organization.regionId'),
-                    areaTypeId: isEqual(insurantIsOwner ? owner : insurant, 'person') ? get(insurantType, 'person.areaTypeId') : get(insurantType, 'organization.areaTypeId'),
                     agentReward: parseInt(agentReward),
                     insurantIsOwner,
                     insurant: isEqual(insurantIsOwner ? owner : insurant, 'person') ? {person: get(insurantType, 'person', {})} : {
@@ -542,7 +541,7 @@ const CreateContainer = () => {
                                            name={'insurant.person.fullName.middlename'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required: true}} defaultValue={get(ownerPerson, 'pinfl')}
+                                    <Field defaultValue={get(ownerPerson, 'pinfl')}
                                            label={'ПИНФЛ'} type={'input'}
                                            name={'insurant.person.passportData.pinfl'}/>
                                 </Col>
@@ -571,6 +570,7 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required: true}}
                                         defaultValue={get(ownerPerson, 'gender')}
                                         options={genderList}
                                         label={'Gender'}
@@ -592,10 +592,11 @@ const CreateContainer = () => {
                                         defaultValue={get(ownerPerson, 'regionId')}
                                         label={'Region'}
                                         type={'select'}
-                                        name={'insurant.person.regionId'}/>
+                                        name={'regionId'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required: true}}
                                         options={residentTypeList}
                                         defaultValue={get(ownerPerson, 'residentType')}
                                         label={'Resident type'}
@@ -604,6 +605,7 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required: true}}
                                         defaultValue={get(ownerPerson, 'address')}
                                         label={'Address'}
                                         type={'input'}
@@ -616,14 +618,21 @@ const CreateContainer = () => {
                                         defaultValue={get(ownerPerson, 'areaTypeId')}
                                         label={'Тип местности'}
                                         type={'select'}
-                                        name={'insurant.person.areaTypeId'}/>
+                                        name={'areaTypeId'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        params={{required: true}}
+                                        params={{
+                                            required: true,
+                                            pattern: {
+                                                value: /^998(9[012345789]|6[125679]|7[01234569])[0-9]{7}$/,
+                                                message: 'Invalid format'
+                                            }
+                                        }}
                                         defaultValue={get(ownerPerson, 'phone')}
                                         label={'Phone'}
                                         type={'input'}
+                                        property={{placeholder: '998XXXXXXXXX'}}
                                         name={'insurant.person.phone'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
@@ -657,7 +666,13 @@ const CreateContainer = () => {
                                            name={'insurant.organization.position'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(ownerOrganization, 'phone')} params={{required: true}}
+                                    <Field defaultValue={get(ownerOrganization, 'phone')} params={{
+                                        required: true,
+                                        pattern: {
+                                            value: /^998(9[012345789]|6[125679]|7[01234569])[0-9]{7}$/,
+                                            message: 'Invalid format'
+                                        }
+                                    }}
                                            label={'Телефон'} type={'input'}
                                            name={'insurant.organization.phone'}/>
                                 </Col>
@@ -671,15 +686,16 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3}><Field label={'Область'} params={{required: true}} options={regionList}
                                                    type={'select'}
-                                                   name={'insurant.organization.regionId'}/></Col>
+                                                   name={'regionId'}/></Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required: true}}
                                         defaultValue={get(ownerOrganization, 'address')}
                                         label={'Address'}
                                         type={'input'}
                                         name={'insurant.organization.address'}/>
                                 </Col>
-                                <Col xs={3}><Field label={'Форма собственности'} params={{required: true}}
+                                <Col xs={3}><Field label={'Форма собственности'}
                                                    options={ownershipFormList}
                                                    type={'select'}
                                                    name={'insurant.organization.ownershipFormId'}/></Col>
@@ -690,7 +706,7 @@ const CreateContainer = () => {
                                         defaultValue={get(ownerOrganization, 'areaTypeId')}
                                         label={'Тип местности'}
                                         type={'select'}
-                                        name={'insurant.organization.areaTypeId'}/>
+                                        name={'areaTypeId'}/>
                                 </Col>
                                 <Col xs={3}><Field defaultValue={parseInt(get(ownerOrganization, 'oked'))}
                                                    label={'Oked'} params={{required: true}}
@@ -795,10 +811,10 @@ const CreateContainer = () => {
                                         name={'owner.person.fullName.middlename'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required: true}}
-                                           defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'pinfl')}
-                                           label={'ПИНФЛ'} type={'input'}
-                                           name={'owner.person.passportData.pinfl'}/>
+                                    <Field
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'pinfl')}
+                                        label={'ПИНФЛ'} type={'input'}
+                                        name={'owner.person.passportData.pinfl'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}} property={{
@@ -820,6 +836,7 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required: true}}
                                         defaultValue={dayjs(get(insurantIsOwner ? ownerPerson : insurant, 'birthDate')).toDate()}
                                         label={'Birth date'}
                                         type={'datepicker'}
@@ -827,6 +844,7 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required: true}}
                                         defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'gender')}
                                         options={genderList}
                                         label={'Gender'}
@@ -843,14 +861,16 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required: true}}
                                         options={regionList}
                                         defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'regionId')}
                                         label={'Region'}
                                         type={'select'}
-                                        name={'owner.person.regionId'}/>
+                                        name={'regionId'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required: true}}
                                         options={residentTypeList}
                                         defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'residentType')}
                                         label={'Resident type'}
@@ -859,6 +879,7 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required: true}}
                                         defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'address')}
                                         label={'Address'}
                                         type={'input'}
@@ -871,10 +892,17 @@ const CreateContainer = () => {
                                         defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'areaTypeId')}
                                         label={'Тип местности'}
                                         type={'select'}
-                                        name={'owner.person.areaTypeId'}/>
+                                        name={'areaTypeId'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{
+                                            required: true,
+                                            pattern: {
+                                                value: /^998(9[012345789]|6[125679]|7[01234569])[0-9]{7}$/,
+                                                message: 'Invalid format'
+                                            }
+                                        }}
                                         defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'phone')}
                                         label={'Phone'}
                                         type={'input'}
@@ -914,7 +942,13 @@ const CreateContainer = () => {
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'phone')}
-                                        params={{required: true}}
+                                        params={{
+                                            required: true,
+                                            pattern: {
+                                                value: /^998(9[012345789]|6[125679]|7[01234569])[0-9]{7}$/,
+                                                message: 'Invalid format'
+                                            }
+                                        }}
                                         label={'Телефон'} type={'input'}
                                         name={'owner.organization.phone'}/>
                                 </Col>
@@ -930,15 +964,16 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3}><Field label={'Область'} params={{required: true}} options={regionList}
                                                    type={'select'}
-                                                   name={'owner.organization.regionId'}/></Col>
+                                                   name={'regionId'}/></Col>
                                 <Col xs={3}>
                                     <Field
+                                        params={{required: true}}
                                         defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'address')}
                                         label={'Address'}
                                         type={'input'}
                                         name={'owner.organization.address'}/>
                                 </Col>
-                                <Col xs={3}><Field label={'Форма собственности'} params={{required: true}}
+                                <Col xs={3}><Field label={'Форма собственности'}
                                                    options={ownershipFormList}
                                                    type={'select'}
                                                    name={'owner.organization.ownershipFormId'}/></Col>
@@ -949,7 +984,7 @@ const CreateContainer = () => {
                                         defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'areaTypeId')}
                                         label={'Тип местности'}
                                         type={'select'}
-                                        name={'owner.organization.areaTypeId'}/>
+                                        name={'areaTypeId'}/>
                                 </Col>
                                 <Col xs={3}><Field
                                     defaultValue={parseInt(get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'oked'))}
@@ -964,21 +999,22 @@ const CreateContainer = () => {
                         <Row gutterWidth={60} className={'mt-30'}>
                             <Col xs={12} className={'mb-15'}><Title>Убыточность предыдущих периодов</Title></Col>
                             <Col xs={3}>
-                                <Field label={'Сумма старховых возмещений в предыдущем году'}
+                                <Field params={{required: true}} label={'Сумма старховых возмещений в предыдущем году'}
                                        type={'number-format-input'}
                                        name={'lastYearPayment'}/>
                             </Col>
-                            <Col xs={3}><Field name={'lastYearInsurancePremium'}
+                            <Col xs={3}><Field params={{required: true}} name={'lastYearInsurancePremium'}
                                                label={'Сумма старховой премии в предыдущем году '}
                                                type={'number-format-input'}
                             /></Col>
-                            <Col xs={3}><Field defaultValue={get(ratioResponse, 'lossRatio', 0)}
+                            <Col xs={3}><Field params={{required: true}}
+                                               defaultValue={get(ratioResponse, 'lossRatio', 0)}
                                                property={{disabled: true}}
                                                name={'lossRatio'}
                                                label={'Уровень убыточности '}
                                                type={'input'}
                             /></Col>
-                            <Col xs={3}><Field property={{disabled: true}}
+                            <Col xs={3}><Field params={{required: true}} property={{disabled: true}}
                                                defaultValue={get(ratioResponse, 'lossCoefficient', 0)}
                                                name={'lossCoefficient'}
                                                label={'Коэффициент страховых тарифов'}
@@ -1001,8 +1037,8 @@ const CreateContainer = () => {
                                         {
                                             policies.map((item, index) => <tr>
                                                 <td>{index + 1}</td>
-                                                <td>{get(item, 'objects[0].vehicleTypeId')}</td>
-                                                <td>{get(item, 'objects[0].modelCustomName')}</td>
+                                                <td>{get(item, 'objects[0].vehicle.vehicleTypeId')}</td>
+                                                <td>{get(item, 'objects[0].vehicle.modelCustomName')}</td>
                                                 <td>{get(item, 'objects[0].govNumber')}</td>
                                                 <td><NumberFormat value={get(item, 'insurancePremium', 0)}
                                                                   displayType={'text'} thousandSeparator={' '}/></td>
@@ -1051,6 +1087,7 @@ const CreateContainer = () => {
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
+                                            params={{required: true}}
                                             defaultValue={round(rewardPercent * sumBy(policies, 'insuranceSum') / 100, 2)}
                                             property={{disabled: true}}
                                             label={'Сумма'}
@@ -1072,7 +1109,7 @@ const CreateContainer = () => {
                 </Col>
             </Row>
             <Modal title={'Добавление объекта страхования'} hide={() => setVisible(false)} visible={visible}>
-                {false && <OverlayLoader/>}
+                {isLoadingVehicleInfo && <OverlayLoader/>}
                 <Form
                     formRequest={({data: item}) => {
                         if (!isEmpty(get(item, 'vehicle'))) {
@@ -1117,26 +1154,26 @@ const CreateContainer = () => {
                                    options={vehicleTypeList}
                                    defaultValue={get(vehicle, 'vehicleTypeId', 0)} label={'Вид ТС'}
                                    type={'select'}
-                                   name={'vehicle.objects[0].vehicleTypeId'}/>
+                                   name={'vehicle.objects[0].vehicle.vehicleTypeId'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field params={{required: true}}
                                    defaultValue={get(vehicle, 'modelName')} label={'Модель ТС'}
                                    type={'input'}
-                                   name={'vehicle.objects[0].modelCustomName'}/>
+                                   name={'vehicle.objects[0].vehicle.modelCustomName'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field params={{required: true}}
                                    defaultValue={get(vehicle, 'bodyNumber')} label={'Номер кузова (шасси)'}
                                    type={'input'}
-                                   name={'vehicle.objects[0].bodyNumber'}/>
+                                   name={'vehicle.objects[0].vehicle.bodyNumber'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field
                                 defaultValue={get(vehicle, 'liftingCapacity')} label={'Грузоподъемность'}
                                 property={{type: 'number'}}
                                 type={'input'}
-                                name={'vehicle.liftingCapacity'}/>
+                                name={'vehicle.objects[0].vehicle.liftingCapacity'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field
@@ -1144,30 +1181,29 @@ const CreateContainer = () => {
                                 defaultValue={get(vehicle, 'seats')} label={'Количество мест сидения'}
                                 property={{type: 'number'}}
                                 type={'input'}
-                                name={'vehicle.objects[0].numberOfSeats'}/>
+                                name={'vehicle.objects[0].vehicle.numberOfSeats'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field params={{required: true}} defaultValue={get(vehicle, 'issueYear')}
-                                   params={{required: true}}
                                    label={'Год выпуска'} type={'input'}
-                                   name={'vehicle.objects[0].issueYear'}/>
+                                   name={'vehicle.objects[0].vehicle.issueYear'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field defaultValue={get(vehicle, 'engineNumber')}
                                    label={'Номер двигателя'} type={'input'}
-                                   name={'vehicle.objects[0].engineNumber'}/>
+                                   name={'vehicle.objects[0].vehicle.engineNumber'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field
                                 label={'Иностранный'} type={'switch'}
-                                name={'vehicle.objects[0].isForeign'}/>
+                                name={'vehicle.objects[0].vehicle.isForeign'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field params={{required: true}}
                                    options={regionList}
                                    defaultValue={get(vehicle, 'regionId')} label={'Регион регистрации'}
                                    type={'select'}
-                                   name={'vehicle.objects[0].regionId'}/>
+                                   name={'vehicle.objects[0].vehicle.regionId'}/>
                         </Col>
                         <Col xs={12} className={'mt-15'}>
                             <hr/>
@@ -1178,13 +1214,13 @@ const CreateContainer = () => {
                                 defaultValue={get(vehicle, 'passengerCapacity', 0)}
                                 label={'Пассажировместимость ТС'}
                                 type={'input'}
-                                name={'vehicle.passengerCapacity'}/>
+                                name={'passengerCapacity'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field
                                 label={'Страховая сумма на одного пассажира'}
                                 type={'number-format-input'}
-                                name={'vehicle.insuranceSumForPassenger'}/>
+                                name={'insuranceSumForPassenger'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field
