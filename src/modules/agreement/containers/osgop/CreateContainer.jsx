@@ -296,7 +296,6 @@ const CreateContainer = () => {
     }
 
     const create = ({data}) => {
-        debugger
         const {
             insuranceSumForPassenger,
             passengerCapacity,
