@@ -87,7 +87,7 @@ const GridView = ({
         key: keyId, url,
         params: {
           params:{
-              skip:page,
+              skip:page-1,
               limit:15
           }
         }
