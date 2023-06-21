@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo} from 'react';
-import {useSettingsStore, useStore} from "../../../../store";
+import { useStore} from "../../../../store";
 import {get} from "lodash";
 import GridView from "../../../../containers/grid-view/grid-view";
 import {KEYS} from "../../../../constants/key";
