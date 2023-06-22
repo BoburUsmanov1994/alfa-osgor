@@ -15,7 +15,6 @@ import {KEYS} from "../../../../constants/key";
 import {URLS} from "../../../../constants/url";
 import {getSelectOptionsListFromData} from "../../../../utils";
 import {OverlayLoader} from "../../../../components/loader";
-import qrcodeImg from "../../../../assets/images/qrcode.png"
 import dayjs from "dayjs";
 import {useNavigate} from "react-router-dom";
 import {useTranslation} from "react-i18next";

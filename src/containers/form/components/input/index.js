@@ -1,6 +1,6 @@
 import React,{useEffect} from 'react';
-import styled from "styled-components";
-import {get, includes, isEmpty} from "lodash";
+import styled,{css} from "styled-components";
+import {get} from "lodash";
 import { ErrorMessage } from "@hookform/error-message";
 import Label from "../../../../components/ui/label";
 import classNames from "classnames";
@@ -25,6 +25,11 @@ const Styled = styled.div`
       border-color: #13D6D1;
     }
   }
+  ${({noMaxWidth}) => noMaxWidth && css`
+    .form-input{
+      max-width: unset !important;
+    }
+  `}
 `;
 const Input = ({
                    register,

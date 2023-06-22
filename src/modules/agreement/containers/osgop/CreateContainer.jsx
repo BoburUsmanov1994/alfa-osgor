@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {useStore} from "../../../../store";
-import {find, get, every, isEqual, isNil, round, upperCase, values, isEmpty, sumBy} from "lodash";
+import {find, get, every, isEqual, isNil, round, upperCase, values, isEmpty, sumBy, includes} from "lodash";
 import Panel from "../../../../components/panel";
 import Search from "../../../../components/search";
 import {Col, Row} from "react-grid-system";
@@ -27,7 +27,15 @@ import NumberFormat from "react-number-format";
 
 const getEndDateByInsuranceTerm = (term, startDate) => {
     if (!isNil(term)) {
-        return dayjs(startDate).add(get(term, 'value'), get(term, 'prefix')).toDate()
+        if (get(term, 'prefix') == 'day') {
+            return dayjs(startDate).add(get(term, 'value') - 1, get(term, 'prefix')).toDate()
+        }
+        if (get(term, 'prefix') == 'month') {
+            return dayjs(startDate).add(get(term, 'value'), get(term, 'prefix')).subtract(1, 'day').toDate()
+        }
+        if (get(term, 'prefix') == 'year') {
+            return dayjs(startDate).add(get(term, 'value'), get(term, 'prefix')).subtract(1, 'day').toDate()
+        }
     }
     return dayjs()
 }
@@ -37,12 +45,17 @@ const CreateContainer = () => {
     const [ownerPerson, setOwnerPerson] = useState(null)
     const [ownerOrganization, setOwnerOrganization] = useState(null)
     const [insurant, setInsurant] = useState('person')
+    const [insurantPerson, setInsurantPerson] = useState(null)
     const [insurantOrganization, setInsurantOrganization] = useState(null)
     const [vehicle, setVehicle] = useState(null)
     const [passportSeries, setPassportSeries] = useState(null)
     const [passportNumber, setPassportNumber] = useState(null)
     const [birthDate, setBirthDate] = useState(null)
+    const [insurantPassportSeries, setInsurantPassportSeries] = useState(null)
+    const [insurantPassportNumber, setInsurantPassportNumber] = useState(null)
+    const [insurantBirthDate, setInsurantBirthDate] = useState(null)
     const [inn, setInn] = useState(null)
+    const [insurantInn, setInsurantInn] = useState(null)
     const [insuranceTerm, setInsuranceTerm] = useState(null)
     const [policeStartDate, setPoliceStartDate] = useState(dayjs())
     const [rpmPercent, setRpmPercent] = useState(0)
@@ -57,6 +70,9 @@ const CreateContainer = () => {
     const [ratioResponse, setRatioResponse] = useState({})
     const [agencyId, setAgencyId] = useState(null)
     const [agentId, setAgentId] = useState(null)
+    const [regionId, setRegionId] = useState(null)
+    const [otherPrams, setOtherParams] = useState({})
+    const [idList, setIdList] = useState([])
     const [osgopCalculateData, setOsgopCalculateData] = useState({
         insuranceSumForPassenger: 0,
         passengerCapacity: 0,
@@ -146,7 +162,17 @@ const CreateContainer = () => {
     })
     const areaTypesList = getSelectOptionsListFromData(get(areaTypes, `data.result`, []), 'id', 'name')
 
-
+    const {data: district} = useGetAllQuery({
+        key: [KEYS.districts, regionId],
+        url: URLS.districts,
+        params: {
+            params: {
+                region: regionId
+            }
+        },
+        enabled: !!(regionId || get(ownerPerson, 'regionId'))
+    })
+    const districtList = getSelectOptionsListFromData(get(district, `data.result`, []), 'id', 'name')
     const {
         mutate: getPersonalInfoRequest, isLoading: isLoadingPersonalInfo
     } = usePostQuery({listKeyId: KEYS.personalInfoProvider})
@@ -172,7 +198,11 @@ const CreateContainer = () => {
 
     const getInfo = (type = 'owner') => {
         getPersonalInfoRequest({
-                url: URLS.personalInfoProvider, attributes: {
+                url: URLS.personalInfoProvider, attributes: type == 'insurant' ? {
+                    birthDate: dayjs(insurantBirthDate).format('YYYY-MM-DD'),
+                    passportSeries: insurantPassportSeries,
+                    passportNumber: insurantPassportNumber
+                } : {
                     birthDate: dayjs(birthDate).format('YYYY-MM-DD'), passportSeries, passportNumber
                 }
             },
@@ -182,7 +212,7 @@ const CreateContainer = () => {
                         setOwnerPerson(get(data, 'result'));
                     }
                     if (type == 'insurant') {
-
+                        setInsurantPerson(get(data, 'result'));
                     }
                 }
             }
@@ -191,8 +221,10 @@ const CreateContainer = () => {
 
     const getOrgInfo = (type = 'owner') => {
         getOrganizationInfoRequest({
-                url: URLS.organizationInfoProvider, attributes: {
-                    inn
+                url: URLS.organizationInfoProvider, attributes: type == 'insurant' ? {
+                    inn: insurantInn
+                } : {
+                    inn: inn
                 }
             },
             {
@@ -259,7 +291,18 @@ const CreateContainer = () => {
         if (isEqual(name, 'terms')) {
             setInsuranceTerm(value)
         }
-
+        if (isEqual(name, 'insurant.person.regionId')) {
+            setRegionId(value)
+        }
+        if (isEqual(name, 'insurant.organization.regionId')) {
+            setRegionId(value)
+        }
+        if (isEqual(name, 'owner.organization.regionId')) {
+            setRegionId(value)
+        }
+        if (isEqual(name, 'owner.person.regionId')) {
+            setRegionId(value)
+        }
         if (isEqual(name, 'rpm')) {
             setRpmPercent(value)
         }
@@ -293,6 +336,7 @@ const CreateContainer = () => {
         if (isEqual(name, 'lossRatio')) {
             setOsgopCalculateData(prev => ({...prev, lossRatio: parseInt(value)}))
         }
+        setOtherParams(prev => ({...prev, [name]: value}))
     }
 
     const create = ({data}) => {
@@ -302,14 +346,20 @@ const CreateContainer = () => {
             birthDate,
             passportNumber,
             passportSeries,
+            insurantPassportSeries,
+            insurantPassportNumber,
+            insurantBirthDate,
             rpmSum,
             inn,
+            agentReward,
+            insurantInn,
             insurant: insurantType,
             owner: ownerType,
             ...rest
         } = data
         createRequest({
                 url: URLS.osgopCreate, attributes: {
+                    agentReward:Number(agentReward),
                     regionId: isEqual(insurantIsOwner ? owner : insurant, 'person') ? get(insurantType, 'person.regionId') : get(insurantType, 'organization.regionId'),
                     insurantIsOwner,
                     insurant: isEqual(insurantIsOwner ? owner : insurant, 'person') ? {person: get(insurantType, 'person', {})} : {
@@ -322,7 +372,7 @@ const CreateContainer = () => {
                             ...get(ownerType, 'organization', {})
                         }
                     },
-                    policies: policies,
+                    policies: policies.filter((_policy,index)=>includes(idList,index)),
                     ...rest
                 }
             },
@@ -355,6 +405,8 @@ const CreateContainer = () => {
     if (isLoadingRegion || isLoadingInsuranceTerms) {
         return <OverlayLoader/>
     }
+    console.log('policies',policies)
+    console.log('idList',idList)
 
     return (<>
         {(isLoadingCountry || isLoadingPersonalInfo || isLoadingOrganizationInfo || isLoadingVehicleInfo || isLoadingPost) &&
@@ -421,6 +473,7 @@ const CreateContainer = () => {
                                 </Row>
 
 
+
                             </Col>
                             <Col xs={4}>
 
@@ -472,19 +525,21 @@ const CreateContainer = () => {
                                     </Col>
                                     <Col xs={8} className={'text-right'}>
                                         {isEqual(owner, 'person') && <Flex justify={'flex-end'}>
-                                            <Field onChange={(e) => setPassportSeries(e.target.value)}
-                                                   className={'mr-16'} style={{width: 75}}
-                                                   property={{
-                                                       hideLabel: true, mask: 'aa', placeholder: 'AA', maskChar: '_'
-                                                   }}
-                                                   name={'passportSeries'}
-                                                   type={'input-mask'}
+                                            <Field
+                                                className={'mr-16'} style={{width: 75}}
+                                                property={{
+                                                    hideLabel: true, mask: 'aa', placeholder: 'AA', maskChar: '_',
+                                                    onChange: (val) => setPassportSeries(upperCase(val))
+                                                }}
+                                                name={'passportSeries'}
+                                                type={'input-mask'}
                                             />
-                                            <Field onChange={(e) => setPassportNumber(e.target.value)} property={{
+                                            <Field property={{
                                                 hideLabel: true,
                                                 mask: '9999999',
                                                 placeholder: '1234567',
-                                                maskChar: '_'
+                                                maskChar: '_',
+                                                onChange: (val) => setPassportNumber(val)
                                             }} name={'passportNumber'} type={'input-mask'}/>
 
                                             <Field className={'ml-15'}
@@ -518,16 +573,16 @@ const CreateContainer = () => {
                             </Col>
                             {isEqual(owner, 'person') && <>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required: true}} defaultValue={get(ownerPerson, 'firstNameLatin')}
-                                           label={'Firstname'}
-                                           type={'input'}
-                                           name={'insurant.person.fullName.firstname'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}} defaultValue={get(ownerPerson, 'lastNameLatin')}
                                            label={'Lastname'}
                                            type={'input'}
                                            name={'insurant.person.fullName.lastname'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field params={{required: true}} defaultValue={get(ownerPerson, 'firstNameLatin')}
+                                           label={'Firstname'}
+                                           type={'input'}
+                                           name={'insurant.person.fullName.firstname'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}} defaultValue={get(ownerPerson, 'middleNameLatin')}
@@ -536,32 +591,16 @@ const CreateContainer = () => {
                                            name={'insurant.person.fullName.middlename'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(ownerPerson, 'pinfl')}
-                                           label={'ПИНФЛ'} type={'input'}
-                                           name={'insurant.person.passportData.pinfl'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required: true}} property={{
-                                        mask: 'aa',
-                                        placeholder: 'AA',
-                                        maskChar: '_'
-                                    }} defaultValue={passportSeries} label={'Passport seria'} type={'input-mask'}
-                                           name={'insurant.person.passportData.seria'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required: true}} property={{
-                                        mask: '9999999',
-                                        placeholder: '1234567',
-                                        maskChar: '_'
-                                    }} defaultValue={passportNumber} label={'Passport number'} type={'input-mask'}
-                                           name={'insurant.person.passportData.number'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required: true}}
-                                           defaultValue={dayjs(get(ownerPerson, 'birthDate')).toDate()}
-                                           label={'Birth date'}
+                                    <Field params={{required: true}} defaultValue={get(ownerPerson, 'startDate')}
+                                           label={'Дата выдачи паспорта'}
                                            type={'datepicker'}
-                                           name={'insurant.person.birthDate'}/>
+                                           name={'insurant.person.passportData.startDate'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field params={{required: true}} defaultValue={get(ownerPerson, 'issuedBy')}
+                                           label={'Кем выдан'}
+                                           type={'input'}
+                                           name={'insurant.person.passportData.issuedBy'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
@@ -573,47 +612,9 @@ const CreateContainer = () => {
                                         name={'insurant.person.gender'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field
-                                        defaultValue={get(ownerPerson, 'birthCountry')}
-                                        label={'Country'}
-                                        type={'select'}
-                                        options={countryList}
-                                        name={'insurant.person.countryId'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field
-                                        params={{required: true}}
-                                        options={regionList}
-                                        defaultValue={get(ownerPerson, 'regionId')}
-                                        label={'Region'}
-                                        type={'select'}
-                                        name={'insurant.person.regionId'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field
-                                        params={{required: true}}
-                                        options={residentTypeList}
-                                        defaultValue={get(ownerPerson, 'residentType')}
-                                        label={'Resident type'}
-                                        type={'select'}
-                                        name={'insurant.person.residentType'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field
-                                        params={{required: true}}
-                                        defaultValue={get(ownerPerson, 'address')}
-                                        label={'Address'}
-                                        type={'input'}
-                                        name={'insurant.person.address'}/>
-                                </Col>
-                                <Col xs={3}>
-                                    <Field
-                                        params={{required: true}}
-                                        options={areaTypesList}
-                                        defaultValue={get(ownerPerson, 'areaTypeId')}
-                                        label={'Тип местности'}
-                                        type={'select'}
-                                        name={'areaTypeId'}/>
+                                    <Field defaultValue={get(ownerPerson, 'pinfl')}
+                                           label={'ПИНФЛ'} type={'input'}
+                                           name={'insurant.person.passportData.pinfl'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
@@ -637,16 +638,95 @@ const CreateContainer = () => {
                                         type={'input'}
                                         name={'insurant.person.email'}/>
                                 </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        params={{required: true}}
+                                        options={residentTypeList}
+                                        defaultValue={get(ownerPerson, 'residentType')}
+                                        label={'Resident type'}
+                                        type={'select'}
+                                        name={'insurant.person.residentType'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        label={'Серия вод. удостоверения'}
+                                        type={'input'}
+                                        name={'insurant.person.driverLicenseSeria'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        label={'Номер вод. удостоверения'}
+                                        type={'input'}
+                                        name={'insurant.person.driverLicenseNumber'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(ownerPerson, 'birthCountry')}
+                                        label={'Country'}
+                                        type={'select'}
+                                        options={countryList}
+                                        name={'insurant.person.countryId'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        params={{required: true}}
+                                        options={regionList}
+                                        defaultValue={get(ownerPerson, 'regionId')}
+                                        label={'Region'}
+                                        type={'select'}
+                                        name={'insurant.person.regionId'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        params={{required: true}}
+                                        options={districtList}
+                                        defaultValue={get(ownerPerson, 'districtId')}
+                                        label={'District'}
+                                        type={'select'}
+                                        name={'insurant.person.districtId'}/>
+                                </Col>
+
+                                <Col xs={3}>
+                                    <Field
+                                        params={{required: true}}
+                                        options={areaTypesList}
+                                        defaultValue={get(ownerPerson, 'areaTypeId')}
+                                        label={'Тип местности'}
+                                        type={'select'}
+                                        name={'areaTypeId'}/>
+                                </Col>
+                                <Col xs={6} className={'mb-25'}>
+                                    <Field
+                                        noMaxWidth
+                                        params={{required: true}}
+                                        defaultValue={get(ownerPerson, 'address')}
+                                        label={'Address'}
+                                        type={'input'}
+                                        name={'insurant.person.address'}/>
+                                </Col>
+                                <Col xs={1} className={'mt-15'}>
+                                    <Field
+                                        property={{disabled: true, type: 'hidden', hideLabel: true}}
+                                        defaultValue={passportSeries}
+                                        type={'input'}
+                                        name={'insurant.person.passportData.seria'}/>
+                                </Col>
+                                <Col xs={1} className={'mt-15'}>
+                                    <Field
+                                        property={{disabled: true, type: 'hidden', hideLabel: true}}
+                                        defaultValue={passportNumber}
+                                        type={'input'}
+                                        name={'insurant.person.passportData.number'}/>
+                                </Col>
+                                <Col xs={1} className={'mt-15'}>
+                                    <Field
+                                        property={{disabled: true, type: 'hidden', hideLabel: true}}
+                                        defaultValue={dayjs(birthDate).format("YYYY-MM-DD")}
+                                        type={'input'}
+                                        name={'insurant.person.birthDate'}/>
+                                </Col>
                             </>}
                             {isEqual(owner, 'organization') && <>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required: true}} label={'INN'} defaultValue={inn} property={{
-                                        mask: '999999999',
-                                        placeholder: 'Inn',
-                                        maskChar: '_'
-                                    }} name={'insurant.organization.inn'} type={'input-mask'}/>
-
-                                </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}} defaultValue={get(ownerOrganization, 'name')}
                                            label={'Наименование'} type={'input'}
@@ -661,6 +741,10 @@ const CreateContainer = () => {
                                            name={'insurant.organization.position'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
+                                    <Field defaultValue={get(ownerOrganization, 'email')} label={'Email'} type={'input'}
+                                           name={'insurant.organization.email'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
                                     <Field defaultValue={get(ownerOrganization, 'phone')} params={{
                                         required: true,
                                         pattern: {
@@ -668,16 +752,32 @@ const CreateContainer = () => {
                                             message: 'Invalid format'
                                         }
                                     }}
+                                           property={{placeholder: '998XXXXXXXXX'}}
                                            label={'Телефон'} type={'input'}
                                            name={'insurant.organization.phone'}/>
                                 </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(ownerOrganization, 'email')} label={'Email'} type={'input'}
-                                           name={'insurant.organization.email'}/>
-                                </Col>
+                                <Col xs={3}><Field defaultValue={parseInt(get(ownerOrganization, 'oked'))}
+                                                   label={'Oked'} params={{required: true, valueAsString: true}}
+                                                   options={okedList}
+                                                   type={'select'}
+                                                   name={'insurant.organization.oked'}/></Col>
+
                                 <Col xs={3} className={'mb-25'}>
                                     <Field label={'Расчетный счет'} type={'input'}
                                            name={'insurant.organization.checkingAccount'}/>
+                                </Col>
+                                <Col xs={3}><Field label={'Форма собственности'}
+                                                   options={ownershipFormList}
+                                                   type={'select'}
+                                                   name={'insurant.organization.ownershipFormId'}/></Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        params={{required: true}}
+                                        defaultValue={get(ownerOrganization, 'birthCountry', 210)}
+                                        label={'Country'}
+                                        type={'select'}
+                                        options={countryList}
+                                        name={'insurant.organization.countryId'}/>
                                 </Col>
                                 <Col xs={3}><Field label={'Область'} params={{required: true}} options={regionList}
                                                    type={'select'}
@@ -685,15 +785,12 @@ const CreateContainer = () => {
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         params={{required: true}}
-                                        defaultValue={get(ownerOrganization, 'address')}
-                                        label={'Address'}
-                                        type={'input'}
-                                        name={'insurant.organization.address'}/>
+                                        options={districtList}
+                                        defaultValue={get(ownerOrganization, 'districtId')}
+                                        label={'District'}
+                                        type={'select'}
+                                        name={'insurant.organization.districtId'}/>
                                 </Col>
-                                <Col xs={3}><Field label={'Форма собственности'}
-                                                   options={ownershipFormList}
-                                                   type={'select'}
-                                                   name={'insurant.organization.ownershipFormId'}/></Col>
                                 <Col xs={3}>
                                     <Field
                                         params={{required: true}}
@@ -703,11 +800,24 @@ const CreateContainer = () => {
                                         type={'select'}
                                         name={'areaTypeId'}/>
                                 </Col>
-                                <Col xs={3}><Field defaultValue={parseInt(get(ownerOrganization, 'oked'))}
-                                                   label={'Oked'} params={{required: true, valueAsString: true}}
-                                                   options={okedList}
-                                                   type={'select'}
-                                                   name={'insurant.organization.oked'}/></Col>
+                                <Col xs={6} className={'mb-25'}>
+                                    <Field
+                                        noMaxWidth
+                                        params={{required: true}}
+                                        defaultValue={get(ownerOrganization, 'address')}
+                                        label={'Address'}
+                                        type={'input'}
+                                        name={'insurant.organization.address'}/>
+                                </Col>
+                                <Col xs={1} className={'mt-15'}>
+                                    <Field
+                                        property={{disabled: true, type: 'hidden', hideLabel: true}}
+                                        defaultValue={inn}
+                                        type={'input'}
+                                        name={'insurant.organization.inn'}/>
+                                </Col>
+
+
                             </>}
                             <Col xs={12} className={'mt-15'}><Checkbox checked={insurantIsOwner}
                                                                        onChange={(e) => setInsuranttIsOwner(e.target.checked)}
@@ -735,26 +845,32 @@ const CreateContainer = () => {
                                     <Col xs={8} className={'text-right'}>
                                         {isEqual(insurantIsOwner ? owner : insurant, 'person') &&
                                             <Flex justify={'flex-end'}>
-                                                <Field onChange={(e) => setPassportSeries(upperCase(e.target.value))}
-                                                       className={'mr-16'} style={{width: 75}}
-                                                       property={{
-                                                           hideLabel: true, mask: 'aa', placeholder: 'AA', maskChar: '_'
-                                                       }}
-                                                       name={'passportSeries'}
-                                                       type={'input-mask'}
+                                                <Field
+                                                    defaultValue={insurantIsOwner ? passportSeries : insurantPassportSeries}
+                                                    onChange={(e) => setInsurantPassportSeries(upperCase(e.target.value))}
+                                                    className={'mr-16'} style={{width: 75}}
+                                                    property={{
+                                                        hideLabel: true, mask: 'aa', placeholder: 'AA', maskChar: '_'
+                                                    }}
+                                                    name={'insurantPassportSeries'}
+                                                    type={'input-mask'}
                                                 />
-                                                <Field onChange={(e) => setPassportNumber(e.target.value)} property={{
-                                                    hideLabel: true,
-                                                    mask: '9999999',
-                                                    placeholder: '1234567',
-                                                    maskChar: '_'
-                                                }} name={'passportNumber'} type={'input-mask'}/>
+                                                <Field
+                                                    defaultValue={insurantIsOwner ? passportNumber : insurantPassportNumber}
+                                                    onChange={(e) => setInsurantPassportNumber(e.target.value)}
+                                                    property={{
+                                                        hideLabel: true,
+                                                        mask: '9999999',
+                                                        placeholder: '1234567',
+                                                        maskChar: '_'
+                                                    }} name={'insurantPassportNumber'} type={'input-mask'}/>
 
-                                                <Field className={'ml-15'}
+                                                <Field defaultValue={insurantIsOwner ? birthDate : null}
+                                                       className={'ml-15'}
                                                        property={{
                                                            hideLabel: true,
                                                            placeholder: 'Дата рождения',
-                                                           onChange: (e) => setBirthDate(e)
+                                                           onChange: (e) => setInsurantBirthDate(e)
                                                        }}
                                                        name={'birthDate'} type={'datepicker'}/>
                                                 <Button onClick={() => getInfo('insurant')} className={'ml-15'}
@@ -763,14 +879,15 @@ const CreateContainer = () => {
                                             </Flex>}
                                         {isEqual(insurantIsOwner ? owner : insurant, 'organization') &&
                                             <Flex justify={'flex-end'}>
-                                                <Field onChange={(e) => setInn(e.target.value)} property={{
+                                                <Field defaultValue={insurantIsOwner ? inn : null}
+                                                       onChange={(e) => setInsurantInn(e.target.value)} property={{
                                                     hideLabel: true,
                                                     mask: '999999999',
                                                     placeholder: 'Inn',
                                                     maskChar: '_'
-                                                }} name={'inn'} type={'input-mask'}/>
+                                                }} name={'insurantInn'} type={'input-mask'}/>
 
-                                                <Button onClick={() => getOrgInfo('applicant')} className={'ml-15'}
+                                                <Button onClick={() => getOrgInfo('insurant')} className={'ml-15'}
                                                         type={'button'}>Получить
                                                     данные</Button>
                                             </Flex>}
@@ -784,15 +901,7 @@ const CreateContainer = () => {
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         params={{required: true}}
-                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'firstNameLatin')}
-                                        label={'Firstname'}
-                                        type={'input'}
-                                        name={'owner.person.fullName.firstname'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field
-                                        params={{required: true}}
-                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'lastNameLatin')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurantPerson, 'lastNameLatin')}
                                         label={'Lastname'}
                                         type={'input'}
                                         name={'owner.person.fullName.lastname'}/>
@@ -800,47 +909,37 @@ const CreateContainer = () => {
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         params={{required: true}}
-                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'middleNameLatin')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurantPerson, 'firstNameLatin')}
+                                        label={'Firstname'}
+                                        type={'input'}
+                                        name={'owner.person.fullName.firstname'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        params={{required: true}}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurantPerson, 'middleNameLatin')}
                                         label={'Middlename'}
                                         type={'input'}
                                         name={'owner.person.fullName.middlename'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field
-                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'pinfl')}
-                                        label={'ПИНФЛ'} type={'input'}
-                                        name={'owner.person.passportData.pinfl'}/>
+                                    <Field params={{required: true}}
+                                           defaultValue={get(insurantIsOwner ? ownerPerson : insurantPerson, 'startDate')}
+                                           label={'Дата выдачи паспорта'}
+                                           type={'datepicker'}
+                                           name={'owner.person.passportData.startDate'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required: true}} property={{
-                                        mask: 'aa',
-                                        placeholder: 'AA',
-                                        maskChar: '_'
-                                    }} defaultValue={passportSeries} label={'Passport seria'} type={'input-mask'}
-                                           name={'owner.person.passportData.seria'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field
-                                        params={{required: true}}
-                                        property={{
-                                            mask: '9999999',
-                                            placeholder: '1234567',
-                                            maskChar: '_'
-                                        }} defaultValue={passportNumber} label={'Passport number'} type={'input-mask'}
-                                        name={'owner.person.passportData.number'}/>
+                                    <Field params={{required: true}}
+                                           defaultValue={get(insurantIsOwner ? ownerPerson : insurantPerson, 'issuedBy')}
+                                           label={'Кем выдан'}
+                                           type={'input'}
+                                           name={'owner.person.passportData.issuedBy'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         params={{required: true}}
-                                        defaultValue={dayjs(get(insurantIsOwner ? ownerPerson : insurant, 'birthDate')).toDate()}
-                                        label={'Birth date'}
-                                        type={'datepicker'}
-                                        name={'owner.person.birthDate'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field
-                                        params={{required: true}}
-                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'gender')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurantPerson, 'gender')}
                                         options={genderList}
                                         label={'Gender'}
                                         type={'select'}
@@ -848,7 +947,59 @@ const CreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'birthCountry')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurantPerson, 'pinfl')}
+                                        label={'ПИНФЛ'} type={'input'}
+                                        name={'owner.person.passportData.pinfl'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        params={{
+                                            required: true,
+                                            pattern: {
+                                                value: /^998(9[012345789]|6[125679]|7[01234569])[0-9]{7}$/,
+                                                message: 'Invalid format'
+                                            }
+                                        }}
+                                        property={{placeholder: '998XXXXXXXXX'}}
+                                        defaultValue={insurantIsOwner ? get(otherPrams, 'insurant.person.phone') : null}
+                                        label={'Phone'}
+                                        type={'input'}
+                                        name={'owner.person.phone'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={insurantIsOwner ? get(otherPrams, 'insurant.person.email') : null}
+                                        label={'Email'}
+                                        type={'input'}
+                                        name={'owner.person.email'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        params={{required: true}}
+                                        options={residentTypeList}
+                                        defaultValue={insurantIsOwner ? get(otherPrams, 'insurant.person.residentType') : null}
+                                        label={'Resident type'}
+                                        type={'select'}
+                                        name={'owner.person.residentType'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={insurantIsOwner ? get(otherPrams, 'insurant.person.driverLicenseSeria') : null}
+                                        label={'Серия вод. удостоверения'}
+                                        type={'input'}
+                                        name={'owner.person.driverLicenseSeria'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={insurantIsOwner ? get(otherPrams, 'insurant.person.driverLicenseNumber') : null}
+                                        label={'Номер вод. удостоверения'}
+                                        type={'input'}
+                                        name={'owner.person.driverLicenseNumber'}/>
+                                </Col>
+
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurantPerson, 'birthCountry')}
                                         label={'Country'}
                                         type={'select'}
                                         options={countryList}
@@ -858,68 +1009,62 @@ const CreateContainer = () => {
                                     <Field
                                         params={{required: true}}
                                         options={regionList}
-                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'regionId')}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurantPerson, 'regionId')}
                                         label={'Region'}
                                         type={'select'}
                                         name={'owner.person.regionId'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        params={{required: true}}
-                                        options={residentTypeList}
-                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'residentType')}
-                                        label={'Resident type'}
+                                        options={districtList}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurantPerson, 'districtId')}
+                                        label={'District'}
                                         type={'select'}
-                                        name={'owner.person.residentType'}/>
+                                        name={'owner.person.districtId'}/>
                                 </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field
-                                        params={{required: true}}
-                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'address')}
-                                        label={'Address'}
-                                        type={'input'}
-                                        name={'owner.person.address'}/>
-                                </Col>
+
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         params={{required: true}}
                                         options={areaTypesList}
-                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'areaTypeId')}
+                                        defaultValue={insurantIsOwner ? get(otherPrams, 'areaTypeId') : null}
                                         label={'Тип местности'}
                                         type={'select'}
                                         name={'areaTypeId'}/>
                                 </Col>
-                                <Col xs={3} className={'mb-25'}>
+                                <Col xs={6} className={'mb-25'}>
                                     <Field
-                                        params={{
-                                            required: true,
-                                            pattern: {
-                                                value: /^998(9[012345789]|6[125679]|7[01234569])[0-9]{7}$/,
-                                                message: 'Invalid format'
-                                            }
-                                        }}
-                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'phone')}
-                                        label={'Phone'}
+                                        noMaxWidth
+                                        params={{required: true}}
+                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurantPerson, 'address')}
+                                        label={'Address'}
                                         type={'input'}
-                                        name={'owner.person.phone'}/>
+                                        name={'owner.person.address'}/>
                                 </Col>
-                                <Col xs={3} className={'mb-25'}>
+                                <Col xs={1} className={'mt-15'}>
                                     <Field
-                                        defaultValue={get(insurantIsOwner ? ownerPerson : insurant, 'email')}
-                                        label={'Email'}
+                                        property={{disabled: true, type: 'hidden', hideLabel: true}}
+                                        defaultValue={insurantIsOwner ? passportSeries : insurantPassportSeries}
                                         type={'input'}
-                                        name={'owner.person.email'}/>
+                                        name={'owner.person.passportData.seria'}/>
                                 </Col>
+                                <Col xs={1} className={'mt-15'}>
+                                    <Field
+                                        property={{disabled: true, type: 'hidden', hideLabel: true}}
+                                        defaultValue={insurantIsOwner ? passportNumber :insurantPassportNumber}
+                                        type={'input'}
+                                        name={'owner.person.passportData.number'}/>
+                                </Col>
+                                <Col xs={1} className={'mt-15'}>
+                                    <Field
+                                        property={{disabled: true, type: 'hidden', hideLabel: true}}
+                                        defaultValue={dayjs(insurantIsOwner ? birthDate : insurantBirthDate).format("YYYY-MM-DD")}
+                                        type={'input'}
+                                        name={'owner.person.birthDate'}/>
+                                </Col>
+
                             </>}
                             {isEqual(insurantIsOwner ? owner : insurant, 'organization') && <>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required: true}} label={'INN'} defaultValue={inn} property={{
-                                        mask: '999999999',
-                                        placeholder: 'Inn',
-                                        maskChar: '_'
-                                    }} name={'owner.organization.inn'} type={'input-mask'}/>
-
-                                </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}}
                                            defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'name')}
@@ -927,16 +1072,22 @@ const CreateContainer = () => {
                                            name={'owner.organization.name'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field label={'Руководитель'} type={'input'}
+                                    <Field  defaultValue={insurantIsOwner ? get(otherPrams, 'insurant.organization.representativeName'):null} label={'Руководитель'} type={'input'}
                                            name={'owner.organization.representativeName'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field label={'Должность'} type={'input'}
+                                    <Field defaultValue={insurantIsOwner ? get(otherPrams, 'insurant.organization.position'):null} label={'Должность'} type={'input'}
                                            name={'owner.organization.position'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'phone')}
+                                        defaultValue={insurantIsOwner ? get(otherPrams, 'insurant.organization.email'):null}
+                                        label={'Email'} type={'input'}
+                                        name={'owner.organization.email'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'phone',get(otherPrams, 'insurant.organization.phone'))}
                                         params={{
                                             required: true,
                                             pattern: {
@@ -944,42 +1095,9 @@ const CreateContainer = () => {
                                                 message: 'Invalid format'
                                             }
                                         }}
+                                        property={{placeholder: '998XXXXXXXXX'}}
                                         label={'Телефон'} type={'input'}
                                         name={'owner.organization.phone'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field
-                                        defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'email')}
-                                        label={'Email'} type={'input'}
-                                        name={'owner.organization.email'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field label={'Расчетный счет'} type={'input'}
-                                           name={'owner.organization.checkingAccount'}/>
-                                </Col>
-                                <Col xs={3}><Field label={'Область'} params={{required: true}} options={regionList}
-                                                   type={'select'}
-                                                   name={'owner.organization.regionId'}/></Col>
-                                <Col xs={3}>
-                                    <Field
-                                        params={{required: true}}
-                                        defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'address')}
-                                        label={'Address'}
-                                        type={'input'}
-                                        name={'owner.organization.address'}/>
-                                </Col>
-                                <Col xs={3}><Field label={'Форма собственности'}
-                                                   options={ownershipFormList}
-                                                   type={'select'}
-                                                   name={'owner.organization.ownershipFormId'}/></Col>
-                                <Col xs={3}>
-                                    <Field
-                                        params={{required: true}}
-                                        options={areaTypesList}
-                                        defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'areaTypeId')}
-                                        label={'Тип местности'}
-                                        type={'select'}
-                                        name={'areaTypeId'}/>
                                 </Col>
                                 <Col xs={3}><Field
                                     defaultValue={parseInt(get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'oked'))}
@@ -988,6 +1106,63 @@ const CreateContainer = () => {
                                     options={okedList}
                                     type={'select'}
                                     name={'owner.organization.oked'}/></Col>
+
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field defaultValue={insurantIsOwner ? get(otherPrams, 'insurant.organization.checkingAccount'):null} label={'Расчетный счет'} type={'input'}
+                                           name={'owner.organization.checkingAccount'}/>
+                                </Col>
+                                <Col xs={3}><Field defaultValue={insurantIsOwner ? get(otherPrams, 'insurant.organization.ownershipFormId'):null} label={'Форма собственности'}
+                                                   options={ownershipFormList}
+                                                   type={'select'}
+                                                   name={'owner.organization.ownershipFormId'}/></Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        params={{required: true}}
+                                        defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'birthCountry', 210)}
+                                        label={'Country'}
+                                        type={'select'}
+                                        options={countryList}
+                                        name={'owner.organization.countryId'}/>
+                                </Col>
+                                <Col xs={3}><Field defaultValue={insurantIsOwner ? get(otherPrams, 'insurant.organization.regionId'):null} label={'Область'} params={{required: true}} options={regionList}
+                                                   type={'select'}
+                                                   name={'owner.organization.regionId'}/></Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        params={{required: true}}
+                                        options={districtList}
+                                        defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'districtId',get(otherPrams, 'insurant.organization.districtId'))}
+                                        label={'District'}
+                                        type={'select'}
+                                        name={'owner.organization.districtId'}/>
+                                </Col>
+
+
+                                <Col xs={3}>
+                                    <Field
+                                        params={{required: true}}
+                                        options={areaTypesList}
+                                        defaultValue={insurantIsOwner ? get(otherPrams, 'areaTypeId'):null}
+                                        label={'Тип местности'}
+                                        type={'select'}
+                                        name={'areaTypeId'}/>
+                                </Col>
+                                <Col xs={6}>
+                                    <Field
+                                        noMaxWidth
+                                        params={{required: true}}
+                                        defaultValue={get(insurantIsOwner ? ownerOrganization : insurantOrganization, 'address')}
+                                        label={'Address'}
+                                        type={'input'}
+                                        name={'owner.organization.address'}/>
+                                </Col>
+                                <Col xs={1} className={'mt-15'}>
+                                    <Field
+                                        property={{disabled: true, type: 'hidden', hideLabel: true}}
+                                        defaultValue={insurantIsOwner ? inn : insurantInn}
+                                        type={'input'}
+                                        name={'owner.organization.inn'}/>
+                                </Col>
 
                             </>}
                         </Row>
@@ -1029,11 +1204,24 @@ const CreateContainer = () => {
                             <Col xs={12}>
                                 <div className={'horizontal-scroll mt-15 mb-25'}>
                                     <Table bordered hideThead={false}
-                                           thead={['№ ', 'Вид ТС', 'Модель ТС', 'Гос.номер', 'Страховая премия', 'Страховая сумма', 'Action']}>
+                                           thead={[<Checkbox onChange={(e) => {
+                                               if (e.target?.checked) {
+                                                   setIdList(policies.map((_policy,index) => index))
+                                               } else {
+                                                   setIdList([])
+                                               }
+                                           }}/>,'№ ', 'Вид ТС', 'Модель ТС', 'Гос.номер', 'Страховая премия', 'Страховая сумма', 'Action']}>
                                         {
                                             policies.map((item, index) => <tr>
+                                                <td><Checkbox checked={includes(idList,index)} onChange={(e) => {
+                                                    if (e.target?.checked) {
+                                                        setIdList(prev => ([...prev, index]))
+                                                    } else {
+                                                        setIdList(idList.filter(id => !isEqual(id, index)))
+                                                    }
+                                                }}/></td>
                                                 <td>{index + 1}</td>
-                                                <td>{get(find(vehicleTypeList,(_vehicle)=>get(_vehicle,'value') == get(item, 'objects[0].vehicle.vehicleTypeId')),'label','-')}</td>
+                                                <td>{get(find(vehicleTypeList, (_vehicle) => get(_vehicle, 'value') == get(item, 'objects[0].vehicle.vehicleTypeId')), 'label', '-')}</td>
                                                 <td>{get(item, 'objects[0].vehicle.modelCustomName')}</td>
                                                 <td>{get(item, 'objects[0].vehicle.govNumber')}</td>
                                                 <td><NumberFormat value={get(item, 'insurancePremium', 0)}
@@ -1071,7 +1259,7 @@ const CreateContainer = () => {
                                                 disabled: isEqual(agentId, undefined),
                                                 valueAsNumber: true
                                             }}
-                                            defaultValue={isEqual(agentId, undefined) ? 0 : 20}
+                                            defaultValue={isEqual(agentId, undefined) ? 0 : 25}
                                             label={'Вознограждение %'}
                                             type={'input'}
                                             name={'agentReward'}/>
