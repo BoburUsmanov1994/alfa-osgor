@@ -74,7 +74,7 @@ const CreateContainer = () => {
     const [otherPrams, setOtherParams] = useState({})
     const [idList, setIdList] = useState([])
     const [osgopCalculateData, setOsgopCalculateData] = useState({
-        insuranceSumForPassenger: 0,
+        insuranceSumForPassenger: 44000000,
         passengerCapacity: 0,
         vehicleTypeId: 0,
         lossRatio: 0
@@ -324,9 +324,6 @@ const CreateContainer = () => {
         if (isEqual(name, 'lastYearInsurancePremium')) {
             setLastYearInsurancePremium(value)
         }
-        if (isEqual(name, 'insuranceSumForPassenger')) {
-            setOsgopCalculateData(prev => ({...prev, insuranceSumForPassenger: parseInt(value)}))
-        }
         if (isEqual(name, 'passengerCapacity')) {
             setOsgopCalculateData(prev => ({...prev, passengerCapacity: parseInt(value)}))
         }
@@ -405,8 +402,6 @@ const CreateContainer = () => {
     if (isLoadingRegion || isLoadingInsuranceTerms) {
         return <OverlayLoader/>
     }
-    console.log('policies',policies)
-    console.log('idList',idList)
 
     return (<>
         {(isLoadingCountry || isLoadingPersonalInfo || isLoadingOrganizationInfo || isLoadingVehicleInfo || isLoadingPost) &&
@@ -1406,6 +1401,8 @@ const CreateContainer = () => {
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field
+                                property={{disabled:true}}
+                                defaultValue={44000000}
                                 label={'Страховая сумма на одного пассажира'}
                                 type={'number-format-input'}
                                 name={'insuranceSumForPassenger'}/>
