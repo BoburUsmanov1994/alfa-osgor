@@ -65,8 +65,8 @@ const CreateContainer = () => {
     const [techPassportNumber, setTechPassportNumber] = useState(null)
     const [insurantIsOwner, setInsuranttIsOwner] = useState(false)
     const [visible, setVisible] = useState(false)
-    const [lastYearPayment, setlastYearPayment] = useState(0)
-    const [lastYearInsurancePremium, setLastYearInsurancePremium] = useState(0)
+    const [lastYearPayment, setlastYearPayment] = useState(null)
+    const [lastYearInsurancePremium, setLastYearInsurancePremium] = useState(null)
     const [ratioResponse, setRatioResponse] = useState({})
     const [agencyId, setAgencyId] = useState(null)
     const [agentId, setAgentId] = useState(null)
@@ -357,16 +357,16 @@ const CreateContainer = () => {
         createRequest({
                 url: URLS.osgopCreate, attributes: {
                     agentReward:Number(agentReward),
-                    regionId: isEqual(insurantIsOwner ? owner : insurant, 'person') ? get(insurantType, 'person.regionId') : get(insurantType, 'organization.regionId'),
+                    regionId: isEqual(owner , 'person') ? get(insurantType, 'person.regionId') : get(insurantType, 'organization.regionId'),
                     insurantIsOwner,
-                    insurant: isEqual(insurantIsOwner ? owner : insurant, 'person') ? {person: get(insurantType, 'person', {})} : {
-                        organization: {
-                            ...get(insurantType, 'organization', {})
-                        }
-                    },
-                    owner: isEqual(owner, 'person') ? {person: get(ownerType, 'person', {})} : {
+                    owner: isEqual(insurantIsOwner ? owner : insurant, 'person') ? {person: get(ownerType, 'person', {})} : {
                         organization: {
                             ...get(ownerType, 'organization', {})
+                        }
+                    },
+                    insurant: isEqual(owner, 'person') ? {person: get(insurantType, 'person', {})} : {
+                        organization: {
+                            ...get(insurantType, 'organization', {})
                         }
                     },
                     policies: policies.filter((_policy,index)=>includes(idList,index)),
@@ -387,7 +387,7 @@ const CreateContainer = () => {
 
 
     useEffect(() => {
-        if (!isNil(lastYearPayment) && !isNil(lastYearInsurancePremium)) {
+        if (lastYearPayment && lastYearInsurancePremium) {
             getRatio()
         }
     }, [lastYearPayment, lastYearInsurancePremium])
@@ -402,6 +402,7 @@ const CreateContainer = () => {
     if (isLoadingRegion || isLoadingInsuranceTerms) {
         return <OverlayLoader/>
     }
+    console.log('owner',owner)
 
     return (<>
         {(isLoadingCountry || isLoadingPersonalInfo || isLoadingOrganizationInfo || isLoadingVehicleInfo || isLoadingPost) &&
@@ -1254,7 +1255,7 @@ const CreateContainer = () => {
                                                 disabled: isEqual(agentId, undefined),
                                                 valueAsNumber: true
                                             }}
-                                            defaultValue={isEqual(agentId, undefined) ? 0 : 25}
+                                            defaultValue={isEqual(agentId, undefined) ? 0 : 10}
                                             label={'Вознограждение %'}
                                             type={'input'}
                                             name={'agentReward'}/>
@@ -1271,7 +1272,7 @@ const CreateContainer = () => {
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
                                             params={{required: true}}
-                                            defaultValue={round(rewardPercent * sumBy(policies, 'insuranceSum') / 100, 2)}
+                                            defaultValue={round(rewardPercent * sumBy(policies, 'insurancePremium') / 100, 2)}
                                             property={{disabled: true}}
                                             label={'Сумма'}
                                             type={'number-format-input'}
@@ -1353,14 +1354,15 @@ const CreateContainer = () => {
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field
-                                defaultValue={get(vehicle, 'liftingCapacity')} label={'Грузоподъемность'}
+                                params={{valueAsNumber: true}}
+                                defaultValue={get(vehicle, 'liftingCapacity',0)} label={'Грузоподъемность'}
                                 property={{type: 'number'}}
                                 type={'input'}
                                 name={'vehicle.objects[0].vehicle.liftingCapacity'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field
-                                params={{required: true, valueAsNumber: true}}
+                                params={{valueAsNumber: true}}
                                 defaultValue={get(vehicle, 'seats')} label={'Количество мест сидения'}
                                 property={{type: 'number'}}
                                 type={'input'}
