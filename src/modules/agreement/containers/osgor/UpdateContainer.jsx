@@ -208,7 +208,8 @@ const UpdateContainer = ({form_id}) => {
         calculatePremiumRequest({
                 url: URLS.osgorCalculate, attributes: {
                     risk,
-                    insuranceSum: fotSum
+                    insuranceSum: fotSum,
+                    insuranceTermId:insuranceTerm
                 }
             },
             {
@@ -357,7 +358,6 @@ const UpdateContainer = ({form_id}) => {
     if (isLoadingFilials || isLoadingInsuranceTerms || isLoadingCountry || isLoadingRegion || isLoading) {
         return <OverlayLoader/>
     }
-    console.log(rewardPercent)
 
     return (<>
         {(isLoadingPersonalInfo || isLoadingOrganizationInfo,isLoadingPatch) && <OverlayLoader/>}

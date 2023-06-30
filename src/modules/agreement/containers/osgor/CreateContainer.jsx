@@ -199,7 +199,8 @@ const CreateContainer = ({...rest}) => {
         calculatePremiumRequest({
                 url: URLS.osgorCalculate, attributes: {
                     risk,
-                    insuranceSum: fotSum
+                    insuranceSum: fotSum,
+                    insuranceTermId:insuranceTerm
                 }
             },
             {

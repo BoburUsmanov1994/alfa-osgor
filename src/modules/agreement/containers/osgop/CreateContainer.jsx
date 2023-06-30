@@ -262,7 +262,7 @@ const CreateContainer = () => {
 
     const calculatePremium = () => {
         calcRequest({
-                url: URLS.osgopCalculate, attributes: osgopCalculateData
+                url: URLS.osgopCalculate, attributes: {...osgopCalculateData,insuranceTermId:insuranceTerm}
             },
             {
                 onSuccess: ({data}) => {
