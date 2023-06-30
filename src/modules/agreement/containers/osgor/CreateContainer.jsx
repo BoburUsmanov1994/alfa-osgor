@@ -310,15 +310,14 @@ const CreateContainer = ({...rest}) => {
         )
     }
     useEffect(() => {
-        if (risk && fotSum) {
+        if (risk && fotSum && insuranceTerm) {
             calculatePremium()
         }
-    }, [risk, fotSum])
+    }, [risk, fotSum,insuranceTerm])
     if (isLoadingFilials || isLoadingInsuranceTerms || isLoadingCountry || isLoadingRegion) {
         return <OverlayLoader/>
     }
 
-    console.log('user',user)
 
     return (<>
         {(isLoadingPersonalInfo || isLoadingOrganizationInfo) && <OverlayLoader/>}

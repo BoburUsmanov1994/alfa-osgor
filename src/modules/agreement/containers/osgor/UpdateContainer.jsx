@@ -317,10 +317,10 @@ const UpdateContainer = ({form_id}) => {
         )
     }
     useEffect(() => {
-        if (risk && fotSum) {
+        if (risk && fotSum && insuranceTerm) {
             calculatePremium()
         }
-    }, [risk, fotSum])
+    }, [risk, fotSum,insuranceTerm])
     useEffect(() => {
         if (get(data, 'data.result.insurant.organization.oked')) {
             setOked(get(data, 'data.result.insurant.organization.oked'))

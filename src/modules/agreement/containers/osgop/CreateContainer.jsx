@@ -393,16 +393,15 @@ const CreateContainer = () => {
     }, [lastYearPayment, lastYearInsurancePremium])
 
     useEffect(() => {
-        if (every(values(osgopCalculateData), (_item) => _item > 0 && !isNil(_item))) {
+        if (every(values(osgopCalculateData), (_item) => _item > 0 && !isNil(_item)) && insuranceTerm) {
             calculatePremium()
         }
-    }, [osgopCalculateData])
+    }, [osgopCalculateData,insuranceTerm])
 
 
     if (isLoadingRegion || isLoadingInsuranceTerms) {
         return <OverlayLoader/>
     }
-    console.log('owner',owner)
 
     return (<>
         {(isLoadingCountry || isLoadingPersonalInfo || isLoadingOrganizationInfo || isLoadingVehicleInfo || isLoadingPost) &&
