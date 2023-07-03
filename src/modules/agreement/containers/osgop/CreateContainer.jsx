@@ -387,7 +387,7 @@ const CreateContainer = () => {
 
 
     useEffect(() => {
-        if (lastYearPayment && lastYearInsurancePremium) {
+        if (!isNil(lastYearPayment) && !isNil(lastYearInsurancePremium)) {
             getRatio()
         }
     }, [lastYearPayment, lastYearInsurancePremium])
