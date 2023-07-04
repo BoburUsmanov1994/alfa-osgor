@@ -1363,7 +1363,7 @@ const CreateContainer = () => {
                             <Field
                                 params={{valueAsNumber: true}}
                                 defaultValue={get(vehicle, 'seats')} label={'Количество мест сидения'}
-                                property={{type: 'number'}}
+                                property={{type: 'number',max: 1000}}
                                 type={'input'}
                                 name={'vehicle.objects[0].vehicle.numberOfSeats'}/>
                         </Col>
