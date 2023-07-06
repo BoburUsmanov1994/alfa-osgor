@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from "styled-components";
-import {ceil, isEqual, range} from "lodash"
+import {ceil, isEqual, range, get} from "lodash"
 import classNames from "classnames";
-import {ChevronLeft,ChevronRight} from "react-feather";
+import {ChevronLeft, ChevronRight} from "react-feather";
+import {useNavigate, useLocation} from "react-router-dom";
 
 const Styled = styled.ul`
   display: flex;
@@ -10,7 +11,8 @@ const Styled = styled.ul`
   justify-content: flex-end;
   align-items: center;
   margin-top: 25px;
-flex-wrap: wrap;
+  flex-wrap: wrap;
+
   li {
     width: 40px;
     height: 40px;
@@ -27,7 +29,8 @@ flex-wrap: wrap;
     margin-right: 10px;
     cursor: pointer;
     margin-bottom: 5px;
-    &:last-child{
+
+    &:last-child {
       margin-right: 0;
     }
 
@@ -47,18 +50,42 @@ const Pagination = ({
                         ...rest
                     }) => {
     const count = ceil(totalItems / limit)
+    const navigate = useNavigate();
+    const location = useLocation();
+    console.log('page',page)
     return (
         <Styled {...rest}>
-            {!!(page > 1) && <li onClick={()=>setPage(page-1)} className={'prev'}>
-                <ChevronLeft />
+            {!!(page > 1) && <li onClick={() => {
+                navigate({
+                    pathname: get(location, 'pathname', '/'),
+                    search: `?page=${page - 1}`
+                });
+                setPage(page - 1);
+            }} className={'prev'}>
+                <ChevronLeft/>
             </li>}
             {
-                count > 1 && range(1, count + 1).map(item => <li className={classNames({'active':isEqual(page,item)})} onClick={()=>setPage(item)} key={item}>
+                count > 1 && range(1, count + 1).map(item => <li className={classNames({'active': page == item})}
+                                                                 onClick={() => {
+                                                                     navigate({
+                                                                         pathname: get(location, 'pathname', '/'),
+                                                                         search: `?page=${item}`
+                                                                     });
+                                                                     setPage(item);
+
+                                                                 }
+                                                                 } key={item}>
                     {item}
                 </li>)
             }
-            {!!(count > 1 && page < count) && <li onClick={()=>setPage(page+1)} className={'next'}>
-                <ChevronRight />
+            {!!(count > 1 && page < count) && <li onClick={() => {
+                navigate({
+                    pathname: get(location, 'pathname', '/'),
+                    search: `?page=${page + 1}`
+                });
+                setPage(page + 1);
+            }} className={'next'}>
+                <ChevronRight/>
             </li>}
         </Styled>
     );

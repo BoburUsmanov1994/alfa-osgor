@@ -21,7 +21,7 @@ import Section from "../../components/section";
 import Swal from "sweetalert2";
 import EmptyPage from "../../modules/auth/pages/EmptyPage";
 import Pagination from "../../components/pagination";
-import {useNavigate} from 'react-router-dom'
+import {useNavigate,useSearchParams} from 'react-router-dom'
 import Flex from "../../components/flex";
 import Dropdown from "../../components/dropdown";
 import {Check, ChevronUp, Menu} from "react-feather";
@@ -78,10 +78,11 @@ const GridView = ({
                       deleteParam = null,
                   }) => {
     const navigate = useNavigate()
+    const [searchParams, setSearchBarParams] = useSearchParams();
     const {t} = useTranslation()
     const [openModal, setOpenModal] = useState(false)
     const [rowId, setRowId] = useState(null)
-    const [page, setPage] = useState(1)
+    const [page, setPage] = useState(searchParams.get('page') || 1)
     const [columns, setColumns] = useState([])
     const {data, isError, isLoading, isFetching} = usePaginateQuery({
         key: keyId, url,
