@@ -1129,6 +1129,15 @@ const ViewContainer = ({osgop_formId = null}) => {
                             <Field
                                 params={{required: true}}
                                 property={{disabled: true}}
+                                defaultValue={get(vehicle, 'objects[0].vehicle.passengerCapacity', 0)}
+                                label={'Пассажировместимость ТС'}
+                                type={'number-format-input'}
+                                name={'vehicle.passengerCapacity'}/>
+                        </Col>
+                        <Col xs={4} className={'mt-15'}>
+                            <Field
+                                params={{required: true}}
+                                property={{disabled: true}}
                                 defaultValue={get(vehicle, 'insuranceSum', 0)}
                                 label={'Страховая сумма'}
                                 type={'number-format-input'}

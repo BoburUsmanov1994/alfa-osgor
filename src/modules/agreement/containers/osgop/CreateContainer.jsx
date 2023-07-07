@@ -324,7 +324,7 @@ const CreateContainer = () => {
         if (isEqual(name, 'lastYearInsurancePremium')) {
             setLastYearInsurancePremium(value)
         }
-        if (isEqual(name, 'passengerCapacity')) {
+        if (isEqual(name, 'vehicle.objects[0].vehicle.passengerCapacity')) {
             setOsgopCalculateData(prev => ({...prev, passengerCapacity: parseInt(value)}))
         }
         if (isEqual(name, 'vehicle.objects[0].vehicle.vehicleTypeId')) {
@@ -1394,11 +1394,12 @@ const CreateContainer = () => {
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field
+                                params={{required:true,valueAsNumber: true}}
                                 property={{type: 'number', max: 1000}}
                                 defaultValue={get(vehicle, 'passengerCapacity', 0)}
                                 label={'Пассажировместимость ТС'}
                                 type={'input'}
-                                name={'passengerCapacity'}/>
+                                name={'vehicle.objects[0].vehicle.passengerCapacity'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
                             <Field
