@@ -89,7 +89,7 @@ const GridView = ({
         params: {
           params:{
               skip:page-1,
-              limit:15
+              limit: 20
           }
         }
     })

@@ -52,6 +52,7 @@ const Pagination = ({
     const count = ceil(totalItems / limit)
     const navigate = useNavigate();
     const location = useLocation();
+    console.log(totalItems,limit,page)
     return (
         <Styled {...rest}>
             {!!(page > 1) && <li onClick={() => {
