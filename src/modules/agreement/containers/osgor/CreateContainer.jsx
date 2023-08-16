@@ -719,8 +719,10 @@ const CreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
+                                    property={{type:'number',max:999999999}}
+                                    params={{required: true}}
                                     label={'Расходы на погребение'}
-                                    type={'number-format-input'}
+                                    type={'input'}
                                     name={'funeralExpensesSum'}/>
                             </Col>
                             <Col xs={3} className={'mb-25'}>
