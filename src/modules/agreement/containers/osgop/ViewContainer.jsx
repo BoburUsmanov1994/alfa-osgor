@@ -556,7 +556,7 @@ const ViewContainer = ({osgop_formId = null}) => {
                         <Col xs={3}><Field
 
                             disabled
-                            defaultValue={parseInt(get(data, 'data.result.insurant.organization.oked'))}
+                            defaultValue={get(data, 'data.result.insurant.organization.oked')}
                             label={'Oked'} params={{required: true}}
                             options={okedList}
                             type={'select'}

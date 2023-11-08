@@ -751,7 +751,7 @@ const CreateContainer = () => {
                                            label={'Телефон'} type={'input'}
                                            name={'insurant.organization.phone'}/>
                                 </Col>
-                                <Col xs={3}><Field defaultValue={parseInt(get(ownerOrganization, 'oked'))}
+                                <Col xs={3}><Field defaultValue={get(ownerOrganization, 'oked')}
                                                    label={'Oked'} params={{required: true, valueAsString: true}}
                                                    options={okedList}
                                                    type={'select'}

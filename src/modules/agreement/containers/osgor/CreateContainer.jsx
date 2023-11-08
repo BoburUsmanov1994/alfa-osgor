@@ -674,7 +674,7 @@ const CreateContainer = ({...rest}) => {
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}}
                                            options={okedList}
-                                           defaultValue={parseInt(get(organization, 'oked'))}
+                                           defaultValue={get(organization, 'oked')}
                                            label={'ОКЭД'}
                                            type={'select'}
                                            name={'insurant.organization.oked'}/>

@@ -672,7 +672,7 @@ const UpdateContainer = ({form_id}) => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={parseInt(get(data,'data.result.insurant.person.oked'))}
+                                        defaultValue={get(data,'data.result.insurant.person.oked')}
                                         options={okedList}
                                         params={{required: true}}
                                         label={'Oked'}
@@ -730,7 +730,7 @@ const UpdateContainer = ({form_id}) => {
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required: true}}
                                            options={okedList}
-                                           defaultValue={parseInt(get(organization, 'oked'))}
+                                           defaultValue={get(organization, 'oked')}
                                            label={'ОКЭД'}
                                            type={'select'}
                                            name={'insurant.organization.oked'}/>

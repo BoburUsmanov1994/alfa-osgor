@@ -536,7 +536,7 @@ const ViewContainer = ({form_id = null}) => {
                                     <Field
                                         disabled
                                         options={okedList}
-                                        defaultValue={parseInt(get(data, 'data.result.insurant.organization.oked'))}
+                                        defaultValue={get(data, 'data.result.insurant.organization.oked')}
                                         label={'ОКЭД'}
                                         type={'select'}
                                         name={'insurant.organization.oked'}/>
