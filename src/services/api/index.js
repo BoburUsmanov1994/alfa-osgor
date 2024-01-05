@@ -40,7 +40,7 @@ alfa.interceptors.request.use((config) => {
     NProgress.inc();
     const token = get(JSON.parse(storage.get('settings')), 'state.translateToken', null) ;
     if (token) {
-        config.headers['auth'] = `${token}`
+        config.headers['Authorization'] = `Bearer ${token}`
     }
     return config;
 }, (error) => {

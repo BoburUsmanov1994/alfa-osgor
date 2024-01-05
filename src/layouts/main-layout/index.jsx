@@ -22,14 +22,15 @@ const Styled = styled.div`
 `;
 const MainLayout = ({...rest}) => {
     const setUser = useStore(state => get(state, 'setUser', []))
-    const token = get(JSON.parse(storage.get('settings')), 'state.translateToken', null) ;
+    const token = get(JSON.parse(storage.get('settings')), 'state.translateToken', null);
     const {data, isLoading} = useGetAllQueryAlfa({
-        key: KEYS.getMeAlfa, url: URLS.getMeAlfa, cb: {
-            success: ({users:result}) => {
+        key: KEYS.getMeAlfa, url: URLS.getMeAlfa,
+        cb: {
+            success: ({users: result}) => {
                 setUser(result)
             }
         },
-        enabled:!!(token)
+        enabled: !!(token)
     })
     return (
         <Styled {...rest}>
