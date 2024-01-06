@@ -26,7 +26,7 @@ const MainLayout = ({...rest}) => {
     const {data, isLoading} = useGetAllQueryAlfa({
         key: KEYS.getMeAlfa, url: URLS.getMeAlfa,
         cb: {
-            success: ({users: result}) => {
+            success: ({user: result}) => {
                 setUser(result)
             }
         },
