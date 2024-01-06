@@ -797,7 +797,7 @@ const UpdateContainer = ({form_id}) => {
                                     <Col xs={12} className={'mb-25'}>
                                         <Field
                                             defaultValue={get(data, 'data.result.agentId')}
-                                            options={[{label:t('No agent'),value:undefined},...agentsList]}
+                                            options={[...agentsList]}
                                             label={'Агент'}
                                             type={'select'}
                                             name={'agentId'}/>

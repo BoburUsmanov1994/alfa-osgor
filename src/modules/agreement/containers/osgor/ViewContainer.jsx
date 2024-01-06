@@ -613,7 +613,7 @@ const ViewContainer = ({form_id = null}) => {
                                         <Field
                                             disabled
                                             defaultValue={get(data,'data.result.agentId')}
-                                            options={[{value:'undefined',label:t('No agent')},...agentsList]}
+                                            options={[...agentsList]}
                                             label={'Агент'}
                                             type={'select'}
                                             name={'agentId'}/>

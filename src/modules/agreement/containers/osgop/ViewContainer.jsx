@@ -976,7 +976,7 @@ const ViewContainer = ({osgop_formId = null}) => {
                                 <Field
                                     disabled
                                     defaultValue={get(data, 'data.result.agentId')}
-                                    options={[{label: t('No agent'), value: undefined}, ...agentsList]}
+                                    options={[...agentsList]}
                                     label={'Агент'}
                                     type={'select'}
                                     name={'agentId'}/>
