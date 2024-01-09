@@ -748,8 +748,8 @@ const CreateContainer = ({...rest}) => {
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
                                             params={{required: true}}
-                                            property={{type: 'number', disabled: isEqual(agentId, undefined)}}
-                                            defaultValue={isEqual(agentId, undefined) ? 0 : 25}
+                                            property={{type: 'number', disabled: isEqual(agentId, '0')}}
+                                            defaultValue={isEqual(agentId, '0') ? 0 : 25}
                                             label={'Вознограждение %'}
                                             type={'input'}
                                             name={'policies[0].agentReward'}/>

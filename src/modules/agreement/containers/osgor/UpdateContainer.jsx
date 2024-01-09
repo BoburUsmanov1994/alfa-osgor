@@ -805,9 +805,9 @@ const UpdateContainer = ({form_id}) => {
 
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={isEqual(agentId,undefined) ? 0 : get(data,'data.result.policies[0].agentReward',25)}
+                                            defaultValue={isEqual(agentId,'0') ? 0 : get(data,'data.result.policies[0].agentReward',25)}
                                             label={'Вознограждение %'}
-                                            property={{type:'number',disabled:isEqual(agentId,undefined)}}
+                                            property={{type:'number',disabled:isEqual(agentId,'0')}}
                                             type={'input'}
                                             name={'policies[0].agentReward'}/>
                                     </Col>
