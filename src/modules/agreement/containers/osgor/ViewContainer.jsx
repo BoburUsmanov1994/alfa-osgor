@@ -637,7 +637,7 @@ const ViewContainer = ({form_id = null}) => {
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={round(get(data,'data.result.agentId')=="undefined" ? 0  : 25 * get(data,'data.result.policies[0].insurancePremium') / 100, 2)}
+                                            defaultValue={round(get(data,'data.result.agentId')=='0' ? 0  : 25 * get(data,'data.result.policies[0].insurancePremium') / 100, 2)}
                                             property={{disabled: true}}
                                             label={'Сумма'}
                                             type={'number-format-input'}
