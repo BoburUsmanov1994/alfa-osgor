@@ -48,6 +48,7 @@ const CreateContainer = ({...rest}) => {
     const [agencyId, setAgencyId] = useState(null)
     const [insuranceTerm, setInsuranceTerm] = useState(null)
     const [policeStartDate, setPoliceStartDate] = useState(dayjs())
+    const [policeEndDate, setPoliceEndDate] = useState(dayjs())
     const [oked, setOked] = useState(null)
     const [fotSum, setFotSum] = useState(0)
     const [risk, setRisk] = useState(null)
@@ -197,10 +198,16 @@ const CreateContainer = ({...rest}) => {
     }
     const calculatePremium = () => {
         calculatePremiumRequest({
-                url: URLS.osgorCalculate, attributes: {
+                url: URLS.osgorCalculate, attributes: insuranceTerm === 6 ? {
                     risk,
                     insuranceSum: fotSum,
-                    insuranceTermId:insuranceTerm
+                    insuranceTermId: insuranceTerm,
+                    startDate: dayjs(policeStartDate).format("YYYY-MM-DD"),
+                    endDate: dayjs(policeEndDate).format("YYYY-MM-DD")
+                } : {
+                    risk,
+                    insuranceSum: fotSum,
+                    insuranceTermId: insuranceTerm
                 }
             },
             {
@@ -237,6 +244,9 @@ const CreateContainer = ({...rest}) => {
         }
         if (isEqual(name, 'agentId')) {
             setAgentId(value)
+        }
+        if (isEqual(name, 'policies[0].endDate')) {
+            setPoliceEndDate(value)
         }
     }
     const create = ({data}) => {
@@ -313,11 +323,11 @@ const CreateContainer = ({...rest}) => {
         if (risk && fotSum && insuranceTerm) {
             calculatePremium()
         }
-    }, [risk, fotSum,insuranceTerm])
+    }, [risk, fotSum, insuranceTerm,policeEndDate])
     if (isLoadingFilials || isLoadingInsuranceTerms || isLoadingCountry || isLoadingRegion) {
         return <OverlayLoader/>
     }
-    console.log('user',user)
+    console.log('user', user)
 
     return (<>
         {(isLoadingPersonalInfo || isLoadingOrganizationInfo) && <OverlayLoader/>}
@@ -412,9 +422,13 @@ const CreateContainer = ({...rest}) => {
                                     <Col xs={5}>Дача окончания покрытия: </Col>
                                     <Col xs={7}><Field
                                         params={{required: true}}
-                                        defaultValue={getEndDateByInsuranceTerm(find(get(insuranceTerms, `data.result`, []), (_insuranceTerm) => get(_insuranceTerm, 'id') == insuranceTerm), policeStartDate)}
+                                        defaultValue={insuranceTerm != 6 ? getEndDateByInsuranceTerm(find(get(insuranceTerms, `data.result`, []), (_insuranceTerm) => get(_insuranceTerm, 'id') == insuranceTerm), policeStartDate): null}
                                         disabled={!isEqual(insuranceTerm, 6)}
-                                        property={{hideLabel: true, dateFormat: 'dd.MM.yyyy'}} type={'datepicker'}
+                                        property={{
+                                            hideLabel: true,
+                                            // onChange: (val) => setPoliceEndDate(val),
+                                            dateFormat: 'dd.MM.yyyy'
+                                        }} type={'datepicker'}
                                         name={'policies[0].endDate'}/></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
@@ -719,7 +733,7 @@ const CreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
-                                    property={{type:'number',max:999999999}}
+                                    property={{type: 'number', max: 999999999}}
                                     params={{required: true}}
                                     label={'Расходы на погребение'}
                                     type={'input'}
@@ -765,7 +779,7 @@ const CreateContainer = ({...rest}) => {
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
-                                            defaultValue={ round(rewardPercent * insurancePremium / 100, 2)}
+                                            defaultValue={round(rewardPercent * insurancePremium / 100, 2)}
                                             property={{disabled: true}}
                                             label={'Сумма'}
                                             type={'number-format-input'}

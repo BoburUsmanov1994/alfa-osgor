@@ -73,6 +73,9 @@ const CustomDatepicker = ({
             }
         }
     }, [defaultValue])
+    useEffect(() => {
+        getValueFromField(getValues(name), name);
+    }, [watch(name)]);
     return (
         <Styled {...rest}>
             <div className="form-group">
