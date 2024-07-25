@@ -1,5 +1,4 @@
-import {includes, isEqual,get,isObject} from "lodash";
-import {isArray} from "react-select/dist/declarations/src/utils";
+import {includes, isEqual,get,isObject,isArray} from "lodash";
 
 const addDetectClick =  ({setOpen,classNames = []}) => {
     window.addEventListener("click", (e) => {
