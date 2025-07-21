@@ -727,7 +727,7 @@ const CreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
-                                    defaultValue={get(find(get(activity, 'data.result.risks', []), _risk => get(_risk, 'number') == risk), 'coeficient')}
+                                    defaultValue={get(activity,'data.result.risks[0].coeficient')}
                                     property={{disabled: true}}
                                     label={'Коэффициент страхового тарифа'}
                                     type={'input'}
