@@ -154,6 +154,7 @@ const CreateContainer = ({...rest}) => {
         oked: get(activity, `data.result.oked`),
         name: get(activity, `data.result.name`)
     }], 'oked', 'name')
+    console.log('activity',activity)
 
     const {
         mutate: getPersonalInfoRequest, isLoading: isLoadingPersonalInfo
@@ -711,16 +712,17 @@ const CreateContainer = ({...rest}) => {
                             <Col xs={3} className={'mb-25'}>
                                 <Field
                                     options={activityList}
+                                    defaultValue={get(activity,'data.result.oked')}
                                     label={'Вид деятельности (по правилам)'}
                                     type={'select'}
                                     name={'activityRisk'}/>
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
-                                    params={{required: true}}
-                                    options={getSelectOptionsListFromData(get(activity, 'data.result.risks', []), 'number', 'number')}
+                                    defaultValue={get(activity,'data.result.risks[0].number')}
+                                    params={{required: true,valueAsNumber:true}}
                                     label={'Класс проф. риска'}
-                                    type={'select'}
+                                    type={'input'}
                                     name={'policies[0].risk'}/>
                             </Col>
                             <Col xs={3} className={'mb-25'}>
