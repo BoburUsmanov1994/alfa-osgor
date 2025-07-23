@@ -53,6 +53,7 @@ const CreateContainer = ({...rest}) => {
     const [fotSum, setFotSum] = useState(0)
     const [risk, setRisk] = useState(null)
     const [insurancePremium, setInsurancePremium] = useState(0)
+    const [_funeralExpensesSum, _setFuneralExpensesSum] = useState(0)
     const [rpmPercent, setRpmPercent] = useState(5)
     const [rewardPercent, setRewardPercent] = useState(0)
     const setBreadcrumbs = useStore(state => get(state, 'setBreadcrumbs', () => {
@@ -214,6 +215,7 @@ const CreateContainer = ({...rest}) => {
             {
                 onSuccess: ({data}) => {
                     setInsurancePremium(get(data, 'result.insurancePremium'))
+                    _setFuneralExpensesSum(get(data, 'result.funeralExpensesSum'))
                 }
             }
         )
@@ -328,7 +330,6 @@ const CreateContainer = ({...rest}) => {
     if (isLoadingFilials || isLoadingInsuranceTerms || isLoadingCountry || isLoadingRegion) {
         return <OverlayLoader/>
     }
-    console.log('user', user)
 
     return (<>
         {(isLoadingPersonalInfo || isLoadingOrganizationInfo) && <OverlayLoader/>}
@@ -735,7 +736,8 @@ const CreateContainer = ({...rest}) => {
                             </Col>
                             <Col xs={3} className={'mb-25'}>
                                 <Field
-                                    property={{type: 'number', max: 999999999}}
+                                    defaultValue={_funeralExpensesSum}
+                                    property={{disabled: true}}
                                     params={{required: true}}
                                     label={'Расходы на погребение'}
                                     type={'input'}
