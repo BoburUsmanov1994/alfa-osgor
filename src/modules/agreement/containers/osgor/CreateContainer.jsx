@@ -738,7 +738,7 @@ const CreateContainer = ({...rest}) => {
                                 <Field
                                     defaultValue={_funeralExpensesSum}
                                     property={{disabled: true}}
-                                    params={{required: true}}
+                                    params={{required: true,valueAsNumber:true}}
                                     label={'Расходы на погребение'}
                                     type={'input'}
                                     name={'funeralExpensesSum'}/>
